@@ -1,0 +1,31 @@
+{
+  "name": "babylondev",
+  "version": "1.0.0",
+  "description": "Babylon dev",
+  "main": "dist/babylondev.js",
+  "scripts": {
+    "dev": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+    "build": "node ./node_modules/webpack/bin/webpack.js"
+  },
+  "keywords": [
+    "javascript",
+    "typescript",
+    "babylonjs"
+  ],
+  "author": "E. Popov",
+  "license": "MIT",
+  "dependencies": {
+    "babylonjs": "^4.0.3",
+    "babylonjs-loaders": "^4.0.3",
+    "ts-loader": "^6.1.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.6.3",
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.8",
+    "webpack-dev-server": "^3.8.0"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.3.31",
+    "@types/pako": "^1.0.1"
+  }
+}
