@@ -1,7 +1,7 @@
 import jQuery from "jquery";
 
 import {
-    Engine, UniversalCamera, Vector3
+    Engine, UniversalCamera, Vector3, Scene
 } from "babylonjs";
 
 import Sample from "./DepthMinMax/index";
@@ -20,9 +20,17 @@ function setContainerDimensions() {
 jQuery(window).on('resize', setContainerDimensions);
 jQuery(window).on('load', setContainerDimensions);
 
-let scene = Sample.CreateScene(engine, canvas);
-let camera = scene.activeCamera as UniversalCamera;
 let divFps = document.getElementById("fps") as HTMLElement;
+
+var scene = new Scene(engine);
+var camera = new UniversalCamera("camera1", new Vector3(0, 5, -10), scene);
+
+camera.setTarget(Vector3.Zero());
+camera.attachControl(canvas, true);
+
+scene.activeCamera = camera;
+
+Sample.CreateScene(scene);
 
 (window as any).camera = camera;
 (window as any).scene = scene;
@@ -47,6 +55,27 @@ scene.onKeyboardObservable.add((kbInfo) => {
             break;
         case BABYLON.KeyboardEventTypes.KEYUP:
             mapKeys.set(kbInfo.event.key, false);
+            break;
+    }
+});
+
+let locked = false;
+
+scene.onPointerObservable.add((pointerInfo) => {
+    switch (pointerInfo.type) {
+        case BABYLON.PointerEventTypes.POINTERDOWN:
+            if (pointerInfo.event.button == 2) {
+                if (!locked) {
+                    locked = true;
+                    canvas.requestPointerLock = canvas.requestPointerLock || canvas.msRequestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
+                    if (canvas.requestPointerLock) {
+                        canvas.requestPointerLock();
+                    }
+                } else {
+                    document.exitPointerLock();
+                    locked = false;
+                }
+            }
             break;
     }
 });
