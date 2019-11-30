@@ -8,10 +8,12 @@ import Sample from "./DepthMinMax/index";
 
 declare var glMatrix: any;
 
+const showDebugLayer = false;
+
 glMatrix.glMatrix.setMatrixArrayType(Array);
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement,
-      engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true });
+      engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true, antialias: false });
 
 function setContainerDimensions() {
     engine.resize();
@@ -79,6 +81,10 @@ scene.onPointerObservable.add((pointerInfo) => {
             break;
     }
 });
+
+if (showDebugLayer) {
+    scene.debugLayer.show({ embedMode: false, handleResize: false, overlay: true, showExplorer: true, showInspector: true });
+}
 
 engine.runRenderLoop(function() {
     camera.speed = cameraSpeed * (mapKeys.get('Shift') ? shiftMultiplier : 1);
