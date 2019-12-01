@@ -27,12 +27,13 @@ let divFps = document.getElementById("fps") as HTMLElement;
 var scene = new Scene(engine);
 var camera = new UniversalCamera("camera1", new Vector3(0, 5, -10), scene);
 
+camera.fov = Math.PI / 4;
 camera.setTarget(Vector3.Zero());
 camera.attachControl(canvas, true);
 
 scene.activeCamera = camera;
 
-Sample.CreateScene(scene);
+new Sample(scene).create();
 
 (window as any).camera = camera;
 (window as any).scene = scene;

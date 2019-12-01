@@ -2,64 +2,108 @@ import {
     Effect,
     Scene,
     Vector3,
-    HemisphericLight,
-    Mesh,
     ShaderMaterial,
     RenderTargetTexture,
     SceneLoader,
-    TargetCamera,
     DirectionalLight,
     StandardMaterial,
-    Texture,
-    Color4
+    Color3,
+    Color4,
+    ShadowGenerator,
+    Quaternion,
+    Matrix
 } from "babylonjs";
 
 import {
     OBJFileLoader
 } from "babylonjs-loaders";
 
-export default class Sample {
-    public static CreateScene(scene: Scene): void {
-        let camera = scene.activeCamera as TargetCamera;
+import SampleBase from "../SampleBase";
 
-        scene.clearColor = new Color4(0.17773, 0.41797, 0.65234);
+export default class Sample extends SampleBase {
 
-        camera.position.x = 100;
-        camera.position.y = 5;
-        camera.position.z = 5;
+    protected sun: DirectionalLight = <any>null;
 
-        camera.setTarget(Vector3.Zero());
+    public create(): void {
+        this.scene.ambientColor = new Color3(1, 1, 1);
+        this.scene.clearColor = new Color4(0.17773, 0.41797, 0.65234);
+        //this.scene.autoClear = false;
 
-        /*var light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene);
-        light.intensity = 0.5;
+        this.camera.position.x = 100;
+        this.camera.position.y = 5;
+        this.camera.position.z = 5;
 
-        var sun = new DirectionalLight("sun", new Vector3(32, -30, 22), scene);
-        sun.intensity = 1;*/
+        this.camera.setTarget(Vector3.Zero());
 
-        Sample.make(scene, []);
+        this.sun = new DirectionalLight("sun", new Vector3(32, -30, 22), this.scene);
+        this.sun.intensity = 1;
+
+        this.make();
     }
 
-    protected static make(scene: Scene, meshes: Array<Mesh>): void {
+    protected make(): void {
         //OBJFileLoader.COMPUTE_NORMALS = true;
         OBJFileLoader.OPTIMIZE_WITH_UV = true;
         OBJFileLoader.MATERIAL_LOADING_FAILS_SILENTLY = false;
         //OBJFileLoader.INVERT_Y  = false;
         OBJFileLoader.INVERT_TEXTURE_Y  = false;
 
-        const stdMat = this.makeShader(scene);
+        const stdMat = this.makeShader();
 
-        SceneLoader.Append("./resources/3d/powerplant/", "powerplant.obj", scene, function(scene) {
+        var shadowGenerator = new ShadowGenerator(1024, this.sun);
+        var renderList = shadowGenerator.getShadowMap()!.renderList!;
+        shadowGenerator.usePercentageCloserFiltering  = true;
+        shadowGenerator.bias = 0.007;
+        shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_HIGH;
+
+        this.sun.shadowMinZ = -80;
+        this.sun.shadowMaxZ = 150;
+        //this.sun.shadowOrthoScale = 0;
+
+        SceneLoader.Append("./resources/3d/powerplant/", "powerplant.obj", this.scene, (scene: Scene) => {
             scene.meshes.forEach((m) => {
-                const texture = (m.material as StandardMaterial).diffuseTexture as Texture;
+                /*const texture = (m.material as StandardMaterial).diffuseTexture as Texture;
                 const newMat = stdMat.clone("cloned");
-                //newMat.backFaceCulling = false;
+                newMat.backFaceCulling = false;
                 newMat.setTexture("textureSampler", texture as Texture);
-                m.material = newMat;
+                m.material = newMat;*/
+
+                const mat = m.material as StandardMaterial;
+                mat.diffuseColor = new Color3(1., 1., 1.);
+                mat.ambientColor = new Color3(0.3, 0.3, 0.3);
+                mat.ambientTexture = null;
+                mat.backFaceCulling = false; // Some meshes have incorrect winding orders... use no backface culling for now
+                mat.freeze();
+
+                m.receiveShadows = true;
+
+                renderList.push(m);
+            });
+
+            this.addSkybox("Clouds.dds");
+
+            scene.freeActiveMeshes();
+
+            let lastTime = new Date().getTime();
+
+            scene.onBeforeRenderObservable.add(() => {
+                let curTime = new Date().getTime();
+                let delta = (curTime - lastTime) / 1000;
+                let rotY = this.XMScalarModAngle(delta * 0.25);
+
+                let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
+                let matrix = new Matrix();
+                Matrix.FromQuaternionToRef(rotation, matrix);
+                let lightDir = this.sun.direction;
+                lightDir = Vector3.TransformCoordinates(lightDir, matrix);
+                this.sun.direction = lightDir;
+
+                lastTime = curTime;
             });
         });
     }
 
-    protected static makeShader(scene: Scene): ShaderMaterial {
+    protected makeShader(): ShaderMaterial {
         Effect.ShadersStore.ppStdVertexShader = `
             precision highp float;
 
@@ -107,7 +151,7 @@ export default class Sample {
 
         const stdMaterial = new ShaderMaterial(
             'standard material',
-            scene,
+            this.scene,
             'ppStd',
             {
                 attributes: [ 'position', 'normal', 'uv' ],
