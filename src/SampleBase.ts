@@ -48,6 +48,7 @@ export default class Sample {
         skyboxMaterial.reflectionTexture!.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
         skyboxMaterial.specularColor = new Color3(0, 0, 0);
+        skyboxMaterial.disableLighting = true;
         skybox.material = skyboxMaterial;
     }
 
