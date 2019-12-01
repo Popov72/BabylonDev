@@ -33,7 +33,9 @@ camera.attachControl(canvas, true);
 
 scene.activeCamera = camera;
 
-new Sample(scene).create();
+const sample = new Sample(scene);
+
+sample.create();
 
 (window as any).camera = camera;
 (window as any).scene = scene;
@@ -98,7 +100,7 @@ engine.runRenderLoop(function() {
     }
 
     if (scene.activeCamera) {
-        scene.render();
+        sample.render();
     }
 
     divFps.innerHTML = engine.getFps().toFixed() + " fps";

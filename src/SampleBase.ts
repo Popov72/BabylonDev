@@ -5,16 +5,23 @@ import {
     Scene,
     StandardMaterial,
     TargetCamera,
+    Engine,
 } from "babylonjs";
 
 export default class Sample {
 
+    protected engine:   Engine;
     protected scene:    Scene;
     protected camera:   TargetCamera;
 
     constructor(scene: Scene) {
+        this.engine = scene.getEngine();
         this.scene = scene;
         this.camera = scene.activeCamera as TargetCamera;
+    }
+
+    public render(): void {
+        this.scene.render();
     }
 
     protected XMScalarModAngle(angle: number): number {
