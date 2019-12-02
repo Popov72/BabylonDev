@@ -4,7 +4,6 @@ import {
     Vector3,
     ShaderMaterial,
     RenderTargetTexture,
-    SceneLoader,
     DirectionalLight,
     StandardMaterial,
     Color3,
@@ -13,41 +12,68 @@ import {
     Quaternion,
     Matrix,
     Texture,
+    Mesh,
+    UniversalCamera,
+    Engine,
     Viewport
 } from "babylonjs";
 
-import {
-    OBJFileLoader
-} from "babylonjs-loaders";
-
 import SampleBase from "../SampleBase";
+import { lightsFragmentFunctions } from "babylonjs/Shaders/ShadersInclude/lightsFragmentFunctions";
+
+enum enumSplitMode {
+    SIDE_BY_SIDE,
+    LINEAR
+}
 
 export default class Sample extends SampleBase {
 
     protected sunDir:       Vector3;
     protected ambientColor: Color3;
     protected splitScreens: Array<any>;
+    protected splitMode:    enumSplitMode;
 
-    constructor(scene: Scene) {
-        super(scene);
+    constructor(engine: Engine, canvas: HTMLCanvasElement) {
+        super(engine, canvas);
 
         this.splitScreens = [];
+        this.splitMode = enumSplitMode.LINEAR;
+
         this.sunDir = new Vector3(32, -30, 22);
         this.ambientColor = new Color3(0.3, 0.3, 0.3);
+
+        (window as any).ss = this.splitScreens;
     }
 
-    public create(): void {
-        this.scene.ambientColor = new Color3(1, 1, 1);
-        this.scene.clearColor = new Color4(0.17773, 0.41797, 0.65234);
-        this.scene.autoClear = false;
+    public async create() {
+        this.makeSplitForStandardShadow("s1").then((split) => {
+            this.addSplit(split);
+        });
 
-        this.camera.position.x = 100;
-        this.camera.position.y = 5;
-        this.camera.position.z = 5;
+        this.makeSplitForCSM("csm1").then((split) => {
+            this.addSplit(split);
+        });
 
-        this.camera.setTarget(Vector3.Zero());
+        /*this.makeSplitForStandardShadow("s2").then((split) => {
+            this.addSplit(split);
+        });*/
 
-        this.make();
+        return Promise.resolve(0);
+    }
+
+    public onBeforeRender(deltaTime: number): void {
+        super.onBeforeRender(deltaTime);
+
+        let matrix = new Matrix();
+
+        let rotY = this.XMScalarModAngle(deltaTime * 0.25);
+
+        let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
+
+        Matrix.FromQuaternionToRef(rotation, matrix);
+        Vector3.TransformCoordinatesToRef(this.sunDir, matrix, this.sunDir);
+
+        //this.splitScreens.forEach((split) => split.updateLightDirection(this.sunDir));
     }
 
     public render(): void {
@@ -55,193 +81,179 @@ export default class Sample extends SampleBase {
               h = this.engine.getRenderHeight(),
               stepx = w / this.splitScreens.length;
 
-        let splitStd = null;
-
         for (let i = 0; i < this.splitScreens.length; ++i) {
             const split = this.splitScreens[i];
 
-            this.engine.enableScissor(stepx * i, 0, stepx * (i + 1), h);
-
-            switch(split.type) {
-                case "std": {
-                    for (let m = 0; m < this.scene.meshes.length; ++m) {
-                        const mesh = this.scene.meshes[m];
-                        if (!mesh.metadata) { continue; }
-                        mesh.material = mesh.metadata.matOrig;
-                    }
-                    this.scene.render();
-                    splitStd = split;
+            switch(this.splitMode) {
+                case enumSplitMode.SIDE_BY_SIDE:
+                    (split.scene.activeCamera as UniversalCamera).viewport = new Viewport(i / this.splitScreens.length, 0, 1 / this.splitScreens.length, 1);
                     break;
-                }
-
-                case "csm": {
-                    for (let m = 0; m < this.scene.meshes.length; ++m) {
-                        const mesh = this.scene.meshes[m];
-                        if (!mesh.metadata) { continue; }
-                        mesh.material = mesh.metadata.mat;
+                case enumSplitMode.LINEAR:
+                    if (this.splitScreens.length > 1) {
+                        split.scene.onBeforeDrawPhaseObservable.addOnce(() => {
+                            this.engine.enableScissor(stepx * i, 0, stepx * (i + 1), h);
+                        });
+                        split.scene.onAfterDrawPhaseObservable.addOnce(() => {
+                            this.engine.disableScissor();
+                        });
                     }
-                    this.scene.render();
                     break;
-                }
             }
+
+            split.scene.render();
         }
 
-        if (splitStd) {
-            splitStd.reset(this);
-        }
     }
 
-    protected makeSplitForStandardShadow(): any {
+    protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
+        const [scene, camera] = super.createSceneAndCamera(attachControls);
+
+        scene.ambientColor = new Color3(1, 1, 1);
+        scene.clearColor = new Color4(0.17773, 0.41797, 0.65234);
+        scene.autoClear = false;
+
+        camera.position.x = 100;
+        camera.position.y = 5;
+        camera.position.z = 5;
+
+        camera.setTarget(Vector3.Zero());
+
+        return [scene, camera];
+    }
+
+    protected async makeSplitForStandardShadow(name: string) {
         let split: any = {};
 
+        const [scene, camera] = this.createSceneAndCamera(!this.mainCamera);
+
         split.type = 'std';
-        split.usePercentageCloserFiltering = true;
+        split.name = name;
+
+        split.scene = scene;
+        split.scene.metadata = { "name": name };
+
+        split.filter = ShadowGenerator.FILTER_CLOSEEXPONENTIALSHADOWMAP;
+        if (name == "s2") {
+            split.filter = ShadowGenerator.FILTER_PCF;
+        }
         split.bias = 0.007;
         split.filteringQuality = ShadowGenerator.QUALITY_HIGH;
         split.shadowTextureSize = 1024;
-        split.sun = new DirectionalLight("sun", this.sunDir, this.scene);
+
+        split.sun = new DirectionalLight("sun", this.sunDir.clone(), split.scene);
         split.sun.intensity = 1;
         split.sun.shadowMinZ = -80;
         split.sun.shadowMaxZ = 150;
 
-        split.reset = function(sample: Sample) {
-            sample.scene.meshes.forEach((m) => {
-                if (!m.metadata) { return; }
-                m.receiveShadows = true;
-                m.material = m.metadata.matOrig;
-            });
-        }
+        await this.loadObj(split.scene, "./resources/3d/powerplant/", "powerplant.obj");
 
-        split.enable = function(sample: Sample) {
-            const shadowGenerator = new ShadowGenerator(this.shadowTextureSize, this.sun),
-                  renderList = shadowGenerator.getShadowMap()!.renderList!;
+        this.addSkybox("Clouds.dds", split.scene);
 
-            shadowGenerator.usePercentageCloserFiltering = this.usePercentageCloserFiltering;
+        split.scene.meshes.forEach((m: Mesh) => {
+            if (m.name == 'skyBox') { return; }
+
+            const mat = m.material as StandardMaterial;
+
+            mat.diffuseColor = new Color3(1., 1., 1.);
+            mat.ambientColor = this.ambientColor;
+            mat.ambientTexture = null;
+            mat.backFaceCulling = false; // Some meshes have incorrect winding orders... use no backface culling for now
+            //!mat.freeze();
+
+            m.receiveShadows = true;
+        });
+
+        split.createShadowGenerator = function() {
+            const shadowGenerator = new ShadowGenerator(this.shadowTextureSize, this.sun);
+
+            shadowGenerator.filter = this.filter;
             shadowGenerator.bias = this.bias;
             shadowGenerator.filteringQuality = this.filteringQuality;
 
-            sample.scene.meshes.forEach((m) => {
-                if (!m.metadata) { return; }
+            this.shadowGenerator = shadowGenerator;
+
+            const renderList = shadowGenerator.getShadowMap()!.renderList!;
+
+            let num = 0, lstm: Array<Mesh> = [];
+            this.scene.meshes.forEach((m: Mesh) => {
+                if (m.name == 'skyBox') { return; }
                 renderList.push(m);
+                /*if (m.name == "mesh_108_Mesh_main_floor_subset_6" || m.name == "mesh_121_Mesh_g_bace_main05_subset_0") {
+                    if (m.name=="mesh_121_Mesh_g_bace_main05_subset_0")
+                        renderList.push(m);
+                } else
+                    lstm.push(m);*/
             });
-
-            this.reset(sample);
-        };
-
-        split.disable = function(sample: Sample) {
-            sample.scene.meshes.forEach((m) => {
-                m.receiveShadows = false;
+            lstm.forEach((m) => {
+                m.dispose();
             });
-            split.shadowGenerator.dispose();
         };
 
-        split.updateLightDirection = function(sample: Sample) {
-            this.sun.direction = sample.sunDir;
+        split.updateLightDirection = function(lightDir: Vector3) {
+            this.sun.direction = lightDir;
         };
+
+        split.createShadowGenerator();
+
+        //split.scene.freeActiveMeshes();
 
         return split;
     }
 
-    protected makeSplitForCSM(): any {
+    protected async makeSplitForCSM(name: string) {
         let split: any = {};
 
+        const [scene, camera] = this.createSceneAndCamera(!this.mainCamera);
+
         split.type = 'csm';
+        split.name = name;
 
-        split.enable = function(sample: Sample) {
-            sample.scene.meshes.forEach((m) => {
-                if (!m.metadata) { return; }
-                m.receiveShadows = false;
-                m.material = m.metadata.mat;
+        split.scene = scene;
+        split.scene.metadata = { "name": split.name };
+
+        await this.loadObj(split.scene, "./resources/3d/powerplant/", "powerplant.obj");
+
+        this.addSkybox("Clouds.dds", split.scene);
+
+        const stdMat = this.makeShader(split.scene);
+
+        split.scene.meshes.forEach((m: Mesh) => {
+            if (m.name == 'skyBox') { return; }
+
+            const matOrig = m.material as StandardMaterial,
+                  texture = matOrig.diffuseTexture as Texture,
+                  newMat = stdMat.clone(matOrig.name);
+
+            newMat.backFaceCulling = false;
+            newMat.setTexture("textureSampler", texture as Texture);
+            newMat.setVector3("lightDirection", this.sunDir.clone());
+            newMat.setColor3("ambientColor", this.ambientColor);
+            //newMat.freeze();
+
+            m.material = newMat;
+        });
+
+        split.updateLightDirection = function(lightDir: Vector3) {
+            this.scene.meshes.forEach((m: Mesh) => {
+                if (m.name == 'skyBox') { return; }
+                m.metadata.mat.setVector3("lightDirection", lightDir);
             });
         };
 
-        split.disable = (sample: Sample) => {
-        };
-
-        split.updateLightDirection = function(sample: Sample) {
-            sample.scene.meshes.forEach((m) => {
-                if (!m.metadata) { return; }
-                m.metadata.mat.setVector3("lightDirection", sample.sunDir);
-            });
-        };
+        //split.scene.freeActiveMeshes();
 
         return split;
     }
 
     protected addSplit(split: any): void {
-        split.enable(this);
-
         this.splitScreens.push(split);
     }
 
     protected removeSplit(index: number): void {
-        this.splitScreens[index].disable(this);
-
         this.splitScreens.splice(index, 1);
     }
 
-    protected async make() {
-        //OBJFileLoader.COMPUTE_NORMALS = true;
-        //OBJFileLoader.INVERT_Y  = false;
-        OBJFileLoader.OPTIMIZE_WITH_UV = true;
-        OBJFileLoader.MATERIAL_LOADING_FAILS_SILENTLY = false;
-        OBJFileLoader.INVERT_TEXTURE_Y  = false;
-
-        const stdMat = this.makeShader();
-
-        await SceneLoader.AppendAsync("./resources/3d/powerplant/", "powerplant.obj", this.scene);
-
-        this.scene.meshes.forEach((m) => {
-            const matOrig = m.material as StandardMaterial,
-                  texture = matOrig.diffuseTexture as Texture,
-                  newMat = stdMat.clone("cloned");
-
-            newMat.backFaceCulling = false;
-            newMat.setTexture("textureSampler", texture as Texture);
-            newMat.setVector3("lightDirection", this.sunDir);
-            newMat.setColor3("ambientColor", this.ambientColor);
-            newMat.freeze();
-
-            m.metadata = {};
-            m.metadata.matOrig = matOrig;
-            m.metadata.mat = newMat;
-
-            matOrig.diffuseColor = new Color3(1., 1., 1.);
-            matOrig.ambientColor = this.ambientColor;
-            matOrig.ambientTexture = null;
-            matOrig.backFaceCulling = false; // Some meshes have incorrect winding orders... use no backface culling for now
-            matOrig.freeze();
-        });
-
-        this.addSkybox("Clouds.dds");
-
-        //scene.freeActiveMeshes();
-
-        /*let lastTime = new Date().getTime();
-        let matrix = new Matrix();
-
-        this.scene.onBeforeRenderObservable.add(() => {
-            let curTime = new Date().getTime();
-            let delta = (curTime - lastTime) / 1000;
-            let rotY = this.XMScalarModAngle(delta * 0.25);
-
-            let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
-
-            Matrix.FromQuaternionToRef(rotation, matrix);
-            Vector3.TransformCoordinatesToRef(this.sunDir, matrix, this.sunDir);
-
-            this.splitScreens.forEach((s) => s.updateLightDirection(this));
-
-            lastTime = curTime;
-        });*/
-
-        this.addSplit(this.makeSplitForStandardShadow());
-        this.addSplit(this.makeSplitForCSM());
-
-        return Promise.resolve(0);
-    }
-
-    protected makeShader(): ShaderMaterial {
+    protected makeShader(scene: Scene): ShaderMaterial {
         Effect.ShadersStore.ppStdVertexShader = `
             precision highp float;
 
@@ -295,7 +307,7 @@ export default class Sample extends SampleBase {
 
         const stdMaterial = new ShaderMaterial(
             'standard material',
-            this.scene,
+            scene,
             'ppStd',
             {
                 attributes: [ 'position', 'normal', 'uv' ],

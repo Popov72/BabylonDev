@@ -24,84 +24,18 @@ jQuery(window).on('load', setContainerDimensions);
 
 let divFps = document.getElementById("fps") as HTMLElement;
 
-var scene = new Scene(engine);
-var camera = new UniversalCamera("camera1", new Vector3(0, 5, -10), scene);
-
-camera.fov = Math.PI / 4;
-camera.setTarget(Vector3.Zero());
-camera.attachControl(canvas, true);
-
-scene.activeCamera = camera;
-
-const sample = new Sample(scene);
+const sample = new Sample(engine, canvas);
 
 sample.create();
 
-(window as any).camera = camera;
-(window as any).scene = scene;
-
-const   cameraSpeed = 5,
-        shiftMultiplier = 3;
-
-camera.inertia = 0;
-camera.angularSensibility = 500;
-
-camera.keysUp.push(90); // Z
-camera.keysDown.push(83); // S
-camera.keysLeft.push(81); // Q
-camera.keysRight.push(68); // D
-
-let mapKeys = new Map<String, boolean>();
-
-scene.onKeyboardObservable.add((kbInfo) => {
-    switch (kbInfo.type) {
-        case BABYLON.KeyboardEventTypes.KEYDOWN:
-            mapKeys.set(kbInfo.event.key, true);
-            break;
-        case BABYLON.KeyboardEventTypes.KEYUP:
-            mapKeys.set(kbInfo.event.key, false);
-            break;
-    }
-});
-
-let locked = false;
-
-scene.onPointerObservable.add((pointerInfo) => {
-    switch (pointerInfo.type) {
-        case BABYLON.PointerEventTypes.POINTERDOWN:
-            if (pointerInfo.event.button == 2) {
-                if (!locked) {
-                    locked = true;
-                    canvas.requestPointerLock = canvas.requestPointerLock || canvas.msRequestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
-                    if (canvas.requestPointerLock) {
-                        canvas.requestPointerLock();
-                    }
-                } else {
-                    document.exitPointerLock();
-                    locked = false;
-                }
-            }
-            break;
-    }
-});
-
-if (showDebugLayer) {
+/*if (showDebugLayer) {
     scene.debugLayer.show({ embedMode: false, handleResize: false, overlay: true, showExplorer: true, showInspector: true });
-}
+}*/
 
 engine.runRenderLoop(function() {
-    camera.speed = cameraSpeed * (mapKeys.get('Shift') ? shiftMultiplier : 1);
+    sample.onBeforeRender(engine.getDeltaTime() / 1000.0);
 
-    if (mapKeys.get(' ')) {
-        camera.cameraDirection = new Vector3(0, 1, 0);
-    }
-    if (mapKeys.get('x')) {
-        camera.cameraDirection = new Vector3(0, -1, 0);
-    }
-
-    if (scene.activeCamera) {
-        sample.render();
-    }
+    sample.render();
 
     divFps.innerHTML = engine.getFps().toFixed() + " fps";
 });

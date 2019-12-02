@@ -4,24 +4,150 @@ import {
     MeshBuilder,
     Scene,
     StandardMaterial,
-    TargetCamera,
+    UniversalCamera,
     Engine,
+    Vector3,
+    SceneLoader,
 } from "babylonjs";
+
+import {
+    OBJFileLoader
+} from "babylonjs-loaders";
+
+const cameraSpeed = 5,
+      shiftMultiplier = 3;
 
 export default class Sample {
 
-    protected engine:   Engine;
-    protected scene:    Scene;
-    protected camera:   TargetCamera;
+    protected engine:       Engine;
+    protected canvas:       HTMLCanvasElement;
+    protected mapKeys:      Map<String, boolean>;
+    protected cameras:      Array<UniversalCamera>;
 
-    constructor(scene: Scene) {
-        this.engine = scene.getEngine();
-        this.scene = scene;
-        this.camera = scene.activeCamera as TargetCamera;
+    protected mainScene:    Scene | undefined;
+    protected mainCamera:   UniversalCamera | undefined;
+
+    constructor(engine: Engine, canvas: HTMLCanvasElement) {
+        this.engine = engine;
+        this.canvas = canvas;
+        this.mapKeys = new Map<String, boolean>();
+        this.cameras = [];
+    }
+
+    public create(): void {
+
+    }
+
+    public onBeforeRender(deltaTime: number): void {
+        if (!this.mainCamera) {
+            return;
+        }
+
+        this.cameras.forEach((camera) => {
+            camera.speed = cameraSpeed * (this.mapKeys.get('Shift') ? shiftMultiplier : 1);
+
+            if (this.mapKeys.get(' ')) {
+                camera.cameraDirection = new Vector3(0, 1, 0);
+            }
+
+            if (this.mapKeys.get('x')) {
+                camera.cameraDirection = new Vector3(0, -1, 0);
+            }
+        });
+
+        /*this.mainCamera.speed = cameraSpeed * (this.mapKeys.get('Shift') ? shiftMultiplier : 1);
+
+        if (this.mapKeys.get(' ')) {
+            this.mainCamera.cameraDirection = new Vector3(0, 1, 0);
+        }
+
+        if (this.mapKeys.get('x')) {
+            this.mainCamera.cameraDirection = new Vector3(0, -1, 0);
+        }
+
+        this.mainCamera.update();
+
+        for (let c = 0; c < this.cameras.length; ++c) {
+            const camera = this.cameras[c];
+            if (camera !== this.mainCamera) {
+                camera.position.set(this.mainCamera.position.x, this.mainCamera.position.y, this.mainCamera.position.z);
+                camera.rotation.set(this.mainCamera.rotation.x, this.mainCamera.rotation.y, this.mainCamera.rotation.z);
+            }
+        }*/
     }
 
     public render(): void {
-        this.scene.render();
+        if (this.mainScene) {
+            this.mainScene.render();
+        }
+    }
+
+    protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
+        var scene = new Scene(this.engine);
+        var camera = new UniversalCamera("camera" + this.cameras.length, new Vector3(0, 5, -10), scene);
+
+        camera.fov = Math.PI / 4;
+        camera.setTarget(Vector3.Zero());
+
+        this.cameras.push(camera);
+
+        //if (attachControls) {
+
+            camera.inertia = 0;
+            camera.angularSensibility = 500;
+
+            camera.keysUp.push(90); // Z
+            camera.keysDown.push(83); // S
+            camera.keysLeft.push(81); // Q
+            camera.keysRight.push(68); // D
+
+            //if (!this.mainScene) {
+                scene.onKeyboardObservable.add((kbInfo) => {
+                    switch (kbInfo.type) {
+                        case BABYLON.KeyboardEventTypes.KEYDOWN:
+                            this.mapKeys.set(kbInfo.event.key, true);
+                            break;
+                        case BABYLON.KeyboardEventTypes.KEYUP:
+                            this.mapKeys.set(kbInfo.event.key, false);
+                            break;
+                    }
+                });
+
+                this.enablePointerLock(scene);
+            //}
+
+            camera.attachControl(this.canvas, true);
+
+            this.mainScene = scene;
+            this.mainCamera = camera;
+        //}
+
+        scene.activeCamera = camera;
+
+        return [scene, camera];
+    }
+
+    protected enablePointerLock(scene: Scene): void {
+        let locked = false;
+
+        scene.onPointerObservable.add((pointerInfo) => {
+            switch (pointerInfo.type) {
+                case BABYLON.PointerEventTypes.POINTERDOWN:
+                    if (pointerInfo.event.button == 2) {
+                        if (!locked) {
+                            locked = true;
+                            this.canvas.requestPointerLock = this.canvas.requestPointerLock || this.canvas.msRequestPointerLock || this.canvas.mozRequestPointerLock || this.canvas.webkitRequestPointerLock;
+                            if (this.canvas.requestPointerLock) {
+                                this.canvas.requestPointerLock();
+                            }
+                        } else {
+                            document.exitPointerLock();
+                            locked = false;
+                        }
+                    }
+                    break;
+            }
+        });
     }
 
     protected XMScalarModAngle(angle: number): number {
@@ -46,17 +172,27 @@ export default class Sample {
         return fTemp;
     }
 
-    protected addSkybox(skyboxName: string = "Runyon_Canyon_A_2k_cube_specular.dds"): void {
-        const skybox = MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, this.scene);
-        const skyboxMaterial = new StandardMaterial("skyBox", this.scene);
+    protected addSkybox(skyboxName: string = "Runyon_Canyon_A_2k_cube_specular.dds", scene: Scene): void {
+        const skybox = MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+        const skyboxMaterial = new StandardMaterial("skyBox", scene);
 
         skyboxMaterial.backFaceCulling = false;
-        skyboxMaterial.reflectionTexture = CubeTexture.CreateFromPrefilteredData("resources/texture/" + skyboxName, this.scene);
+        skyboxMaterial.reflectionTexture = new CubeTexture("resources/texture/" + skyboxName, scene);
         skyboxMaterial.reflectionTexture!.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
         skyboxMaterial.specularColor = new Color3(0, 0, 0);
         skyboxMaterial.disableLighting = true;
         skybox.material = skyboxMaterial;
+    }
+
+    protected async loadObj(scene: Scene, path: string, name: string) {
+        //OBJFileLoader.COMPUTE_NORMALS = true;
+        //OBJFileLoader.INVERT_Y  = false;
+        OBJFileLoader.OPTIMIZE_WITH_UV = true;
+        OBJFileLoader.MATERIAL_LOADING_FAILS_SILENTLY = false;
+        OBJFileLoader.INVERT_TEXTURE_Y  = false;
+
+        return SceneLoader.AppendAsync(path, name, scene);
     }
 
 }
