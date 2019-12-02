@@ -105,8 +105,8 @@ export default class Sample extends SampleBase {
 
     }
 
-    protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
-        const [scene, camera] = super.createSceneAndCamera(attachControls);
+    protected createSceneAndCamera(): [Scene, UniversalCamera] {
+        const [scene, camera] = super.createSceneAndCamera();
 
         scene.ambientColor = new Color3(1, 1, 1);
         scene.clearColor = new Color4(0.17773, 0.41797, 0.65234);
@@ -124,7 +124,7 @@ export default class Sample extends SampleBase {
     protected async makeSplitForStandardShadow(name: string) {
         let split: any = {};
 
-        const [scene, camera] = this.createSceneAndCamera(!this.mainCamera);
+        const [scene, camera] = this.createSceneAndCamera();
 
         split.type = 'std';
         split.name = name;
@@ -203,7 +203,7 @@ export default class Sample extends SampleBase {
     protected async makeSplitForCSM(name: string) {
         let split: any = {};
 
-        const [scene, camera] = this.createSceneAndCamera(!this.mainCamera);
+        const [scene, camera] = this.createSceneAndCamera();
 
         split.type = 'csm';
         split.name = name;

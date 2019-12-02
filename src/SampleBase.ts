@@ -54,26 +54,6 @@ export default class Sample {
                 camera.cameraDirection = new Vector3(0, -1, 0);
             }
         });
-
-        /*this.mainCamera.speed = cameraSpeed * (this.mapKeys.get('Shift') ? shiftMultiplier : 1);
-
-        if (this.mapKeys.get(' ')) {
-            this.mainCamera.cameraDirection = new Vector3(0, 1, 0);
-        }
-
-        if (this.mapKeys.get('x')) {
-            this.mainCamera.cameraDirection = new Vector3(0, -1, 0);
-        }
-
-        this.mainCamera.update();
-
-        for (let c = 0; c < this.cameras.length; ++c) {
-            const camera = this.cameras[c];
-            if (camera !== this.mainCamera) {
-                camera.position.set(this.mainCamera.position.x, this.mainCamera.position.y, this.mainCamera.position.z);
-                camera.rotation.set(this.mainCamera.rotation.x, this.mainCamera.rotation.y, this.mainCamera.rotation.z);
-            }
-        }*/
     }
 
     public render(): void {
@@ -82,45 +62,45 @@ export default class Sample {
         }
     }
 
-    protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
-        var scene = new Scene(this.engine);
-        var camera = new UniversalCamera("camera" + this.cameras.length, new Vector3(0, 5, -10), scene);
+    protected createSceneAndCamera(): [Scene, UniversalCamera] {
+        const scene = new Scene(this.engine);
+        const camera = new UniversalCamera("camera" + this.cameras.length, new Vector3(0, 5, -10), scene);
 
         camera.fov = Math.PI / 4;
         camera.setTarget(Vector3.Zero());
 
         this.cameras.push(camera);
 
-        //if (attachControls) {
+        camera.inertia = 0;
+        camera.angularSensibility = 500;
 
-            camera.inertia = 0;
-            camera.angularSensibility = 500;
+        camera.keysUp.push(90); // Z
+        camera.keysDown.push(83); // S
+        camera.keysLeft.push(81); // Q
+        camera.keysRight.push(68); // D
 
-            camera.keysUp.push(90); // Z
-            camera.keysDown.push(83); // S
-            camera.keysLeft.push(81); // Q
-            camera.keysRight.push(68); // D
+        scene.onKeyboardObservable.add((kbInfo) => {
+            switch (kbInfo.type) {
+                case BABYLON.KeyboardEventTypes.KEYDOWN:
+                    this.mapKeys.set(kbInfo.event.key, true);
+                    break;
+                case BABYLON.KeyboardEventTypes.KEYUP:
+                    this.mapKeys.set(kbInfo.event.key, false);
+                    break;
+            }
+        });
 
-            //if (!this.mainScene) {
-                scene.onKeyboardObservable.add((kbInfo) => {
-                    switch (kbInfo.type) {
-                        case BABYLON.KeyboardEventTypes.KEYDOWN:
-                            this.mapKeys.set(kbInfo.event.key, true);
-                            break;
-                        case BABYLON.KeyboardEventTypes.KEYUP:
-                            this.mapKeys.set(kbInfo.event.key, false);
-                            break;
-                    }
-                });
+        this.enablePointerLock(scene);
 
-                this.enablePointerLock(scene);
-            //}
+        camera.attachControl(this.canvas, true);
 
-            camera.attachControl(this.canvas, true);
-
+        if (!this.mainScene) {
             this.mainScene = scene;
+        }
+
+        if (!this.mainCamera) {
             this.mainCamera = camera;
-        //}
+        }
 
         scene.activeCamera = camera;
 
