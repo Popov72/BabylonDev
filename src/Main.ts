@@ -1,16 +1,20 @@
 import jQuery from "jquery";
 
 import {
-    Engine, UniversalCamera, Vector3, Scene
+    Engine
 } from "babylonjs";
 
-import Sample from "./DepthMinMax/index";
+import "./allSamples";
+import Browser from "./Browser";
+import Sample from "./Sample";
 
 declare var glMatrix: any;
 
 const showDebugLayer = false;
 
 glMatrix.glMatrix.setMatrixArrayType(Array);
+
+const qs = Browser.QueryString;
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement,
       engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true, antialias: false });
@@ -24,18 +28,26 @@ jQuery(window).on('load', setContainerDimensions);
 
 let divFps = document.getElementById("fps") as HTMLElement;
 
-const sample = new Sample(engine, canvas);
+let sampleName = Sample.sampleList.keys().next().value;
 
-sample.create();
+if (qs['sample']) {
+    sampleName = qs['sample'];
+}
 
-/*if (showDebugLayer) {
-    scene.debugLayer.show({ embedMode: false, handleResize: false, overlay: true, showExplorer: true, showInspector: true });
-}*/
+const sample = Sample.createSample(sampleName, engine, canvas) as Sample;
 
-engine.runRenderLoop(function() {
-    sample.onBeforeRender(engine.getDeltaTime() / 1000.0);
+if (sample === null) {
+    alert(`Unknown sample "${sampleName}" !`);
+} else {
+    /*if (showDebugLayer) {
+        scene.debugLayer.show({ embedMode: false, handleResize: false, overlay: true, showExplorer: true, showInspector: true });
+    }*/
 
-    sample.render();
+    engine.runRenderLoop(function() {
+        sample.onBeforeRender(engine.getDeltaTime() / 1000.0);
 
-    divFps.innerHTML = engine.getFps().toFixed() + " fps";
-});
+        sample.render();
+
+        divFps.innerHTML = engine.getFps().toFixed() + " fps";
+    });
+}
