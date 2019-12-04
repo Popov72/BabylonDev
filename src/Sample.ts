@@ -12,12 +12,12 @@ import Split from "Split";
 const cameraSpeed = 5,
       shiftMultiplier = 3;
 
-enum enumSplitMode {
+export enum enumSplitMode {
     SIDE_BY_SIDE,
     LINEAR
 }
 
-interface ISampleDescription {
+export interface ISampleDescription {
     displayName: string;
     description: string;
     class: typeof Sample;
@@ -33,6 +33,7 @@ export default class Sample {
     protected _cameras:         Array<UniversalCamera>;
     protected _clearColor:      Color4;
     protected _resyncCameras:   boolean;
+    protected _cameraSpeed:     number;
 
     protected _splitScreens:    Array<Split>;
     protected _splitMode:       enumSplitMode;
@@ -67,9 +68,10 @@ export default class Sample {
         this._cameras = [];
         this._clearColor = new Color4(0, 0, 0, 1);
         this._resyncCameras = false;
+        this._cameraSpeed = cameraSpeed;
 
         this._splitScreens = [];
-        this._splitMode = enumSplitMode.SIDE_BY_SIDE;
+        this._splitMode = enumSplitMode.LINEAR;
         this._splitClasses = new Map();
 
         (window as any).__sample = this;
@@ -103,14 +105,14 @@ export default class Sample {
         }
 
         this._cameras.forEach((camera) => {
-            camera.speed = cameraSpeed * (this._mapKeys.get('Shift') ? shiftMultiplier : 1);
+            camera.speed = this._cameraSpeed * (this._mapKeys.get('Shift') ? shiftMultiplier : 1);
 
             if (this._mapKeys.get(' ')) {
-                camera.cameraDirection = new Vector3(0, 1, 0);
+                camera.cameraDirection = new Vector3(0, this._cameraSpeed / 5, 0);
             }
 
             if (this._mapKeys.get('x')) {
-                camera.cameraDirection = new Vector3(0, -1, 0);
+                camera.cameraDirection = new Vector3(0, -this._cameraSpeed / 5, 0);
             }
         });
 

@@ -12,6 +12,7 @@
                 padding: 0;
                 margin: 0;
                 overflow: hidden;
+                font-size: 26px;
             }
 
             #renderCanvas {
@@ -34,6 +35,7 @@
                 height: 20px;
             }
         </style>
+
         <script src="resources/lib/gl-matrix.js"></script>
         <script src="resources/lib/jquery-3.3.1.min.js"></script>
         <script src="resources/lib/babylon.max.js"></script>
@@ -45,6 +47,11 @@
     </head>
 
     <body>
-        SAMPLE LIST
+        <a href="showSample.html?sample=csm">Implementation of the Cascaded Shadow Maps rendering technic</a><br>
+        <a href="showSample.html?sample=depthminmax">Calculate depth min and max in scene zbuffer</a><br>
+        <a href="showSample.html?sample=drawedges">Draw the edges + hidden edges of an object</a> (<a href="https://forum.babylonjs.com/t/how-to-detect-the-lines-based-on-their-distance-to-camera/5598/24">Post on Babylon forum</a>)<br>
+        <a href="showSample.html?sample=raymarching">A raymarching test</a> (<a href="https://forum.babylonjs.com/t/help-with-matrices-and-view-stuff/7014/8">Post on Babylon forum</a> / <a href="https://forum.babylonjs.com/t/struggling-to-convert-global-position-to-shadow-map-position/6936/15">2nd</a>)<br>
+        <a href="showSample.html?sample=rttandpostprocess">Create a Render Target Texture and use it in a post process pass</a> (<a href="https://forum.babylonjs.com/t/how-to-override-materials/6721/28">Post on Babylon forum</a>)<br>
+        <a href="showSample.html?sample=sketchfabmarkers">Show front-facing markers as in Sketchfab</a> (<a href="https://forum.babylonjs.com/t/check-if-a-point-is-in-front-or-behind-the-mesh/6515/6">Post on Babylon forum</a>)
     </body>
 </html>
