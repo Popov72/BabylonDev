@@ -15,6 +15,8 @@ import ISampleSplit from "./ISampleSplit";
 
 export default class StandardShadow extends Split implements ISampleSplit {
 
+    public static className: string = "Standard";
+
     protected shadowGenerator: ShadowGenerator;
     protected bias: number;
     protected filter: number;
@@ -37,7 +39,7 @@ export default class StandardShadow extends Split implements ISampleSplit {
         this.sun.direction = lightDir;
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
+    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
@@ -47,17 +49,22 @@ export default class StandardShadow extends Split implements ISampleSplit {
 
         await Utils.loadObj(this.scene, scenePath, sceneName);
 
+        this.scene.activeCamera = this.camera;
+
         Utils.addSkybox("Clouds.dds", this.scene);
 
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox') { return; }
 
+            if (!m.material) { return; }
+
             const mat = m.material as StandardMaterial;
 
             mat.diffuseColor = new Color3(1., 1., 1.);
+            mat.specularColor = new Color3(0., 0., 0.);
             mat.ambientColor = ambientColor;
             mat.ambientTexture = null;
-            mat.backFaceCulling = false; // Some meshes have incorrect winding orders... use no backface culling for now
+            mat.backFaceCulling = backfaceCulling;
             //!mat.freeze();
 
             m.receiveShadows = true;

@@ -30,12 +30,10 @@ export default class Sample {
     protected _engine:          Engine;
     protected _canvas:          HTMLCanvasElement;
     protected _mapKeys:         Map<String, boolean>;
-    protected _cameras:         Array<UniversalCamera>;
     protected _clearColor:      Color4;
-    protected _resyncCameras:   boolean;
     protected _cameraSpeed:     number;
 
-    protected _splitScreens:    Array<Split>;
+    protected _splits:          Array<Split>;
     protected _splitMode:       enumSplitMode;
     protected _splitClasses:    Map<string, typeof Split>;
 
@@ -65,17 +63,15 @@ export default class Sample {
         this._engine = engine;
         this._canvas = canvas;
         this._mapKeys = new Map<String, boolean>();
-        this._cameras = [];
         this._clearColor = new Color4(0, 0, 0, 1);
-        this._resyncCameras = false;
         this._cameraSpeed = cameraSpeed;
 
-        this._splitScreens = [];
+        this._splits = [];
         this._splitMode = enumSplitMode.LINEAR;
         this._splitClasses = new Map();
 
         (window as any).__sample = this;
-        (window as any).__ss = this._splitScreens;
+        (window as any).__ss = this._splits;
     }
 
     public createNewSplit(): void {
@@ -87,24 +83,9 @@ export default class Sample {
     }
 
     public onBeforeRender(deltaTime: number): void {
-        if (this._resyncCameras) {
-            this._resyncCameras = false;
-            if (this._cameras.length > 1) {
-                const camera = this._cameras[0];
-                camera.update();
+        this._splits.forEach((split) => {
+            const camera = split.camera;
 
-                for (let i = 1; i < this._cameras.length; ++i) {
-                    const scamera = this._cameras[i];
-                    scamera.speed = camera.speed;
-                    scamera.position = camera.position.clone();
-                    scamera.rotation = camera.rotation.clone();
-                    scamera.cameraDirection = camera.cameraDirection.clone();
-                    scamera.cameraRotation = camera.cameraRotation.clone();
-                }
-            }
-        }
-
-        this._cameras.forEach((camera) => {
             camera.speed = this._cameraSpeed * (this._mapKeys.get('Shift') ? shiftMultiplier : 1);
 
             if (this._mapKeys.get(' ')) {
@@ -121,9 +102,9 @@ export default class Sample {
             this.createNewSplit();
         }
 
-        if (this._mapKeys.get("-") && this._splitScreens.length > 1) {
+        if (this._mapKeys.get("-") && this._splits.length > 1) {
             this._mapKeys.set("-", false);
-            const split = this.removeSplit(this._splitScreens.length - 1);
+            const split = this.removeSplit(this._splits.length - 1);
             if (split) {
                 split.scene.dispose();
             }
@@ -138,18 +119,20 @@ export default class Sample {
     public render(): void {
         const w = this._engine.getRenderWidth(),
               h = this._engine.getRenderHeight(),
-              stepx = w / this._splitScreens.length;
+              stepx = w / this._splits.length;
 
-        for (let i = 0; i < this._splitScreens.length; ++i) {
-            const split = this._splitScreens[i];
+        for (let i = 0; i < this._splits.length; ++i) {
+            const split = this._splits[i];
+
+            split.scene.autoClear = (i == 0);
 
             switch (this._splitMode) {
                 case enumSplitMode.SIDE_BY_SIDE:
-                    split.camera.viewport = new Viewport(i / this._splitScreens.length, 0, 1 / this._splitScreens.length, 1);
+                    split.camera.viewport = new Viewport(i / this._splits.length, 0, 1 / this._splits.length, 1);
                     break;
                 case enumSplitMode.LINEAR:
                     split.camera.viewport = new Viewport(0, 0, 1, 1);
-                    if (this._splitScreens.length > 1) {
+                    if (this._splits.length > 1) {
                         split.scene.onBeforeDrawPhaseObservable.addOnce(() => {
                             this._engine.enableScissor(stepx * i, 0, stepx * (i + 1), h);
                         });
@@ -172,6 +155,28 @@ export default class Sample {
     protected create(): void {
     }
 
+    protected resyncCameras(): void {
+        const groups = new Map<number, UniversalCamera>();
+
+        for (let i = 0; i < this._splits.length; ++i) {
+            const split = this._splits[i],
+                  scamera = split.camera;
+
+            const camera = groups.get(split.group);
+            if (!camera) {
+                groups.set(split.group, scamera);
+                scamera.update();
+                continue;
+            }
+
+            scamera.speed = camera.speed;
+            scamera.position = camera.position.clone();
+            scamera.rotation = camera.rotation.clone();
+            scamera.cameraDirection = camera.cameraDirection.clone();
+            scamera.cameraRotation = camera.cameraRotation.clone();
+        }
+    }
+
     protected registerClass(splitClassName: string, splitClass: typeof Split): void {
         this._splitClasses.set(splitClassName, splitClass);
     }
@@ -186,18 +191,18 @@ export default class Sample {
 
         const split = new splitClass(scene, camera, splitName);
 
-        this._splitScreens.push(split);
+        this._splits.push(split);
 
         return split;
     }
 
     protected removeSplit(index: number | Split): Split | null {
         if (typeof(index) == 'number') {
-            return this._splitScreens.splice(index, 1)[0];
+            return this._splits.splice(index, 1)[0];
         } else {
-            const idx = this._splitScreens.indexOf(index);
+            const idx = this._splits.indexOf(index);
             if (idx !== -1) {
-                return this._splitScreens.splice(idx, 1)[0];
+                return this._splits.splice(idx, 1)[0];
             }
         }
 
@@ -205,25 +210,27 @@ export default class Sample {
     }
 
     protected attachControlToAllCameras(): void {
-        this._cameras.forEach((camera) => {
+        this._splits.forEach((split) => {
+            const camera = split.camera;
+
             camera.attachControl(this._canvas, true);
         });
     }
 
     protected detachControlFromAllCameras(): void {
-        this._cameras.forEach((camera) => {
+        this._splits.forEach((split) => {
+            const camera = split.camera;
+
             camera.detachControl(this._canvas);
         });
     }
 
     protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
         const scene = new Scene(this._engine);
-        const camera = new UniversalCamera("camera" + this._cameras.length, new Vector3(0, 5, -10), scene);
+        const camera = new UniversalCamera("camera" + this._splits.length, new Vector3(0, 5, -10), scene);
 
         camera.fov = Math.PI / 4;
         camera.setTarget(Vector3.Zero());
-
-        this._cameras.push(camera);
 
         camera.inertia = 0;
         camera.angularSensibility = 500;
@@ -266,11 +273,15 @@ export default class Sample {
                             locked = true;
                             this._canvas.requestPointerLock = this._canvas.requestPointerLock || this._canvas.msRequestPointerLock || this._canvas.mozRequestPointerLock || this._canvas.webkitRequestPointerLock;
                             if (this._canvas.requestPointerLock) {
+                                this.detachControlFromAllCameras();
                                 this._canvas.requestPointerLock();
+                                window.setTimeout(() => this.attachControlToAllCameras(), 100);
                             }
                         } else {
+                            this.detachControlFromAllCameras();
                             document.exitPointerLock();
                             locked = false;
+                            window.setTimeout(() => this.attachControlToAllCameras(), 100);
                         }
                     }
                     break;

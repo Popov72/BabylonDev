@@ -1,15 +1,16 @@
 import {
     Color3,
-    DirectionalLight,
     Effect,
-    Mesh,
     Scene,
     ShaderMaterial,
-    ShadowGenerator,
     StandardMaterial,
     UniversalCamera,
     Texture,
     Vector3,
+    PBRMaterial,
+    MultiMaterial,
+    Material,
+    Nullable,
 } from "babylonjs";
 
 import Split from "../Split";
@@ -17,6 +18,8 @@ import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
 
 export default class CSM extends Split implements ISampleSplit {
+
+    public static className: string = "CSM";
 
     protected sunDir: Vector3;
 
@@ -28,17 +31,19 @@ export default class CSM extends Split implements ISampleSplit {
 
     public updateLightDirection(lightDir: Vector3): void {
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox') { return; }
+            if (m.name == 'skyBox' || !m.material) { return; }
             (m.material as ShaderMaterial).setVector3("lightDirection", lightDir);
         });
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
+    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
 
         this.sunDir = sunDir;
 
         await Utils.loadObj(this.scene, scenePath, sceneName);
+
+        this.scene.activeCamera = this.camera;
 
         Utils.addSkybox("Clouds.dds", this.scene);
 
@@ -47,17 +52,52 @@ export default class CSM extends Split implements ISampleSplit {
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox') { return; }
 
-            const matOrig = m.material as StandardMaterial,
-                  texture = matOrig.diffuseTexture as Texture,
-                  newMat = stdMat.clone(matOrig.name);
+            if (!m.material) { return; }
 
-            newMat.backFaceCulling = false;
-            newMat.setTexture("textureSampler", texture as Texture);
-            newMat.setVector3("lightDirection", sunDir);
-            newMat.setColor3("ambientColor", ambientColor);
-            //newMat.freeze();
+            let diffuse: Texture | null = null;
 
-            m.material = newMat;
+            if (m.material instanceof PBRMaterial) {
+                diffuse = m.material.albedoTexture as Texture;
+            } else if (m.material instanceof StandardMaterial) {
+                diffuse = m.material.diffuseTexture as Texture;
+            }
+
+            if (diffuse) {
+                const newMat = stdMat.clone(m.name + "_" + m.material.name + "_cloned");
+
+                newMat.backFaceCulling = backfaceCulling;
+                newMat.setTexture("textureSampler", diffuse);
+                newMat.setVector3("lightDirection", sunDir);
+                newMat.setColor3("ambientColor", ambientColor);
+                //newMat.freeze();
+
+                m.material = newMat;
+            } else if (m.material instanceof MultiMaterial) {
+                const newSubMat: Array<Nullable<Material>> = [];
+                m.material.subMaterials.forEach((mat) => {
+                    diffuse = null;
+                    if (mat instanceof PBRMaterial) {
+                        diffuse = mat.albedoTexture as Texture;
+                    } else if (mat instanceof StandardMaterial) {
+                        diffuse = mat.diffuseTexture as Texture;
+                    }
+        
+                    if (diffuse) {
+                        const newMat = stdMat.clone(m.name + "_" + mat!.name + "_cloned");
+        
+                        newMat.backFaceCulling = backfaceCulling;
+                        newMat.setTexture("textureSampler", diffuse);
+                        newMat.setVector3("lightDirection", sunDir);
+                        newMat.setColor3("ambientColor", ambientColor);
+                        //newMat.freeze();
+        
+                        newSubMat.push(newMat);
+                    } else {
+                        newSubMat.push(mat);
+                    }
+                });
+                m.material.subMaterials = newSubMat;
+            }
         });
 
         return this;

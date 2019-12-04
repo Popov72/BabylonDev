@@ -20,44 +20,117 @@ import CSM from "./CSM";
 
 export default class CSMSample extends Sample {
 
-    protected _sunDir:       Vector3;
-    protected _ambientColor: Color3;
-    protected _animateLight: boolean;
+    protected _sunDir:          Vector3;
+    protected _ambientColor:    Color3;
+    protected _global:          any;
 
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
         super(engine, canvas);
 
         this._sunDir = new Vector3(32, -30, 22);
         this._ambientColor = new Color3(0.3, 0.3, 0.3);
-        this._animateLight = false;
         this._clearColor = new Color4(0.17773, 0.41797, 0.65234, 1);
+        this._global = {
+            "scenes": [
+                {
+                    "dname": "Power Plant",
+                    "path": "./resources/3d/powerplant/",
+                    "name": "powerplant.obj",
+                    "backfaceCulling": false,  // Some meshes have incorrect winding orders... use no backface culling for now
+                    "camera": {
+                        "position": new Vector3(100, 5, 5),
+                        "target": Vector3.Zero(),
+                    },
+                },
+                {
+                    "dname": "Dude",
+                    "path": "./resources/3d/Dude/",
+                    "name": "dude.babylon",
+                    "backfaceCulling": true,
+                    "camera": {
+                        "position": new Vector3(0, 76, 154),
+                        "target": new Vector3(0, 60, 0),
+                    },
+                }
+            ],
+            "selectedSplitType": "csm",
+            "selectedScene": 0,
+            "animateLight": false,
+        };
 
         this.registerClass("std", StandardShadow);
         this.registerClass("csm", CSM);
     }
 
-    protected create(): void {
-        let splitStd = this.addSplit("std", "s1") as StandardShadow;
+    protected showGlobalGUI(): void {
+        let osplittypes = '<select name="splittype" id="splittype">';
+        for (let stype of this._splitClasses) {
+            const sel = stype[0] === this._global.selectedSplitType ? ' selected="selected" ' : '';
+            osplittypes += '<option value="' + stype[0] + '"' + sel + '>' + stype[1].className + '</option>';
+        }
+        osplittypes += '</select>';
 
-        splitStd.initialize("./resources/3d/powerplant/", "powerplant.obj", this._ambientColor, this._sunDir.clone());
+        let oscenes = '<select name="scene" id="scene">';
+        this._global.scenes.forEach((scene: any, idx: number) => {
+            const sel = idx === this._global.selectedScene ? ' selected="selected" ' : '';
+            oscenes += '<option value="' + idx + '"' + sel + '>' + scene.dname + '</option>';
+        });
+        oscenes += '</select>';
 
-        let splitCSM = this.addSplit("csm", "csm1") as CSM;
+        let oaddscene = '<button id="addscene">+</button>';
 
-        splitCSM.initialize("./resources/3d/powerplant/", "powerplant.obj", this._ambientColor, this._sunDir.clone());
+        let ocont = jQuery('<div>' +
+            '<div>' + osplittypes + oscenes + oaddscene + '</div>' +
+            '<div style="background-color: #ffffff">Animate light: <input type="checkbox" name="animatelight" id="animatelight"></input></div>' +
+            '</div>'
+        ).css('position', 'absolute').css('left', '2px').css('top', '2px').css('z-index', '10');
+
+        jQuery(document.body).append(ocont);
+
+        jQuery('#splittype').on('change', () => {
+            let o = jQuery('#splittype');
+            this._global.selectedSplitType = o.prop('value');
+        });
+
+        jQuery('#scene').on('change', () => {
+            let o = jQuery('#scene');
+            this._global.selectedScene = parseInt(o.prop('value'));
+        });
+
+        jQuery('#animatelight').on('click', () => {
+            let o = jQuery('#animatelight');
+            this._global.animateLight = o.prop('checked');
+        });
+
+        jQuery('#addscene').on('click', () => {
+            this.createNewSplit();
+        });
     }
 
-    public createNewSplit(): void {
-        SceneLoader.ShowLoadingScreen = false;
+    protected create(): void {
+        Promise.all([this.createNewSplit()]).then(() => {
+            SceneLoader.ShowLoadingScreen = false;
+            this.showGlobalGUI();
+        });
+    }
 
+    public async createNewSplit() {
         this.detachControlFromAllCameras();
 
-        let splitCSM = this.addSplit("csm", "csmx", false) as CSM;
+        let split = this.addSplit(this._global.selectedSplitType, this._global.selectedSplitType + "_" + this._splits.length, false) as ISampleSplit,
+            camera = split.camera;
 
-        splitCSM.isLoading = true;
+        const gscene = this._global.scenes[this._global.selectedScene];
 
-        splitCSM.initialize("./resources/3d/powerplant/", "powerplant.obj", this._ambientColor, this._sunDir.clone()).then(() => {
-            this._resyncCameras = true;
-            splitCSM.isLoading = false;
+        split.group = this._global.selectedScene;
+        split.isLoading = true;
+
+        camera.position = gscene.camera.position;
+        camera.setTarget(gscene.camera.target);
+
+        return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.backfaceCulling).then(() => {
+            split.isLoading = false;
+            this.resyncCameras();
             this.attachControlToAllCameras();
         });
     }
@@ -65,7 +138,7 @@ export default class CSMSample extends Sample {
     public onBeforeRender(deltaTime: number): void {
         super.onBeforeRender(deltaTime);
 
-        if (this._animateLight) {
+        if (this._global.animateLight) {
             let matrix = new Matrix();
 
             let rotY = Utils.XMScalarModAngle(deltaTime * 0.25);
@@ -75,7 +148,7 @@ export default class CSMSample extends Sample {
             Matrix.FromQuaternionToRef(rotation, matrix);
             Vector3.TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
 
-            this._splitScreens.forEach((split) => (split as ISampleSplit).updateLightDirection(this._sunDir));
+            this._splits.forEach((split) => (split as ISampleSplit).updateLightDirection(this._sunDir));
         }
     }
 
@@ -84,13 +157,6 @@ export default class CSMSample extends Sample {
 
         scene.ambientColor = new Color3(1, 1, 1);
         scene.clearColor = this._clearColor;
-        scene.autoClear = false;
-
-        camera.position.x = 100;
-        camera.position.y = 5;
-        camera.position.z = 5;
-
-        camera.setTarget(Vector3.Zero());
 
         return [scene, camera];
     }
