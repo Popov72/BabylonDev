@@ -49,13 +49,16 @@ export default class CSMSample extends Sample {
     public createNewSplit(): void {
         SceneLoader.ShowLoadingScreen = false;
 
-        let splitCSM = this.addSplit("csm", "csmx") as CSM;
+        this.detachControlFromAllCameras();
+
+        let splitCSM = this.addSplit("csm", "csmx", false) as CSM;
 
         splitCSM.isLoading = true;
 
         splitCSM.initialize("./resources/3d/powerplant/", "powerplant.obj", this._ambientColor, this._sunDir.clone()).then(() => {
             this._resyncCameras = true;
             splitCSM.isLoading = false;
+            this.attachControlToAllCameras();
         });
     }
 
@@ -76,8 +79,8 @@ export default class CSMSample extends Sample {
         }
     }
 
-    protected createSceneAndCamera(): [Scene, UniversalCamera] {
-        const [scene, camera] = super.createSceneAndCamera();
+    protected createSceneAndCamera(attachControls: boolean): [Scene, UniversalCamera] {
+        const [scene, camera] = super.createSceneAndCamera(attachControls);
 
         scene.ambientColor = new Color3(1, 1, 1);
         scene.clearColor = this._clearColor;

@@ -91,10 +91,13 @@ export default class Sample {
                 const camera = this._cameras[0];
                 camera.update();
 
-                for (let i = 2; i < this._cameras.length; ++i) {
+                for (let i = 1; i < this._cameras.length; ++i) {
                     const scamera = this._cameras[i];
-                    scamera.position.set(camera.position.x, camera.position.y, camera.position.z);
-                    scamera.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z);
+                    scamera.speed = camera.speed;
+                    scamera.position = camera.position.clone();
+                    scamera.rotation = camera.rotation.clone();
+                    scamera.cameraDirection = camera.cameraDirection.clone();
+                    scamera.cameraRotation = camera.cameraRotation.clone();
                 }
             }
         }
@@ -171,13 +174,13 @@ export default class Sample {
         this._splitClasses.set(splitClassName, splitClass);
     }
 
-    protected addSplit(splitClassName: string, splitName: string): Split | null {
+    protected addSplit(splitClassName: string, splitName: string, attachControls: boolean = true): Split | null {
         const splitClass = this._splitClasses.get(splitClassName);
 
         if (!splitClass) {
             return null;
         }
-        let [scene, camera] = this.createSceneAndCamera();
+        let [scene, camera] = this.createSceneAndCamera(attachControls);
 
         const split = new splitClass(scene, camera, splitName);
 
@@ -199,7 +202,19 @@ export default class Sample {
         return null;
     }
 
-    protected createSceneAndCamera(): [Scene, UniversalCamera] {
+    protected attachControlToAllCameras(): void {
+        this._cameras.forEach((camera) => {
+            camera.attachControl(this._canvas, true);
+        });
+    }
+
+    protected detachControlFromAllCameras(): void {
+        this._cameras.forEach((camera) => {
+            camera.detachControl(this._canvas);
+        });
+    }
+
+    protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
         const scene = new Scene(this._engine);
         const camera = new UniversalCamera("camera" + this._cameras.length, new Vector3(0, 5, -10), scene);
 
@@ -229,7 +244,9 @@ export default class Sample {
 
         this.enablePointerLock(scene);
 
-        camera.attachControl(this._canvas, true);
+        if (attachControls) {
+            camera.attachControl(this._canvas, true);
+        }
 
         scene.activeCamera = camera;
 
