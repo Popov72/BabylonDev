@@ -1,0 +1,2754 @@
+# Materials for converted sdkmesh
+
+newmtl Material0
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka cementDiffuse.png
+map_Kd cementDiffuse.png
+
+newmtl Material1
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka cementDiffuse.png
+map_Kd cementDiffuse.png
+
+newmtl Material2
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka cementDiffuse.png
+map_Kd cementDiffuse.png
+
+newmtl Material3
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka cementDiffuse.png
+map_Kd cementDiffuse.png
+
+newmtl Material4
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka cementDiffuse.png
+map_Kd cementDiffuse.png
+
+newmtl Material5
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka redRibbonDiffuse.png
+map_Kd redRibbonDiffuse.png
+
+newmtl Material6
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka woodDirty.png
+map_Kd woodDirty.png
+
+newmtl Material7
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material8
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material9
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material10
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material11
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material12
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material13
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material14
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material15
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material16
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material17
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material18
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material19
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material20
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material21
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material22
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material23
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material24
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material25
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material26
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material27
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material28
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material29
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material30
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material31
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material32
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material33
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material34
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material35
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material36
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material37
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material38
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material39
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material40
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material41
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material42
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material43
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material44
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material45
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka metalSilverDiffuse.png
+map_Kd metalSilverDiffuse.png
+
+newmtl Material46
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka redDirty.png
+map_Kd redDirty.png
+
+newmtl Material47
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.08264 0.08264
+Ks 1 0 0
+map_Ka rubberDirtyDiffuse.png
+map_Kd rubberDirtyDiffuse.png
+
+newmtl Material48
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka blackDirty.png
+map_Kd blackDirty.png
+
+newmtl Material49
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.301176 0.301176
+Ks 1 0.023529 0.023529
+
+newmtl Material50
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka metalSilverDiffuse.png
+map_Kd metalSilverDiffuse.png
+
+newmtl Material51
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka redDirty.png
+map_Kd redDirty.png
+
+newmtl Material52
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.08264 0.08264
+Ks 1 0 0
+map_Ka rubberDirtyDiffuse.png
+map_Kd rubberDirtyDiffuse.png
+
+newmtl Material53
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+map_Ka blackDirty.png
+map_Kd blackDirty.png
+
+newmtl Material54
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.301176 0.301176
+Ks 1 0.023529 0.023529
+
+newmtl Material55
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material56
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+map_Ka road_2k_diff_01.png
+map_Kd road_2k_diff_01.png
+
+newmtl Material57
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+map_Ka supportShort_2k_diff_01.png
+map_Kd supportShort_2k_diff_01.png
+
+newmtl Material58
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+map_Ka supportShort_2k_diff_01.png
+map_Kd supportShort_2k_diff_01.png
+
+newmtl Material59
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+map_Ka supportShort_2k_diff_01.png
+map_Kd supportShort_2k_diff_01.png
+
+newmtl Material60
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+map_Ka supportShort_2k_diff_01.png
+map_Kd supportShort_2k_diff_01.png
+
+newmtl Material61
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+map_Ka supportShort_2k_diff_01.png
+map_Kd supportShort_2k_diff_01.png
+
+newmtl Material62
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material63
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material64
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material65
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material66
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material67
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material68
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material69
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material70
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material71
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material72
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material73
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material74
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material75
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material76
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material77
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material78
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material79
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material80
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material81
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material82
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material83
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material84
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material85
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material86
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material87
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material88
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material89
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material90
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material91
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material92
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material93
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material94
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material95
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material96
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material97
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material98
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material99
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material100
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material101
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material102
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material103
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material104
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material105
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material106
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material107
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material108
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material109
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material110
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material111
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material112
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material113
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material114
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material115
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material116
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material117
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material118
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material119
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material120
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material121
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material122
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material123
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material124
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material125
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material126
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material127
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material128
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material129
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material130
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material131
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material132
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material133
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material134
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material135
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material136
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material137
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material138
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material139
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material140
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material141
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material142
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material143
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material144
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material145
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material146
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material147
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material148
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material149
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material150
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material151
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material152
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material153
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material154
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material155
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material156
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material157
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material158
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material159
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material160
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material161
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material162
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material163
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material164
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material165
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material166
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material167
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material168
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material169
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material170
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material171
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material172
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material173
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material174
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material175
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material176
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material177
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material178
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material179
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material180
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material181
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material182
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material183
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material184
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material185
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material186
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material187
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material188
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material189
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material190
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material191
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material192
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material193
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material194
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material195
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material196
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material197
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material198
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material199
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material200
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material201
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material202
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material203
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material204
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material205
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material206
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material207
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material208
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material209
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material210
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material211
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material212
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material213
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material214
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material215
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material216
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material217
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material218
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material219
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material220
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material221
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material222
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material223
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material224
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material225
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material226
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material227
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material228
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material229
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material230
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material231
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material232
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material233
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material234
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material235
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material236
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material237
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material238
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material239
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material240
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material241
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material242
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material243
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material244
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material245
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material246
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material247
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material248
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material249
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material250
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material251
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material252
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material253
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material254
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material255
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material256
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material257
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material258
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material259
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material260
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material261
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material262
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material263
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material264
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.301176 0.301176
+Ks 1 0.023529 0.023529
+
+newmtl Material265
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material266
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material267
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material268
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.5 0.5
+Ks 1 0 0
+
+newmtl Material269
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0 0
+Ks 1 0 0
+
+newmtl Material270
+Ns 10.0000
+Ni 1.5000
+Tr 0.0000
+illum 2
+Ka 0.5880 0.5880 0.5880
+Kd 0.5880 0.5880 0.5880
+Ks 1 0.301176 0.301176
+Ks 1 0.023529 0.023529
+
