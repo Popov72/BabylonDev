@@ -49,7 +49,7 @@ export default class CSM extends Split implements ISampleSplit {
               whiteTexture = new Texture("resources/texture/white.png", this.scene, true);
 
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox') { return; }
+            if (m.name == 'skyBox' || m.name.endsWith("_gui")) { return; }
 
             const mat = m.material;
 

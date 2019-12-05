@@ -55,7 +55,7 @@ export default class StandardShadow extends Split implements ISampleSplit {
         Utils.addSkybox("Clouds.dds", this.scene);
 
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox') { return; }
+            if (m.name == 'skyBox' || m.name.endsWith("_gui")) { return; }
 
             if (!m.material) { return; }
 

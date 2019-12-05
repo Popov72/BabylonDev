@@ -1,5 +1,6 @@
 import {
     Engine,
+    Matrix,
     Scene,
     UniversalCamera,
     Vector3,
@@ -192,6 +193,29 @@ export default class Sample {
         const split = new splitClass(scene, camera, splitName);
 
         this._splits.push(split);
+
+        split.createGUI(400, 1024);
+
+        scene.onBeforeRenderObservable.add(() => {
+            camera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+
+            let cameraProj = camera.getProjectionMatrix();
+            let invertCameraViewProj = Matrix.Invert(camera.getTransformationMatrix());
+
+            let p0 = Vector3.TransformCoordinates(new Vector3(0, 0, camera.minZ), cameraProj);
+            let p1 = Vector3.TransformCoordinates(new Vector3(split.guiPlaneWidth, 0, camera.minZ), cameraProj);
+            let pWidth = p1.x - p0.x, pOfst = 0;
+
+            if (this._splitMode === enumSplitMode.LINEAR) {
+                let sidx = this._splits.indexOf(split);
+                pOfst = 2 * (this._splits.length - 1 - sidx) / this._splits.length;
+            }
+
+            let p = new Vector3(1 - pWidth / 2 - pOfst, 1, 0);
+
+            split.guiPlane.rotation = camera.rotation;
+            split.guiPlane.position = Vector3.TransformCoordinates(p, invertCameraViewProj);
+        });
 
         return split;
     }
