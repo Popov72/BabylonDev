@@ -21,6 +21,8 @@ export default class SampleBasic extends Sample {
         let split = this.addSplit("split", "basic") as SplitBasic;
 
         this.populateScene(split.scene, split.camera);
+
+        jQuery(document.body).append('<div id="fps"></div>');
     }
 
 }

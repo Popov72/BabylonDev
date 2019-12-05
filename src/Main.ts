@@ -26,8 +26,6 @@ function setContainerDimensions() {
 jQuery(window).on('resize', setContainerDimensions);
 jQuery(window).on('load', setContainerDimensions);
 
-let divFps = document.getElementById("fps") as HTMLElement;
-
 let sampleName = Sample.sampleList.keys().next().value;
 
 if (qs['sample']) {
@@ -39,6 +37,8 @@ const sample = Sample.createSample(sampleName, engine, canvas) as Sample;
 if (sample === null) {
     alert(`Unknown sample "${sampleName}" !`);
 } else {
+    let divFps = document.getElementById("fps") as HTMLElement;
+
     /*if (showDebugLayer) {
         scene.debugLayer.show({ embedMode: false, handleResize: false, overlay: true, showExplorer: true, showInspector: true });
     }*/
@@ -48,6 +48,8 @@ if (sample === null) {
 
         sample.render();
 
-        divFps.innerHTML = engine.getFps().toFixed() + " fps";
+        if (divFps) {
+            divFps.innerHTML = engine.getFps().toFixed() + " fps";
+        }
     });
 }
