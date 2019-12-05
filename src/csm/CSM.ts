@@ -7,10 +7,8 @@ import {
     UniversalCamera,
     Texture,
     Vector3,
-    PBRMaterial,
-    MultiMaterial,
-    Material,
-    Nullable,
+    Matrix,
+    Mesh,
 } from "babylonjs";
 
 import Split from "../Split";
@@ -36,7 +34,7 @@ export default class CSM extends Split implements ISampleSplit {
         });
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean): Promise<ISampleSplit> {
+    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
 
         this.sunDir = sunDir;
@@ -47,56 +45,38 @@ export default class CSM extends Split implements ISampleSplit {
 
         Utils.addSkybox("Clouds.dds", this.scene);
 
-        const stdMat = this.makeShader(this.scene);
+        const stdMat = this.makeShader(this.scene),
+              whiteTexture = new Texture("resources/texture/white.png", this.scene, true);
 
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox') { return; }
 
-            if (!m.material) { return; }
+            const mat = m.material;
 
-            let diffuse: Texture | null = null;
+            if (!mat || !(mat instanceof StandardMaterial)) { return; }
 
-            if (m.material instanceof PBRMaterial) {
-                diffuse = m.material.albedoTexture as Texture;
-            } else if (m.material instanceof StandardMaterial) {
-                diffuse = m.material.diffuseTexture as Texture;
-            }
+            let diffuse: Texture = mat.diffuseTexture as Texture;
 
+            const newMat = stdMat.clone(m.name + "_" + mat.name + "_cloned");
+
+            newMat.backFaceCulling = backfaceCulling;
+            newMat.setVector3("lightDirection", sunDir);
             if (diffuse) {
-                const newMat = stdMat.clone(m.name + "_" + m.material.name + "_cloned");
-
-                newMat.backFaceCulling = backfaceCulling;
                 newMat.setTexture("textureSampler", diffuse);
-                newMat.setVector3("lightDirection", sunDir);
                 newMat.setColor3("ambientColor", ambientColor);
-                //newMat.freeze();
+            } else {
+                newMat.setTexture("textureSampler", whiteTexture);
+                newMat.setColor3("ambientColor", new Color3(0, 0, 0));
+            }
+            //newMat.freeze();
 
-                m.material = newMat;
-            } else if (m.material instanceof MultiMaterial) {
-                const newSubMat: Array<Nullable<Material>> = [];
-                m.material.subMaterials.forEach((mat) => {
-                    diffuse = null;
-                    if (mat instanceof PBRMaterial) {
-                        diffuse = mat.albedoTexture as Texture;
-                    } else if (mat instanceof StandardMaterial) {
-                        diffuse = mat.diffuseTexture as Texture;
-                    }
-        
-                    if (diffuse) {
-                        const newMat = stdMat.clone(m.name + "_" + mat!.name + "_cloned");
-        
-                        newMat.backFaceCulling = backfaceCulling;
-                        newMat.setTexture("textureSampler", diffuse);
-                        newMat.setVector3("lightDirection", sunDir);
-                        newMat.setColor3("ambientColor", ambientColor);
-                        //newMat.freeze();
-        
-                        newSubMat.push(newMat);
-                    } else {
-                        newSubMat.push(mat);
-                    }
-                });
-                m.material.subMaterials = newSubMat;
+            m.material = newMat;
+
+            if (scaling != 1) {
+                let matrix = Matrix.Identity();
+                matrix.scaleToRef(scaling, matrix);
+                matrix.setRowFromFloats(3, 0, 0, 0, 1);
+                (m as Mesh).bakeTransformIntoVertices(matrix);
             }
         });
 

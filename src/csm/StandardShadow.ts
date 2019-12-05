@@ -1,6 +1,7 @@
 import {
     Color3,
     DirectionalLight,
+    Matrix,
     Mesh,
     Scene,
     ShadowGenerator,
@@ -28,7 +29,7 @@ export default class StandardShadow extends Split implements ISampleSplit {
         super(scene, camera, name);
 
         this.shadowGenerator = <any>null;
-        this.filter = ShadowGenerator.FILTER_NONE;
+        this.filter = ShadowGenerator.FILTER_PCF;
         this.bias = 0.007;
         this.filteringQuality = ShadowGenerator.QUALITY_HIGH;
         this.shadowTextureSize = 1024;
@@ -39,7 +40,7 @@ export default class StandardShadow extends Split implements ISampleSplit {
         this.sun.direction = lightDir;
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean): Promise<ISampleSplit> {
+    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
@@ -65,9 +66,20 @@ export default class StandardShadow extends Split implements ISampleSplit {
             mat.ambientColor = ambientColor;
             mat.ambientTexture = null;
             mat.backFaceCulling = backfaceCulling;
+
+            if (!mat.diffuseTexture) {
+                mat.ambientColor = new Color3(0, 0, 0);
+            }
             //!mat.freeze();
 
             m.receiveShadows = true;
+
+            if (scaling != 1) {
+                let matrix = Matrix.Identity();
+                matrix.scaleToRef(scaling, matrix);
+                matrix.setRowFromFloats(3, 0, 0, 0, 1);
+                (m as Mesh).bakeTransformIntoVertices(matrix);
+            }
         });
 
         this.createShadowGenerator();

@@ -10,7 +10,7 @@ import {
     Engine,
 } from "babylonjs";
 
-import Sample from "../Sample";
+import Sample, { enumSplitMode } from "../Sample";
 import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
@@ -41,6 +41,18 @@ export default class CSMSample extends Sample {
                         "position": new Vector3(100, 5, 5),
                         "target": Vector3.Zero(),
                     },
+                    "scaling": 1,
+                },
+                {
+                    "dname": "Tower",
+                    "path": "./resources/3d/Tower/",
+                    "name": "Tower.obj",
+                    "backfaceCulling": true,
+                    "camera": {
+                        "position": new Vector3(0, 76, 154),
+                        "target": new Vector3(0, 60, 0),
+                    },
+                    "scaling": 0.04,
                 },
                 {
                     "dname": "Dude",
@@ -51,12 +63,16 @@ export default class CSMSample extends Sample {
                         "position": new Vector3(0, 76, 154),
                         "target": new Vector3(0, 60, 0),
                     },
+                    "scaling": 0.25,
                 }
             ],
             "selectedSplitType": "csm",
             "selectedScene": 0,
+            "splitMode": enumSplitMode.LINEAR,
             "animateLight": false,
         };
+
+        this._splitMode = this._global.splitMode;
 
         this.registerClass("std", StandardShadow);
         this.registerClass("csm", CSM);
@@ -79,13 +95,25 @@ export default class CSMSample extends Sample {
 
         let oaddscene = '<button id="addscene">+</button>';
 
-        let ocont = jQuery('<div>' +
-            '<div>' + osplittypes + oscenes + oaddscene + '</div>' +
-            '<div style="background-color: #ffffff">Animate light: <input type="checkbox" name="animatelight" id="animatelight"></input></div>' +
+        const splitModes = [{ "val": enumSplitMode.LINEAR, "name": "Linear" }, { "val": enumSplitMode.SIDE_BY_SIDE, "name": "Side by Side" }];
+        let osplitmode = '<select name="splitmode" id="splitmode">';
+        splitModes.forEach((sm) => {
+            const sel = sm.val === this._global.splitMode ? ' selected="selected" ' : '';
+            osplitmode += '<option value="' + sm.val + '"' + sel + '>' + sm.name + '</option>';
+        });
+        osplitmode += '</select>';
+
+        let ocont = jQuery('<div id="globalgui">' +
+            '<div id="fps2"></div>' +
+            '<div>Split ' + osplittypes + oscenes + oaddscene + '</div>' +
+            '<div>Split mode ' + osplitmode + '</div>' +
+            '<div>Animate light <input type="checkbox" name="animatelight" id="animatelight"></input></div>' +
             '</div>'
         ).css('position', 'absolute').css('left', '2px').css('top', '2px').css('z-index', '10');
 
         jQuery(document.body).append(ocont);
+
+        jQuery('#globalgui').css('background-color', '#000000').css('opacity' ,'0.7').css('color', 'white').css('padding', '6px');
 
         jQuery('#splittype').on('change', () => {
             let o = jQuery('#splittype');
@@ -104,6 +132,12 @@ export default class CSMSample extends Sample {
 
         jQuery('#addscene').on('click', () => {
             this.createNewSplit();
+        });
+
+        jQuery('#splitmode').on('change', () => {
+            let o = jQuery('#splitmode');
+            this._global.splitMode = parseInt(o.prop('value'));
+            this._splitMode = this._global.splitMode;
         });
     }
 
@@ -126,13 +160,23 @@ export default class CSMSample extends Sample {
         split.isLoading = true;
 
         camera.position = gscene.camera.position;
-        camera.setTarget(gscene.camera.target);
+        camera.position.scaleToRef(gscene.scaling, camera.position);
 
-        return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.backfaceCulling).then(() => {
+        let target: Vector3 = gscene.camera.target;
+        target.scaleToRef(gscene.scaling, target);
+        camera.setTarget(target);
+
+        return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.backfaceCulling, gscene.scaling).then(() => {
             split.isLoading = false;
             this.resyncCameras();
             this.attachControlToAllCameras();
         });
+    }
+
+    public render(): void {
+        super.render();
+
+        jQuery('#fps2').html(this._engine.getFps().toFixed() + " fps");
     }
 
     public onBeforeRender(deltaTime: number): void {
