@@ -194,7 +194,7 @@ export default class Sample {
 
         this._splits.push(split);
 
-        split.createGUI(400, 1024);
+        /*split.createGUI(400, 1024);
 
         scene.onBeforeRenderObservable.add(() => {
             camera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
@@ -215,7 +215,7 @@ export default class Sample {
 
             split.guiPlane.rotation = camera.rotation;
             split.guiPlane.position = Vector3.TransformCoordinates(p, invertCameraViewProj);
-        });
+        });*/
 
         return split;
     }

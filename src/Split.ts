@@ -55,14 +55,17 @@ export default class Split {
         this.guiPlane.alwaysSelectAsActiveMesh = true;
 
         this.gui = GUI.AdvancedDynamicTexture.CreateForMesh(this.guiPlane, textureWidth, textureHeight, false);
+        this.gui.background = "rgba(255,255,255,0.4)";
 
         var button1 = GUI.Button.CreateSimpleButton("but1", "Click Me");
 
         button1.width = 1;
-        button1.height = 1;
+        button1.height = 0.03;
         button1.color = "white";
-        button1.fontSize = 50;
+        button1.fontSize = 18;
         button1.background = "green";
+        button1.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        button1.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
         this.gui.addControl(button1);
     }
