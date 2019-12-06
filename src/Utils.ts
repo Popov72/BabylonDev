@@ -35,8 +35,8 @@ export default class Utils {
         return fTemp;
     }
 
-    public static addSkybox(skyboxName: string = "Runyon_Canyon_A_2k_cube_specular.dds", scene: Scene): void {
-        const skybox = MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+    public static addSkybox(skyboxName: string = "Runyon_Canyon_A_2k_cube_specular.dds", scene: Scene, size: number = 1000): void {
+        const skybox = MeshBuilder.CreateBox("skyBox", { size: size }, scene);
         const skyboxMaterial = new StandardMaterial("skyBox", scene);
 
         skyboxMaterial.backFaceCulling = false;

@@ -38,10 +38,11 @@ export default class CSMSample extends Sample {
                     "name": "powerplant.obj",
                     "backfaceCulling": false,  // Some meshes have incorrect winding orders... use no backface culling for now
                     "camera": {
-                        "position": new Vector3(100, 5, 5),
-                        "target": Vector3.Zero(),
+                        "position": new Vector3(40, 5, 5),
+                        "target": new Vector3(0, 5, 5),
                     },
-                    "scaling": 1,
+                    "scaling": 0.5,
+                    "sunColor": new Color3(1, 1, 1),
                 },
                 {
                     "dname": "Tower",
@@ -49,11 +50,12 @@ export default class CSMSample extends Sample {
                     "name": "Tower.obj",
                     "backfaceCulling": true,
                     "camera": {
-                        "position": new Vector3(0, 76, 154),
-                        "target": new Vector3(0, 60, 0),
+                        "position": new Vector3(40, 5, 5),
+                        "target": new Vector3(0, 5, 5),
                     },
-                    "scaling": 0.04,
-                },
+                    "scaling": 0.025,
+                    "sunColor": new Color3(1, 0.8, 0.5),
+                }/*,
                 {
                     "dname": "Dude",
                     "path": "./resources/3d/Dude/",
@@ -61,9 +63,21 @@ export default class CSMSample extends Sample {
                     "backfaceCulling": true,
                     "camera": {
                         "position": new Vector3(0, 76, 154),
-                        "target": new Vector3(0, 60, 0),
+                        "target": new Vector3(0, 0, 0),
                     },
                     "scaling": 0.25,
+                }*/,
+                {
+                    "dname": "Columns",
+                    "path": "./resources/3d/Columns/",
+                    "name": "Columns.obj",
+                    "backfaceCulling": true,
+                    "camera": {
+                        "position": new Vector3(40, 5, 5),
+                        "target": new Vector3(0, 5, 5),
+                    },
+                    "scaling": 0.25,
+                    "sunColor": new Color3(1, 0.8, 0.5),
                 }
             ],
             "selectedSplitType": "csm",
@@ -113,7 +127,7 @@ export default class CSMSample extends Sample {
 
         jQuery(document.body).append(ocont);
 
-        jQuery('#globalgui').css('background-color', '#000000').css('opacity' ,'0.7').css('color', 'white').css('padding', '6px');
+        jQuery('#globalgui').css('background-color', '#00FF00A0').css('color', 'black').css('padding', '6px').css('border', '1px solid black');
 
         jQuery('#splittype').on('change', () => {
             let o = jQuery('#splittype');
@@ -160,13 +174,9 @@ export default class CSMSample extends Sample {
         split.isLoading = true;
 
         camera.position = gscene.camera.position;
-        camera.position.scaleToRef(gscene.scaling, camera.position);
+        camera.setTarget(gscene.camera.target);
 
-        let target: Vector3 = gscene.camera.target;
-        target.scaleToRef(gscene.scaling, target);
-        camera.setTarget(target);
-
-        return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.backfaceCulling, gscene.scaling).then(() => {
+        return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.sunColor.clone(), gscene.backfaceCulling, gscene.scaling).then(() => {
             split.isLoading = false;
             this.resyncCameras();
             this.attachControlToAllCameras();
@@ -201,6 +211,10 @@ export default class CSMSample extends Sample {
 
         scene.ambientColor = new Color3(1, 1, 1);
         scene.clearColor = this._clearColor;
+
+        camera.fov = Math.PI / 4 * 0.75;
+        camera.minZ = 0.25;
+        camera.maxZ = 250;
 
         return [scene, camera];
     }

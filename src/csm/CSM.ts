@@ -29,12 +29,12 @@ export default class CSM extends Split implements ISampleSplit {
 
     public updateLightDirection(lightDir: Vector3): void {
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || !m.material) { return; }
+            if (m.name == 'skyBox' || !m.material || m.name.endsWith("_gui")) { return; }
             (m.material as ShaderMaterial).setVector3("lightDirection", lightDir);
         });
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
+    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, sunColor: Color3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
 
         this.sunDir = sunDir;
@@ -43,7 +43,7 @@ export default class CSM extends Split implements ISampleSplit {
 
         this.scene.activeCamera = this.camera;
 
-        Utils.addSkybox("Clouds.dds", this.scene);
+        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
 
         const stdMat = this.makeShader(this.scene),
               whiteTexture = new Texture("resources/texture/white.png", this.scene, true);
@@ -61,6 +61,7 @@ export default class CSM extends Split implements ISampleSplit {
 
             newMat.backFaceCulling = backfaceCulling;
             newMat.setVector3("lightDirection", sunDir);
+            newMat.setColor3("lightColor", sunColor);
             if (diffuse) {
                 newMat.setTexture("textureSampler", diffuse);
                 newMat.setColor3("ambientColor", ambientColor);
@@ -116,6 +117,7 @@ export default class CSM extends Split implements ISampleSplit {
             precision highp float;
 
             uniform sampler2D textureSampler;
+            uniform vec3 lightColor;
             uniform vec3 lightDirection;
             uniform vec3 ambientColor;
 
@@ -128,7 +130,7 @@ export default class CSM extends Split implements ISampleSplit {
                 vec3 lightVectorW = normalize(-lightDirection);
                 float ndl = max(0., dot(vNormal, lightVectorW));
                 vec4 baseColor = texture2D(textureSampler, vUV);
-                vec3 diffuse = clamp(ndl + ambientColor, 0.0, 1.0)*baseColor.rgb;
+                vec3 diffuse = clamp(ndl*lightColor + ambientColor, 0.0, 1.0)*baseColor.rgb;
                 vec4 c = vec4(diffuse, 1.0);
                 //if (c.a < 0.3) discard;
                 gl_FragColor = c;

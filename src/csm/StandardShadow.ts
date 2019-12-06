@@ -40,19 +40,20 @@ export default class StandardShadow extends Split implements ISampleSplit {
         this.sun.direction = lightDir;
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
+    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, sunColor: Color3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
         this.sun.intensity = 1;
         this.sun.shadowMinZ = -80;
         this.sun.shadowMaxZ = 150;
+        this.sun.diffuse = sunColor;
 
         await Utils.loadObj(this.scene, scenePath, sceneName);
 
         this.scene.activeCamera = this.camera;
 
-        Utils.addSkybox("Clouds.dds", this.scene);
+        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
 
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox' || m.name.endsWith("_gui")) { return; }
