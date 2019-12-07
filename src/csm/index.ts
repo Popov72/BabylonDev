@@ -165,7 +165,7 @@ export default class CSMSample extends Sample {
     public async createNewSplit() {
         this.detachControlFromAllCameras();
 
-        let split = this.addSplit(this._global.selectedSplitType, this._global.selectedSplitType + "_" + this._splits.length, false) as ISampleSplit,
+        let split = this.addSplit(this._global.selectedSplitType, this._splitClasses.get(this._global.selectedSplitType)!.className, false) as ISampleSplit,
             camera = split.camera;
 
         const gscene = this._global.scenes[this._global.selectedScene];

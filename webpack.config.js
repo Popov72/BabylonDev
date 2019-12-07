@@ -8,21 +8,26 @@ module.exports = {
         filename: 'babylondev.js',
     },
 
-    externals: {
+    externals: [{
         'babylonjs': 'BABYLON',
         'babylonjs-loaders': 'BABYLON',
         'jquery': 'jQuery',
         'pako': 'pako',
-    },
+        'react': 'React',
+        'react-dom': 'ReactDOM',
+        '@material-ui/core': 'MaterialUI',
+        '@material-ui/core/styles': 'MaterialUI',
+        '@material-ui/core/colors': 'MaterialUI.colors'
+    }],
 
     module: {
         rules: [
-            { test: /\.ts$/, use: [{ loader: 'ts-loader' }], exclude: /node_modules/ },
+            { test: /\.tsx?$/, use: [{ loader: 'ts-loader' }], exclude: /node_modules/ },
         ]
     },
 
     resolve: {
-        extensions: ['.ts']
+        extensions: ['.ts', '.tsx']
     },
 
     devServer: {

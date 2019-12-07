@@ -194,43 +194,39 @@ export default class Sample {
 
         this._splits.push(split);
 
-        /*split.createGUI(400, 1024);
+        split.createGUI();
 
         scene.onBeforeRenderObservable.add(() => {
-            camera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+            let splitIdx = this._splits.indexOf(split) + 1,
+                screenWidth = this._engine.getRenderWidth(),
+                splitWidth = split.guiWidth,
+                elem = jQuery('#' + split.guiID);
 
-            let cameraProj = camera.getProjectionMatrix();
-            let invertCameraViewProj = Matrix.Invert(camera.getTransformationMatrix());
-
-            let p0 = Vector3.TransformCoordinates(new Vector3(0, 0, camera.minZ), cameraProj);
-            let p1 = Vector3.TransformCoordinates(new Vector3(split.guiPlaneWidth, 0, camera.minZ), cameraProj);
-            let pWidth = p1.x - p0.x, pOfst = 0;
-
-            if (this._splitMode === enumSplitMode.LINEAR) {
-                let sidx = this._splits.indexOf(split);
-                pOfst = 2 * (this._splits.length - 1 - sidx) / this._splits.length;
-            }
-
-            let p = new Vector3(1 - pWidth / 2 - pOfst, 1, 0);
-
-            split.guiPlane.rotation = camera.rotation;
-            split.guiPlane.position = Vector3.TransformCoordinates(p, invertCameraViewProj);
-        });*/
+            elem.css('width', splitWidth + 'px');
+            elem.css('top', '2px');
+            elem.css('left', splitIdx * screenWidth / this._splits.length - splitWidth - 2 + 'px');
+        });
 
         return split;
     }
 
     protected removeSplit(index: number | Split): Split | null {
+        let split: Split | null = null;
+
         if (typeof(index) == 'number') {
-            return this._splits.splice(index, 1)[0];
+            split = this._splits.splice(index, 1)[0];
         } else {
             const idx = this._splits.indexOf(index);
             if (idx !== -1) {
-                return this._splits.splice(idx, 1)[0];
+                split = this._splits.splice(idx, 1)[0];
             }
         }
 
-        return null;
+        if (split) {
+            split.removeGUI();
+        }
+
+        return split;
     }
 
     protected attachControlToAllCameras(): void {

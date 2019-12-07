@@ -1,3 +1,14 @@
+import * as React from "react";
+import {
+    Button,
+    Checkbox,
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    Icon,
+    Typography,
+} from '@material-ui/core';
+
 import {
     Color3,
     DirectionalLight,
@@ -28,12 +39,12 @@ export default class StandardShadow extends Split implements ISampleSplit {
     constructor(scene: Scene, camera: UniversalCamera, name: string) {
         super(scene, camera, name);
 
-        this.shadowGenerator = <any>null;
+        this.shadowGenerator = null as any;
         this.filter = ShadowGenerator.FILTER_PCF;
         this.bias = 0.007;
         this.filteringQuality = ShadowGenerator.QUALITY_HIGH;
         this.shadowTextureSize = 1024;
-        this.sun = <any>null;
+        this.sun = null as any;
     }
 
     public updateLightDirection(lightDir: Vector3): void {
@@ -114,4 +125,24 @@ export default class StandardShadow extends Split implements ISampleSplit {
         });
     }
 
+    protected createCustomGUIProperties(): React.ReactElement {
+        const Properties = () => {
+            return (
+                <ExpansionPanel defaultExpanded={true}>
+                    <ExpansionPanelSummary
+                        expandIcon={<Icon>expand_more</Icon>}
+                    >
+                        <Typography>SceneControls</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                        <Button variant="contained" color="primary">
+                        Hello World
+                        </Button>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+            );
+        };
+
+        return Properties();
+    }
 }

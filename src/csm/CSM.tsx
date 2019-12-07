@@ -1,3 +1,14 @@
+import * as React from "react";
+import {
+    Button,
+    Checkbox,
+    ExpansionPanel,
+    ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    Icon,
+    Typography,
+} from '@material-ui/core';
+
 import {
     Color3,
     Effect,
@@ -151,6 +162,27 @@ export default class CSM extends Split implements ISampleSplit {
         //scene.customRenderTargets.push(renderTarget);
 
         return stdMaterial;
+    }
+
+    protected createCustomGUIProperties(): React.ReactElement {
+        const Properties = () => {
+            return (
+                <ExpansionPanel defaultExpanded={true}>
+                    <ExpansionPanelSummary
+                        expandIcon={<Icon>expand_more</Icon>}
+                    >
+                        <Typography>SceneControls</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                        <Button variant="contained" color="primary">
+                        Hello World
+                        </Button>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+            );
+        };
+
+        return Properties();
     }
 
 }
