@@ -71,8 +71,9 @@ export default class Split {
     }
 
     protected createGUITheme() {
-        const theme = createMuiTheme({
-            spacing: 1,
+        let theme = createMuiTheme({});
+        theme = {
+            ...theme,
             overrides: {
                 MuiIcon: {
                     root: {
@@ -90,10 +91,9 @@ export default class Split {
                         overflowY: 'auto',
                     },
                     maxWidthLg: {
-                        maxWidth: 'inherit',
-                        '@media (min-width: 1280px)': {
-                            maxWidth: 'inherit',
-                        }
+                        [theme.breakpoints.up("lg")]: {
+                            maxWidth: 'inherit'
+                        },
                     }
                 },
                 MuiPaper: {
@@ -144,7 +144,7 @@ export default class Split {
 
             props: {
             }
-        });
+        };
 
         return theme;
     }
