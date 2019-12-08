@@ -107,12 +107,11 @@ export default class Sample {
             this.createNewSplit();
         }
 
-        if (this._mapKeys.get("-") && this._splits.length > 1) {
+        if (this._mapKeys.get("-")) {
             this._mapKeys.set("-", false);
-            const split = this.removeSplit(this._splits.length - 1);
-            if (split) {
-                split.scene.dispose();
-            }
+            this._splits.forEach((split) => {
+                split.toggleGUI();
+            });
         }
 
         if (this._mapKeys.get("/")) {
@@ -200,18 +199,34 @@ export default class Sample {
 
         split.createGUI();
 
-        scene.onBeforeRenderObservable.add(() => {
-            let splitIdx = this._splits.indexOf(split) + 1,
-                screenWidth = this._engine.getRenderWidth(),
-                splitWidth = split.guiWidth,
-                elem = jQuery('#' + split.guiID);
-
-            elem.css('width', splitWidth + 'px');
-            elem.css('top', '2px');
-            elem.css('left', splitIdx * screenWidth / this._splits.length - splitWidth - 2 + 'px');
-        });
+        window.dispatchEvent(new Event('split_added'));
 
         return split;
+    }
+
+    public getSplitBounds(index: number | Split): { x: number, y: number, w: number, h: number } {
+        let splitIdx: number = 0;
+
+        if (typeof(index) == 'number') {
+            splitIdx = index;
+        } else {
+            splitIdx = this._splits.indexOf(index);
+        }
+
+        if (splitIdx < 0) {
+            return { x: 0, y: 0, w: 0, h: 0 };
+        }
+
+        let screenWidth = this._engine.getRenderWidth(),
+            screenHeight = this._engine.getRenderHeight(),
+            w = screenWidth / this._splits.length;
+
+        return {
+            x: splitIdx * screenWidth / this._splits.length,
+            y: 0,
+            w: w,
+            h: screenHeight
+        };
     }
 
     public removeSplit(index: number | Split): Split | null {
@@ -229,6 +244,8 @@ export default class Sample {
         if (split) {
             split.removeGUI();
         }
+
+        window.dispatchEvent(new Event('split_removed'));
 
         return split;
     }
