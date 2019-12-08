@@ -22,6 +22,7 @@ import {
     Mesh,
 } from "babylonjs";
 
+import Sample from "../Sample";
 import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
@@ -32,8 +33,8 @@ export default class CSM extends Split implements ISampleSplit {
 
     protected sunDir: Vector3;
 
-    constructor(scene: Scene, camera: UniversalCamera, name: string) {
-        super(scene, camera, name);
+    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
+        super(scene, camera, parent, name);
 
         this.sunDir = new Vector3();
     }

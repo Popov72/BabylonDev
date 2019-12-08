@@ -2,6 +2,13 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {
     Container,
+    Icon,
+    IconButton,
+    List,
+    ListItem,
+    ListItemSecondaryAction,
+    ListItemText,
+    Typography,
 } from '@material-ui/core';
 
 import {
@@ -15,6 +22,8 @@ import {
     Scene,
     UniversalCamera,
 } from "babylonjs";
+
+import Sample from "Sample";
 
 export default class Split {
 
@@ -30,7 +39,9 @@ export default class Split {
     public guiID:           string;
     public guiWidth:        number;
 
-    constructor(scene: Scene, camera: UniversalCamera, name: string = "default") {
+    protected _container:   Sample;
+
+    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string = "default") {
         this.scene = scene;
         this.camera = camera;
         this.name = name;
@@ -38,6 +49,7 @@ export default class Split {
         this.group = 0;
         this.guiID = "splitgui_" + (Split.counter++);
         this.guiWidth = 300;
+        this._container = parent;
     }
 
     protected createGUITheme() {
@@ -96,6 +108,12 @@ export default class Split {
                 },
                 MuiButton: {
                 },
+                MuiListItem: {
+                    root: {
+                        textAlign: 'center',
+                        paddingTop: '0',
+                    }
+                },
             },
 
             props: {
@@ -111,11 +129,27 @@ export default class Split {
 
     public createGUI(): void {
         const theme = this.createGUITheme();
+
         const GUI = () => {
+            const [disableCloseButton, setDisableCloseButton] = React.useState(this._container.splitNumber === 1);
+            const handleClose = () => {
+                this._container.removeSplit(this);
+            };
             return (
                 <ThemeProvider theme={theme}>
                     <Container id={this.guiID} fixed>
-                        <div className="gui_title">{this.name}</div>
+                        <List className="gui_title" disablePadding={true}>
+                            <ListItem>
+                            <ListItemText
+                                primary={this.name}
+                            />
+                            <ListItemSecondaryAction>
+                                <IconButton edge="end" style={{ marginTop: '-12px', marginRight: '-20px'}} onClick={handleClose} disabled={disableCloseButton}>
+                                    <Icon>cancel_presentation</Icon>
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                            </ListItem>
+                        </List>
                         {this.createCustomGUIProperties()}
                     </Container>
                 </ThemeProvider>
@@ -127,6 +161,10 @@ export default class Split {
         document.body.append(e);
 
         ReactDOM.render(<GUI />, e);
+    }
+
+    public showGUI(show: boolean): void {
+        jQuery('#' + this.guiID).css('display', show ? 'block' : 'none');
     }
 
     public removeGUI(): void {

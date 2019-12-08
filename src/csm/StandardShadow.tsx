@@ -21,6 +21,7 @@ import {
     Vector3,
 } from "babylonjs";
 
+import Sample from "../Sample";
 import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
@@ -36,8 +37,8 @@ export default class StandardShadow extends Split implements ISampleSplit {
     protected shadowTextureSize: number;
     protected sun: DirectionalLight;
 
-    constructor(scene: Scene, camera: UniversalCamera, name: string) {
-        super(scene, camera, name);
+    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
+        super(scene, camera, parent, name);
 
         this.shadowGenerator = null as any;
         this.filter = ShadowGenerator.FILTER_PCF;

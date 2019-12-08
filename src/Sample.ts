@@ -75,6 +75,10 @@ export default class Sample {
         (window as any).__ss = this._splits;
     }
 
+    public get splitNumber(): number {
+        return this._splits.length;
+    }
+
     public createNewSplit(): void {
         if (this._splitClasses.size === 0) {
             return;
@@ -182,7 +186,7 @@ export default class Sample {
         this._splitClasses.set(splitClassName, splitClass);
     }
 
-    protected addSplit(splitClassName: string, splitName: string, attachControls: boolean = true): Split | null {
+    public addSplit(splitClassName: string, splitName: string, attachControls: boolean = true): Split | null {
         const splitClass = this._splitClasses.get(splitClassName);
 
         if (!splitClass) {
@@ -190,7 +194,7 @@ export default class Sample {
         }
         let [scene, camera] = this.createSceneAndCamera(attachControls);
 
-        const split = new splitClass(scene, camera, splitName);
+        const split = new splitClass(scene, camera, this, splitName);
 
         this._splits.push(split);
 
@@ -210,7 +214,7 @@ export default class Sample {
         return split;
     }
 
-    protected removeSplit(index: number | Split): Split | null {
+    public removeSplit(index: number | Split): Split | null {
         let split: Split | null = null;
 
         if (typeof(index) == 'number') {

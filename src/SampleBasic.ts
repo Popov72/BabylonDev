@@ -5,8 +5,8 @@ import Split from "./Split";
 
 class SplitBasic extends Split {
 
-    constructor(scene: Scene, camera: UniversalCamera, name: string = "default") {
-        super(scene, camera, name);
+    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string = "default") {
+        super(scene, camera, parent, name);
     }
 }
 

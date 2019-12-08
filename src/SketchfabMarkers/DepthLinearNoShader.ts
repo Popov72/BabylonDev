@@ -9,12 +9,13 @@ import {
     DepthRenderer,
 } from "babylonjs";
 
+import Sample from "../Sample";
 import Split from "../Split";
 
 export default class DepthLinearNoShader extends Split {
 
-    constructor(scene: Scene, camera: UniversalCamera, name: string) {
-        super(scene, camera, name);
+    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
+        super(scene, camera, parent, name);
     }
 
     public initialize(): void {
