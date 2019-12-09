@@ -31,11 +31,11 @@ export default class CSMSample extends Sample {
     }
 
     protected create(): void {
-        let split1 = this.addSplit("depth_nonlinear_shader", "s1") as DepthNonLinearShader;
+        let split1 = this.addSplit("depth_nonlinear_shader", "Non linear depth") as DepthNonLinearShader;
 
         split1.initialize();
 
-        let split2 = this.addSplit("depth_linear_shader", "s2") as DepthLinearShader;
+        let split2 = this.addSplit("depth_linear_shader", "Linear depth") as DepthLinearShader;
 
         split2.initialize();
 

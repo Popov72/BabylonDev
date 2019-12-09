@@ -20,6 +20,9 @@ export default class DepthNonLinearShader extends Split {
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
+
+        this.dimensions.height = 50;
+        this.showCloseButton = false;
     }
 
     public initialize(): void {

@@ -16,6 +16,9 @@ export default class DepthLinearNoShader extends Split {
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
+
+        this.dimensions.height = 50;
+        this.showCloseButton = false;
     }
 
     public initialize(): void {
@@ -74,7 +77,7 @@ export default class DepthLinearNoShader extends Split {
 
         this.scene.onAfterRenderObservable.add(() => {
 
-            depthMap.readPixels(0, 0, buffer);
+            depthMap.readPixels(0, 0, buffer); // that's too slow to do that each frame...
 
             sprites.forEach((sprite) => {
                 var posInView = Vector3.TransformCoordinates(sprite.pos, this.scene.getViewMatrix());
