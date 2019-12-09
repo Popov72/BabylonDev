@@ -228,7 +228,7 @@ export default class Sample extends GUI {
             split.createGUI();
         }
 
-        window.dispatchEvent(new Event('split_added'));
+        window.setTimeout(() => window.dispatchEvent(new Event('split_added')), 16); // let the time to the GUI to render before sending the event
 
         return split;
     }
