@@ -126,7 +126,7 @@ export default class StandardShadow extends Split implements ISampleSplit {
         });
     }
 
-    protected createCustomGUIProperties(): React.ReactElement {
+    protected createCustomGUI(): React.ReactElement {
         const Properties = () => {
             return (
                 <ExpansionPanel defaultExpanded={true}>

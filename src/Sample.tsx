@@ -1,6 +1,19 @@
+import * as React from "react";
+
+import {
+    Button,
+    Grid,
+    MenuItem,
+    Paper,
+    Select,
+} from '@material-ui/core';
+
+import {
+    makeStyles,
+} from '@material-ui/core/styles';
+
 import {
     Engine,
-    Matrix,
     Scene,
     UniversalCamera,
     Vector3,
@@ -8,7 +21,8 @@ import {
     Color4,
 } from "babylonjs";
 
-import Split from "Split";
+import GUI, { enumDefaultPosition } from "./GUI";
+import Split from "./Split";
 
 const cameraSpeed = 5,
       shiftMultiplier = 3;
@@ -24,7 +38,7 @@ export interface ISampleDescription {
     class: typeof Sample;
 }
 
-export default class Sample {
+export default class Sample extends GUI {
 
     protected static _sampleList: Map<string, ISampleDescription> = new Map();
 
@@ -33,10 +47,12 @@ export default class Sample {
     protected _mapKeys:         Map<String, boolean>;
     protected _clearColor:      Color4;
     protected _cameraSpeed:     number;
+    protected _useStyles:       any;
 
     protected _splits:          Array<Split>;
     protected _splitMode:       enumSplitMode;
     protected _splitClasses:    Map<string, typeof Split>;
+    protected _splitType:       string | null;
 
     public static get sampleList(): Map<string, ISampleDescription> {
         return Sample._sampleList;
@@ -61,6 +77,8 @@ export default class Sample {
     }
 
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
+        super("Global settings", engine);
+
         this._engine = engine;
         this._canvas = canvas;
         this._mapKeys = new Map<String, boolean>();
@@ -70,6 +88,12 @@ export default class Sample {
         this._splits = [];
         this._splitMode = enumSplitMode.LINEAR;
         this._splitClasses = new Map();
+        this._splitType = null;
+
+        this.dimensions.width = 250;
+        this.dimensions.height = 184;
+        this.showCloseButton = false;
+        this.defaultPosition = enumDefaultPosition.TOP_LEFT;
 
         (window as any).__sample = this;
         (window as any).__ss = this._splits;
@@ -112,6 +136,9 @@ export default class Sample {
             this._splits.forEach((split) => {
                 split.toggleGUI();
             });
+            if (this._mapKeys.get("Shift")) {
+                this.toggleGUI();
+            }
         }
 
         if (this._mapKeys.get("/")) {
@@ -185,7 +212,7 @@ export default class Sample {
         this._splitClasses.set(splitClassName, splitClass);
     }
 
-    public addSplit(splitClassName: string, splitName: string, attachControls: boolean = true): Split | null {
+    public addSplit(splitClassName: string, splitName: string, attachControls: boolean = true, createGUI: boolean = true): Split | null {
         const splitClass = this._splitClasses.get(splitClassName);
 
         if (!splitClass) {
@@ -197,7 +224,9 @@ export default class Sample {
 
         this._splits.push(split);
 
-        split.createGUI();
+        if (createGUI) {
+            split.createGUI();
+        }
 
         window.dispatchEvent(new Event('split_added'));
 
@@ -328,6 +357,108 @@ export default class Sample {
                     break;
             }
         });
+    }
+
+    protected handleEvent(event: Event): boolean {
+        return false;
+    }
+
+    protected createCustomGUI(): React.ReactElement {
+        this._useStyles = makeStyles((theme) => ({
+            propertyTitle: {
+              padding: '4px 0px 4px 8px',
+              textAlign: 'left',
+              color: 'white',
+              whiteSpace: 'nowrap',
+              marginBottom: theme.spacing(0),
+              textShadow: '1px 1px black',
+            },
+            propertyValue: {
+                padding: '4px 4px 4px 4px',
+                textAlign: 'left',
+                color: '#00ff00',
+                whiteSpace: 'nowrap',
+                marginBottom: theme.spacing(0),
+                backgroundColor: '#1565c060',
+                textShadow: 'none',
+            },
+            subPropertyTitle: {
+                padding: '2px 0px 2px 20px',
+                textAlign: 'left',
+                color: 'white',
+                whiteSpace: 'nowrap',
+                marginBottom: theme.spacing(0),
+                textShadow: '1px 1px black',
+            },
+        }));
+
+        const Properties = () => {
+            const classes = this._useStyles();
+            const [splitLayout, setSplitLayout] = React.useState(this._splitMode);
+            const [splitType, setSplitType] = React.useState(this._splitType);
+
+            const changeSplitLayout = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
+                this._splitMode = event.target.value as number;
+                setSplitLayout(this._splitMode);
+            };
+
+            const changeSplitType = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
+                this._splitType = event.target.value as string;
+                setSplitType(this._splitType);
+            };
+
+            return (
+                <Grid container spacing={1}>
+                    <Grid item xs={6}>
+                        <Paper className={classes.propertyTitle}>Split layout</Paper>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Select
+                            className={classes.propertyValue}
+                            id="splitlayout"
+                            value={splitLayout}
+                            onChange={changeSplitLayout}
+                            >
+                            <MenuItem value={enumSplitMode.SIDE_BY_SIDE}>Side by side</MenuItem>
+                            <MenuItem value={enumSplitMode.LINEAR}>Linear</MenuItem>
+                        </Select>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Paper className={classes.propertyTitle}>Split type</Paper>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Select
+                            className={classes.propertyValue}
+                            id="splittype"
+                            value={splitType}
+                            onChange={changeSplitType}
+                            >
+                            { Array.from(this._splitClasses.keys()).map((name) => {
+                                const stype = this._splitClasses.get(name)!;
+                                return (
+                                    <MenuItem key={name} value={name}>{stype.className}</MenuItem>
+                                );
+                            }) }
+                        </Select>
+                    </Grid>
+                    {this.createCustomGlobalGUIProperties()}
+                    <Grid item xs={12} style={{ textAlign: 'center', marginTop: '8px' }}>
+                        <Button variant="contained" color="primary" onClick={this.createNewSplit.bind(this)}>
+                            Create Split
+                        </Button>
+                    </Grid>
+                </Grid>
+            );
+        };
+
+        return Properties();
+    }
+
+    protected createCustomGlobalGUIProperties(): React.ReactElement {
+        return (
+            <React.Fragment>
+            </React.Fragment>
+        );
     }
 
 }

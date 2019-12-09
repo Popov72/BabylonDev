@@ -165,7 +165,7 @@ export default class CSM extends Split implements ISampleSplit {
         return stdMaterial;
     }
 
-    protected createCustomGUIProperties(): React.ReactElement {
+    protected createCustomGUI(): React.ReactElement {
         const Properties = () => {
             return (
                 <ExpansionPanel defaultExpanded={true}>
