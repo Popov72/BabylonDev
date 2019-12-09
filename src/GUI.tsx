@@ -1,5 +1,7 @@
 import * as React from "react";
+
 import * as ReactDOM from "react-dom";
+
 import {
     Container,
     Icon,
@@ -13,6 +15,7 @@ import {
 
 import {
     createMuiTheme,
+    makeStyles,
     ThemeProvider,
 } from '@material-ui/core/styles';
 
@@ -44,11 +47,12 @@ export default class GUI {
     public dimensions: IDimensions;
     public zIndex: number;
 
-    protected _name: string;
-    protected _engine: Engine;
+    protected _name:            string;
+    protected _engine:          Engine;
     protected _showCloseButton: boolean;
-    protected _guiElemCont: HTMLElement;
-    protected _defaultPos: enumDefaultPosition;
+    protected _guiElemCont:     HTMLElement;
+    protected _defaultPos:      enumDefaultPosition;
+    protected _useStyles:       any;
 
     constructor(name: string, engine: Engine) {
         this._name = name;
@@ -67,6 +71,34 @@ export default class GUI {
         this._guiElemCont = null as any;
         this._defaultPos = enumDefaultPosition.TOP_RIGHT;
         this.zIndex = 20;
+
+        this._useStyles = makeStyles((theme) => ({
+            propertyTitle: {
+              padding: '4px 0px 4px 8px',
+              textAlign: 'left',
+              color: 'white',
+              whiteSpace: 'nowrap',
+              marginBottom: theme.spacing(0),
+              textShadow: '1px 1px black',
+            },
+            propertyValue: {
+                padding: '4px 4px 4px 4px',
+                textAlign: 'left',
+                color: '#00ff00',
+                whiteSpace: 'nowrap',
+                marginBottom: theme.spacing(0),
+                backgroundColor: '#1565c060',
+                textShadow: 'none',
+            },
+            subPropertyTitle: {
+                padding: '2px 0px 2px 20px',
+                textAlign: 'left',
+                color: 'white',
+                whiteSpace: 'nowrap',
+                marginBottom: theme.spacing(0),
+                textShadow: '1px 1px black',
+            },
+        }));
     }
 
     public get showCloseButton(): boolean {

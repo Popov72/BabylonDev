@@ -9,10 +9,6 @@ import {
 } from '@material-ui/core';
 
 import {
-    makeStyles,
-} from '@material-ui/core/styles';
-
-import {
     Engine,
 } from "babylonjs";
 
@@ -21,7 +17,6 @@ import Sample, { enumSplitMode } from "./Sample";
 
 export default class MainGUI extends GUI {
 
-    protected _useStyles:   any;
     protected _parent:      Sample;
 
     constructor(name: string, engine: Engine, parent: Sample) {
@@ -33,34 +28,6 @@ export default class MainGUI extends GUI {
         this.dimensions.height = 184;
         this.showCloseButton = false;
         this.defaultPosition = enumDefaultPosition.TOP_LEFT;
-
-        this._useStyles = makeStyles((theme) => ({
-            propertyTitle: {
-              padding: '4px 0px 4px 8px',
-              textAlign: 'left',
-              color: 'white',
-              whiteSpace: 'nowrap',
-              marginBottom: theme.spacing(0),
-              textShadow: '1px 1px black',
-            },
-            propertyValue: {
-                padding: '4px 4px 4px 4px',
-                textAlign: 'left',
-                color: '#00ff00',
-                whiteSpace: 'nowrap',
-                marginBottom: theme.spacing(0),
-                backgroundColor: '#1565c060',
-                textShadow: 'none',
-            },
-            subPropertyTitle: {
-                padding: '2px 0px 2px 20px',
-                textAlign: 'left',
-                color: 'white',
-                whiteSpace: 'nowrap',
-                marginBottom: theme.spacing(0),
-                textShadow: '1px 1px black',
-            },
-        }));
     }
 
     protected handleEvent(event: Event): boolean {
@@ -68,7 +35,6 @@ export default class MainGUI extends GUI {
     }
 
     protected createCustomGUI(): React.ReactElement {
-
         const Properties = () => {
             const classes = this._useStyles();
             const [splitLayout, setSplitLayout] = React.useState(this._parent.splitMode);
@@ -118,7 +84,7 @@ export default class MainGUI extends GUI {
                             }) }
                         </Select>
                     </Grid>
-                    {this.createCustomGlobalGUIProperties()}
+                    {this.createCustomGUIProperties()}
                     <Grid item xs={12} style={{ textAlign: 'center', marginTop: '8px' }}>
                         <Button variant="contained" color="primary" onClick={this._parent.createNewSplit.bind(this._parent)}>
                             Create Split
@@ -131,7 +97,7 @@ export default class MainGUI extends GUI {
         return Properties();
     }
 
-    protected createCustomGlobalGUIProperties(): React.ReactElement {
+    protected createCustomGUIProperties(): React.ReactElement {
         return (
             <React.Fragment>
             </React.Fragment>
