@@ -1,17 +1,3 @@
-import * as React from "react";
-
-import {
-    Button,
-    Grid,
-    MenuItem,
-    Paper,
-    Select,
-} from '@material-ui/core';
-
-import {
-    makeStyles,
-} from '@material-ui/core/styles';
-
 import {
     Engine,
     Scene,
@@ -21,7 +7,7 @@ import {
     Color4,
 } from "babylonjs";
 
-import GUI, { enumDefaultPosition } from "./GUI";
+import MainGUI from "./MainGUI";
 import Split from "./Split";
 
 const cameraSpeed = 5,
@@ -38,7 +24,7 @@ export interface ISampleDescription {
     class: typeof Sample;
 }
 
-export default class Sample extends GUI {
+export default class Sample {
 
     protected static _sampleList: Map<string, ISampleDescription> = new Map();
 
@@ -47,12 +33,12 @@ export default class Sample extends GUI {
     protected _mapKeys:         Map<String, boolean>;
     protected _clearColor:      Color4;
     protected _cameraSpeed:     number;
-    protected _useStyles:       any;
+    protected _gui:             MainGUI | null;
 
-    protected _splits:          Array<Split>;
-    protected _splitMode:       enumSplitMode;
-    protected _splitClasses:    Map<string, typeof Split>;
-    protected _splitType:       string | null;
+    public splits:          Array<Split>;
+    public splitMode:       enumSplitMode;
+    public splitClasses:    Map<string, typeof Split>;
+    public splitType:       string | null;
 
     public static get sampleList(): Map<string, ISampleDescription> {
         return Sample._sampleList;
@@ -77,42 +63,36 @@ export default class Sample extends GUI {
     }
 
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
-        super("Global settings", engine);
-
         this._engine = engine;
         this._canvas = canvas;
         this._mapKeys = new Map<String, boolean>();
         this._clearColor = new Color4(0, 0, 0, 1);
         this._cameraSpeed = cameraSpeed;
 
-        this._splits = [];
-        this._splitMode = enumSplitMode.LINEAR;
-        this._splitClasses = new Map();
-        this._splitType = null;
-
-        this.dimensions.width = 250;
-        this.dimensions.height = 184;
-        this.showCloseButton = false;
-        this.defaultPosition = enumDefaultPosition.TOP_LEFT;
+        this.splits = [];
+        this.splitMode = enumSplitMode.LINEAR;
+        this.splitClasses = new Map();
+        this.splitType = null;
+        this._gui = null;
 
         (window as any).__sample = this;
-        (window as any).__ss = this._splits;
+        (window as any).__ss = this.splits;
     }
 
     public get splitNumber(): number {
-        return this._splits.length;
+        return this.splits.length;
     }
 
     public createNewSplit(): void {
-        if (this._splitClasses.size === 0) {
+        if (this.splitClasses.size === 0) {
             return;
         }
 
-        this.addSplit(this._splitClasses.keys().next().value, "");
+        this.addSplit(this.splitClasses.keys().next().value, "");
     }
 
     public onBeforeRender(deltaTime: number): void {
-        this._splits.forEach((split) => {
+        this.splits.forEach((split) => {
             const camera = split.camera;
 
             camera.speed = this._cameraSpeed * (this._mapKeys.get('Shift') ? shiftMultiplier : 1);
@@ -133,37 +113,37 @@ export default class Sample extends GUI {
 
         if (this._mapKeys.get("-")) {
             this._mapKeys.set("-", false);
-            this._splits.forEach((split) => {
+            this.splits.forEach((split) => {
                 split.toggleGUI();
             });
-            if (this._mapKeys.get("Shift")) {
-                this.toggleGUI();
+            if (this._mapKeys.get("Shift") && this._gui) {
+                this._gui.toggleGUI();
             }
         }
 
         if (this._mapKeys.get("/")) {
             this._mapKeys.set("/", false);
-            this._splitMode = this._splitMode === enumSplitMode.LINEAR ? enumSplitMode.SIDE_BY_SIDE : enumSplitMode.LINEAR;
+            this.splitMode = this.splitMode === enumSplitMode.LINEAR ? enumSplitMode.SIDE_BY_SIDE : enumSplitMode.LINEAR;
         }
     }
 
     public render(): void {
         const w = this._engine.getRenderWidth(),
               h = this._engine.getRenderHeight(),
-              stepx = w / this._splits.length;
+              stepx = w / this.splits.length;
 
-        for (let i = 0; i < this._splits.length; ++i) {
-            const split = this._splits[i];
+        for (let i = 0; i < this.splits.length; ++i) {
+            const split = this.splits[i];
 
             split.scene.autoClear = (i == 0);
 
-            switch (this._splitMode) {
+            switch (this.splitMode) {
                 case enumSplitMode.SIDE_BY_SIDE:
-                    split.camera.viewport = new Viewport(i / this._splits.length, 0, 1 / this._splits.length, 1);
+                    split.camera.viewport = new Viewport(i / this.splits.length, 0, 1 / this.splits.length, 1);
                     break;
                 case enumSplitMode.LINEAR:
                     split.camera.viewport = new Viewport(0, 0, 1, 1);
-                    if (this._splits.length > 1) {
+                    if (this.splits.length > 1) {
                         split.scene.onBeforeDrawPhaseObservable.addOnce(() => {
                             this._engine.enableScissor(stepx * i, 0, stepx * (i + 1), h);
                         });
@@ -183,14 +163,20 @@ export default class Sample extends GUI {
 
     }
 
+    public createGUI(): void {
+        this._gui = new MainGUI("Global settings", this._engine, this);
+
+        this._gui.createGUI();
+    }
+
     protected create(): void {
     }
 
     protected resyncCameras(): void {
         const groups = new Map<number, UniversalCamera>();
 
-        for (let i = 0; i < this._splits.length; ++i) {
-            const split = this._splits[i],
+        for (let i = 0; i < this.splits.length; ++i) {
+            const split = this.splits[i],
                   scamera = split.camera;
 
             const camera = groups.get(split.group);
@@ -209,11 +195,11 @@ export default class Sample extends GUI {
     }
 
     protected registerClass(splitClassName: string, splitClass: typeof Split): void {
-        this._splitClasses.set(splitClassName, splitClass);
+        this.splitClasses.set(splitClassName, splitClass);
     }
 
     public addSplit(splitClassName: string, splitName: string, attachControls: boolean = true, createGUI: boolean = true): Split | null {
-        const splitClass = this._splitClasses.get(splitClassName);
+        const splitClass = this.splitClasses.get(splitClassName);
 
         if (!splitClass) {
             return null;
@@ -222,7 +208,7 @@ export default class Sample extends GUI {
 
         const split = new splitClass(scene, camera, this, splitName);
 
-        this._splits.push(split);
+        this.splits.push(split);
 
         if (createGUI) {
             split.createGUI();
@@ -239,7 +225,7 @@ export default class Sample extends GUI {
         if (typeof(index) == 'number') {
             splitIdx = index;
         } else {
-            splitIdx = this._splits.indexOf(index);
+            splitIdx = this.splits.indexOf(index);
         }
 
         if (splitIdx < 0) {
@@ -248,10 +234,10 @@ export default class Sample extends GUI {
 
         let screenWidth = this._engine.getRenderWidth(),
             screenHeight = this._engine.getRenderHeight(),
-            w = screenWidth / this._splits.length;
+            w = screenWidth / this.splits.length;
 
         return {
-            x: splitIdx * screenWidth / this._splits.length,
+            x: splitIdx * screenWidth / this.splits.length,
             y: 0,
             w: w,
             h: screenHeight
@@ -262,11 +248,11 @@ export default class Sample extends GUI {
         let split: Split | null = null;
 
         if (typeof(index) == 'number') {
-            split = this._splits.splice(index, 1)[0];
+            split = this.splits.splice(index, 1)[0];
         } else {
-            const idx = this._splits.indexOf(index);
+            const idx = this.splits.indexOf(index);
             if (idx !== -1) {
-                split = this._splits.splice(idx, 1)[0];
+                split = this.splits.splice(idx, 1)[0];
             }
         }
 
@@ -280,7 +266,7 @@ export default class Sample extends GUI {
     }
 
     protected attachControlToAllCameras(): void {
-        this._splits.forEach((split) => {
+        this.splits.forEach((split) => {
             const camera = split.camera;
 
             camera.attachControl(this._canvas, true);
@@ -288,7 +274,7 @@ export default class Sample extends GUI {
     }
 
     protected detachControlFromAllCameras(): void {
-        this._splits.forEach((split) => {
+        this.splits.forEach((split) => {
             const camera = split.camera;
 
             camera.detachControl(this._canvas);
@@ -297,7 +283,7 @@ export default class Sample extends GUI {
 
     protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
         const scene = new Scene(this._engine);
-        const camera = new UniversalCamera("camera" + this._splits.length, new Vector3(0, 5, -10), scene);
+        const camera = new UniversalCamera("camera" + this.splits.length, new Vector3(0, 5, -10), scene);
 
         camera.fov = Math.PI / 4;
         camera.setTarget(Vector3.Zero());
@@ -357,108 +343,6 @@ export default class Sample extends GUI {
                     break;
             }
         });
-    }
-
-    protected handleEvent(event: Event): boolean {
-        return false;
-    }
-
-    protected createCustomGUI(): React.ReactElement {
-        this._useStyles = makeStyles((theme) => ({
-            propertyTitle: {
-              padding: '4px 0px 4px 8px',
-              textAlign: 'left',
-              color: 'white',
-              whiteSpace: 'nowrap',
-              marginBottom: theme.spacing(0),
-              textShadow: '1px 1px black',
-            },
-            propertyValue: {
-                padding: '4px 4px 4px 4px',
-                textAlign: 'left',
-                color: '#00ff00',
-                whiteSpace: 'nowrap',
-                marginBottom: theme.spacing(0),
-                backgroundColor: '#1565c060',
-                textShadow: 'none',
-            },
-            subPropertyTitle: {
-                padding: '2px 0px 2px 20px',
-                textAlign: 'left',
-                color: 'white',
-                whiteSpace: 'nowrap',
-                marginBottom: theme.spacing(0),
-                textShadow: '1px 1px black',
-            },
-        }));
-
-        const Properties = () => {
-            const classes = this._useStyles();
-            const [splitLayout, setSplitLayout] = React.useState(this._splitMode);
-            const [splitType, setSplitType] = React.useState(this._splitType);
-
-            const changeSplitLayout = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
-                this._splitMode = event.target.value as number;
-                setSplitLayout(this._splitMode);
-            };
-
-            const changeSplitType = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
-                this._splitType = event.target.value as string;
-                setSplitType(this._splitType);
-            };
-
-            return (
-                <Grid container spacing={1}>
-                    <Grid item xs={6}>
-                        <Paper className={classes.propertyTitle}>Split layout</Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Select
-                            className={classes.propertyValue}
-                            id="splitlayout"
-                            value={splitLayout}
-                            onChange={changeSplitLayout}
-                            >
-                            <MenuItem value={enumSplitMode.SIDE_BY_SIDE}>Side by side</MenuItem>
-                            <MenuItem value={enumSplitMode.LINEAR}>Linear</MenuItem>
-                        </Select>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Paper className={classes.propertyTitle}>Split type</Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Select
-                            className={classes.propertyValue}
-                            id="splittype"
-                            value={splitType}
-                            onChange={changeSplitType}
-                            >
-                            { Array.from(this._splitClasses.keys()).map((name) => {
-                                const stype = this._splitClasses.get(name)!;
-                                return (
-                                    <MenuItem key={name} value={name}>{stype.className}</MenuItem>
-                                );
-                            }) }
-                        </Select>
-                    </Grid>
-                    {this.createCustomGlobalGUIProperties()}
-                    <Grid item xs={12} style={{ textAlign: 'center', marginTop: '8px' }}>
-                        <Button variant="contained" color="primary" onClick={this.createNewSplit.bind(this)}>
-                            Create Split
-                        </Button>
-                    </Grid>
-                </Grid>
-            );
-        };
-
-        return Properties();
-    }
-
-    protected createCustomGlobalGUIProperties(): React.ReactElement {
-        return (
-            <React.Fragment>
-            </React.Fragment>
-        );
     }
 
 }

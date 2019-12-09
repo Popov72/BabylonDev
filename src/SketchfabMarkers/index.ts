@@ -23,7 +23,7 @@ export default class CSMSample extends Sample {
 
         this._clearColor = new Color4(51 / 255, 52 / 255, 75 / 255, 1);
         this._cameraSpeed = 2.5;
-        this._splitMode = enumSplitMode.SIDE_BY_SIDE;
+        this.splitMode = enumSplitMode.SIDE_BY_SIDE;
 
         this.registerClass("depth_nonlinear_shader", DepthNonLinearShader);
         this.registerClass("depth_linear_shader", DepthLinearShader);

@@ -1,29 +1,17 @@
-import * as React from "react";
-
-import {
-    Grid,
-    MenuItem,
-    Paper,
-    Select,
-} from '@material-ui/core';
-
 import {
     Scene,
     Vector3,
     Color3,
     Color4,
-    Quaternion,
-    Matrix,
     SceneLoader,
     UniversalCamera,
     Engine,
 } from "babylonjs";
 
 import Sample, { enumSplitMode } from "../Sample";
-import Split from "../Split";
-import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
 
+import GlobalGUI from "./GlobalGUI";
 import StandardShadow from "./StandardShadow";
 import CSM from "./CSM";
 
@@ -31,8 +19,6 @@ export default class CSMSample extends Sample {
 
     protected _sunDir:          Vector3;
     protected _ambientColor:    Color3;
-    protected _selectedScene:   number;
-    protected _scenes:          Array<any>;
 
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
         super(engine, canvas);
@@ -40,99 +26,18 @@ export default class CSMSample extends Sample {
         this._sunDir = new Vector3(32, -30, 22);
         this._ambientColor = new Color3(0.3, 0.3, 0.3);
         this._clearColor = new Color4(0.17773, 0.41797, 0.65234, 1);
-        this._scenes = [
-            {
-                "dname": "Power Plant",
-                "path": "./resources/3d/powerplant/",
-                "name": "powerplant.obj",
-                "backfaceCulling": false,  // Some meshes have incorrect winding orders... use no backface culling for now
-                "camera": {
-                    "position": new Vector3(40, 5, 5),
-                    "target": new Vector3(0, 5, 5),
-                },
-                "scaling": 0.5,
-                "sunColor": new Color3(1, 1, 1),
-            },
-            {
-                "dname": "Tower",
-                "path": "./resources/3d/Tower/",
-                "name": "Tower.obj",
-                "backfaceCulling": true,
-                "camera": {
-                    "position": new Vector3(40, 5, 5),
-                    "target": new Vector3(0, 5, 5),
-                },
-                "scaling": 0.025,
-                "sunColor": new Color3(1, 0.8, 0.5),
-            }/*,
-            {
-                "dname": "Dude",
-                "path": "./resources/3d/Dude/",
-                "name": "dude.babylon",
-                "backfaceCulling": true,
-                "camera": {
-                    "position": new Vector3(0, 76, 154),
-                    "target": new Vector3(0, 0, 0),
-                },
-                "scaling": 0.25,
-            }*/,
-            {
-                "dname": "Columns",
-                "path": "./resources/3d/Columns/",
-                "name": "Columns.obj",
-                "backfaceCulling": true,
-                "camera": {
-                    "position": new Vector3(40, 5, 5),
-                    "target": new Vector3(0, 5, 5),
-                },
-                "scaling": 0.25,
-                "sunColor": new Color3(1, 0.8, 0.5),
-            }
-        ];
 
         this.registerClass("std", StandardShadow);
         this.registerClass("csm", CSM);
 
-        this._splitMode = enumSplitMode.LINEAR;
-        this._splitType = "csm";
-        this._selectedScene = 0;
-        this._zIndex = 200;
+        this.splitMode = enumSplitMode.LINEAR;
+        this.splitType = "csm";
+
+        this._gui = new GlobalGUI("Global settings", this._engine, this);
 
         let ocont = jQuery('<div id="fps2"></div>').css('position', 'absolute').css('left', '2px').css('top', '2px').css('z-index', '201');
 
         jQuery(document.body).append(ocont);
-    }
-
-    protected createCustomGlobalGUIProperties(): React.ReactElement {
-        const classes = this._useStyles();
-        const [scene, setScene] = React.useState(this._selectedScene);
-
-        const changeScene = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
-            this._selectedScene = event.target.value as number;
-            setScene(this._selectedScene);
-        };
-
-        return (
-            <React.Fragment>
-                <Grid item xs={6}>
-                    <Paper className={classes.propertyTitle}>Scene</Paper>
-                </Grid>
-                <Grid item xs={6}>
-                    <Select
-                        className={classes.propertyValue}
-                        id="scene"
-                        value={scene}
-                        onChange={changeScene}
-                        >
-                        { this._scenes.map((scene: any, idx: number) => {
-                            return (
-                                <MenuItem key={idx} value={idx}>{scene.dname}</MenuItem>
-                            );
-                        }) }
-                    </Select>
-                </Grid>
-            </React.Fragment>
-        );
     }
 
     protected create(): void {
@@ -142,17 +47,22 @@ export default class CSMSample extends Sample {
         });
     }
 
+    public createGUI(): void {
+        this._gui!.zIndex = 200;
+        this._gui!.createGUI();
+    }
+
     public async createNewSplit() {
         this.detachControlFromAllCameras();
 
-        let split = this.addSplit(this._splitType!, this._splitClasses.get(this._splitType!)!.className, false) as ISampleSplit,
+        let split = this.addSplit(this.splitType!, this.splitClasses.get(this.splitType!)!.className, false) as ISampleSplit,
             camera = split.camera;
 
         split.showGUI(false);
 
-        const gscene = this._scenes[this._selectedScene];
+        const gscene = (this._gui as GlobalGUI)!.scenes[(this._gui as GlobalGUI).selectedScene];
 
-        split.group = this._selectedScene;
+        split.group = (this._gui as GlobalGUI).selectedScene;
         split.isLoading = true;
 
         camera.position = gscene.camera.position;
