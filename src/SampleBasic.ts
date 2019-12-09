@@ -18,7 +18,7 @@ export default class SampleBasic extends Sample {
     protected create() {
         this.registerClass("split", SplitBasic);
 
-        let split = this.addSplit("split", "basic") as SplitBasic;
+        let split = this.addSplit("split", "basic", true, false) as SplitBasic;
 
         this.populateScene(split.scene, split.camera);
 
