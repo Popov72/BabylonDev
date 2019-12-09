@@ -1,14 +1,3 @@
-import * as React from "react";
-import {
-    Button,
-    Checkbox,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
-    Icon,
-    Typography,
-} from '@material-ui/core';
-
 import {
     Color3,
     DirectionalLight,
@@ -133,24 +122,4 @@ export default class StandardShadow extends Split implements ISampleSplit {
         });
     }
 
-    protected createCustomGUI(): React.ReactElement {
-        const Properties = () => {
-            return (
-                <ExpansionPanel defaultExpanded={true}>
-                    <ExpansionPanelSummary
-                        expandIcon={<Icon>expand_more</Icon>}
-                    >
-                        <Typography>SceneControls</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <Button variant="contained" color="primary">
-                        Hello World
-                        </Button>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
-            );
-        };
-
-        return Properties();
-    }
 }
