@@ -48,6 +48,7 @@ export default class GUI {
     protected _showCloseButton: boolean;
     protected _guiElemCont: HTMLElement;
     protected _defaultPos: enumDefaultPosition;
+    protected _zIndex: number;
 
     constructor(name: string, engine: Engine) {
         this._name = name;
@@ -65,6 +66,7 @@ export default class GUI {
 
         this._guiElemCont = null as any;
         this._defaultPos = enumDefaultPosition.TOP_RIGHT;
+        this._zIndex = 20;
     }
 
     public get showCloseButton(): boolean {
@@ -296,6 +298,7 @@ export default class GUI {
                             maxHeight={maxSizes.maxHeight}
                             onResizeStop={onStopResize}
                             enable={{ top: false, right: true, bottom: true, left: false, topRight: false, bottomRight: true, bottomLeft: false, topLeft: false }}
+                            style={{ zIndex: this._zIndex}}
                             >
 
                             <Container fixed>
@@ -320,7 +323,7 @@ export default class GUI {
 
         this._guiElemCont = document.createElement("div");
 
-        jQuery(this._guiElemCont).css('position', 'absolute').css('user-select', 'none').css('top', '0').css('left', '0').css('z-index', '0');
+        jQuery(this._guiElemCont).css('position', 'absolute').css('user-select', 'none').css('top', '0').css('left', '0').css('z-index', this._zIndex);
 
         document.body.append(this._guiElemCont);
 

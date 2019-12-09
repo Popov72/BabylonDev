@@ -96,8 +96,9 @@ export default class CSMSample extends Sample {
         this._splitMode = enumSplitMode.LINEAR;
         this._splitType = "csm";
         this._selectedScene = 0;
+        this._zIndex = 200;
 
-        let ocont = jQuery('<div id="fps2"></div>').css('position', 'absolute').css('left', '2px').css('top', '2px').css('z-index', '1');
+        let ocont = jQuery('<div id="fps2"></div>').css('position', 'absolute').css('left', '2px').css('top', '2px').css('z-index', '201');
 
         jQuery(document.body).append(ocont);
     }
