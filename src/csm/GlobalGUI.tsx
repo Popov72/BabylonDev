@@ -81,7 +81,7 @@ export default class GlobalGUI extends MainGUI {
         ];
     }
 
-    protected createCustomGlobalGUIProperties(): React.ReactElement {
+    protected createCustomGUIProperties(): React.ReactElement {
         const classes = this._useStyles();
         const [scene, setScene] = React.useState(this._selectedScene);
 

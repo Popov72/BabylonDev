@@ -58,7 +58,9 @@ export default class CSMSample extends Sample {
         let split = this.addSplit(this.splitType!, this.splitClasses.get(this.splitType!)!.className, false) as ISampleSplit,
             camera = split.camera;
 
-        split.showGUI(false);
+        if (split.gui) {
+            split.gui.showGUI(false);
+        }
 
         const gscene = (this._gui as GlobalGUI)!.scenes[(this._gui as GlobalGUI).selectedScene];
 
@@ -70,7 +72,9 @@ export default class CSMSample extends Sample {
 
         return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.sunColor.clone(), gscene.backfaceCulling, gscene.scaling).then(() => {
             split.isLoading = false;
-            split.showGUI(true);
+            if (split.gui) {
+                split.gui.showGUI(true);
+            }
             this.resyncCameras();
             this.attachControlToAllCameras();
         });

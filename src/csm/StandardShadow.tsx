@@ -25,6 +25,7 @@ import Sample from "../Sample";
 import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
+import StandardShadowGUI from "./StandardShadowGUI";
 
 export default class StandardShadow extends Split implements ISampleSplit {
 
@@ -46,6 +47,12 @@ export default class StandardShadow extends Split implements ISampleSplit {
         this.filteringQuality = ShadowGenerator.QUALITY_HIGH;
         this.shadowTextureSize = 1024;
         this.sun = null as any;
+    }
+
+    public createGUI(): void {
+        this.gui = new StandardShadowGUI(this.name, this.scene.getEngine(), this._container, this);
+
+        this.gui.createGUI();
     }
 
     public updateLightDirection(lightDir: Vector3): void {

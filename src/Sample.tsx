@@ -114,7 +114,9 @@ export default class Sample {
         if (this._mapKeys.get("-")) {
             this._mapKeys.set("-", false);
             this.splits.forEach((split) => {
-                split.toggleGUI();
+                if (split.gui) {
+                    split.gui.toggleGUI();
+                }
             });
             if (this._mapKeys.get("Shift") && this._gui) {
                 this._gui.toggleGUI();
@@ -256,8 +258,8 @@ export default class Sample {
             }
         }
 
-        if (split) {
-            split.removeGUI();
+        if (split && split.gui) {
+            split.gui.removeGUI();
         }
 
         window.dispatchEvent(new Event('split_removed'));

@@ -1,14 +1,3 @@
-import * as React from "react";
-import {
-    Button,
-    Checkbox,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
-    Icon,
-    Typography,
-} from '@material-ui/core';
-
 import {
     Color3,
     Effect,
@@ -26,6 +15,7 @@ import Sample from "../Sample";
 import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
+import CSMGUI from "./CSMGUI";
 
 export default class CSM extends Split implements ISampleSplit {
 
@@ -37,6 +27,12 @@ export default class CSM extends Split implements ISampleSplit {
         super(scene, camera, parent, name);
 
         this.sunDir = new Vector3();
+    }
+
+    public createGUI(): void {
+        this.gui = new CSMGUI(this.name, this.scene.getEngine(), this._container, this);
+
+        this.gui.createGUI();
     }
 
     public updateLightDirection(lightDir: Vector3): void {
@@ -163,27 +159,6 @@ export default class CSM extends Split implements ISampleSplit {
         //scene.customRenderTargets.push(renderTarget);
 
         return stdMaterial;
-    }
-
-    protected createCustomGUI(): React.ReactElement {
-        const Properties = () => {
-            return (
-                <ExpansionPanel defaultExpanded={true}>
-                    <ExpansionPanelSummary
-                        expandIcon={<Icon>expand_more</Icon>}
-                    >
-                        <Typography>SceneControls</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <Button variant="contained" color="primary">
-                        Hello World
-                        </Button>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
-            );
-        };
-
-        return Properties();
     }
 
 }

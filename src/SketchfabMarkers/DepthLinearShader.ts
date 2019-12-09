@@ -18,11 +18,11 @@ import Split from "../Split";
 
 export default class DepthLinearShader extends Split {
 
-    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
-        super(scene, camera, parent, name);
+    public createGUI(): void {
+        this.gui!.dimensions.height = 50;
+        this.gui!.showCloseButton = false;
 
-        this.dimensions.height = 50;
-        this.showCloseButton = false;
+        super.createGUI();
     }
 
     public initialize(): void {
