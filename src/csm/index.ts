@@ -55,12 +55,8 @@ export default class CSMSample extends Sample {
     public async createNewSplit() {
         this.detachControlFromAllCameras();
 
-        let split = this.addSplit(this.splitType!, this.splitClasses.get(this.splitType!)!.className, false) as ISampleSplit,
+        let split = this.addSplit(this.splitType!, this.splitClasses.get(this.splitType!)!.className, false, false) as ISampleSplit,
             camera = split.camera;
-
-        if (split.gui) {
-            split.gui.showGUI(false);
-        }
 
         const gscene = (this._gui as GlobalGUI)!.scenes[(this._gui as GlobalGUI).selectedScene];
 
@@ -70,11 +66,9 @@ export default class CSMSample extends Sample {
         camera.position = gscene.camera.position;
         camera.setTarget(gscene.camera.target);
 
-        return split.initialize(gscene.path, gscene.name, this._ambientColor, this._sunDir.clone(), gscene.sunColor.clone(), gscene.backfaceCulling, gscene.scaling).then(() => {
+        return split.initialize(gscene, this._ambientColor, this._sunDir.clone()).then(() => {
             split.isLoading = false;
-            if (split.gui) {
-                split.gui.showGUI(true);
-            }
+            split.createGUI();
             this.resyncCameras();
             this.attachControlToAllCameras();
         });
@@ -84,23 +78,6 @@ export default class CSMSample extends Sample {
         super.render();
 
         jQuery('#fps2').html(this._engine.getFps().toFixed() + " fps");
-    }
-
-    public onBeforeRender(deltaTime: number): void {
-        super.onBeforeRender(deltaTime);
-
-        /*if (this._global.animateLight) {
-            let matrix = new Matrix();
-
-            let rotY = Utils.XMScalarModAngle(deltaTime * 0.25);
-
-            let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
-
-            Matrix.FromQuaternionToRef(rotation, matrix);
-            Vector3.TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
-
-            this._splits.forEach((split) => (split as ISampleSplit).updateLightDirection(this._sunDir));
-        }*/
     }
 
     protected createSceneAndCamera(attachControls: boolean): [Scene, UniversalCamera] {

@@ -4,11 +4,15 @@ import {
 } from "babylonjs";
 
 import Split from "../Split";
+import { ISceneDescription } from "./GlobalGUI";
 
 export default interface ISampleSplit extends Split {
 
-    initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, sunColor: Color3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit>;
+    initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit>;
 
-    updateLightDirection(lightDir: Vector3): void;
+    sceneName: string;
+    animateLight: boolean;
+    lightColor: string;
+    lightDirection: Vector3;
 
 }

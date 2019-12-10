@@ -11,12 +11,13 @@ import {
 } from "babylonjs";
 
 import Sample from "../Sample";
-import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
+import { ISceneDescription } from "./GlobalGUI";
+import SplitBase from "./SplitBase";
 import StandardShadowGUI from "./StandardShadowGUI";
 
-export default class StandardShadow extends Split implements ISampleSplit {
+export default class StandardShadow extends SplitBase {
 
     public static className: string = "Standard";
 
@@ -38,26 +39,43 @@ export default class StandardShadow extends Split implements ISampleSplit {
         this.sun = null as any;
     }
 
+    public get lightColor(): string {
+        return this._sunColor.toHexString();
+    }
+
+    public set lightColor(lc: string) {
+        this._sunColor = Color3.FromHexString(lc);
+        this.sun.diffuse = this._sunColor;
+    }
+
     public createGUI(): void {
         this.gui = new StandardShadowGUI(this.name, this.scene.getEngine(), this._container, this);
 
         this.gui.createGUI();
     }
 
-    public updateLightDirection(lightDir: Vector3): void {
-        this.sun.direction = lightDir;
+    public get lightDirection(): Vector3 {
+        return this._sunDir;
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, sunColor: Color3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
+    public set lightDirection(ld: Vector3) {
+        this._sunDir = ld;
+        this.sun.direction = ld;
+    }
+
+    public async initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
+
+        this._sceneName = scene.dname;
+        this._sunDir = sunDir;
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
         this.sun.intensity = 1;
         this.sun.shadowMinZ = -80;
         this.sun.shadowMaxZ = 150;
-        this.sun.diffuse = sunColor;
+        this.sun.diffuse = scene.sunColor.clone();
 
-        await Utils.loadObj(this.scene, scenePath, sceneName);
+        await Utils.loadObj(this.scene, scene.path, scene.name);
 
         this.scene.activeCamera = this.camera;
 
@@ -74,7 +92,7 @@ export default class StandardShadow extends Split implements ISampleSplit {
             mat.specularColor = new Color3(0., 0., 0.);
             mat.ambientColor = ambientColor;
             mat.ambientTexture = null;
-            mat.backFaceCulling = backfaceCulling;
+            mat.backFaceCulling = scene.backfaceCulling;
 
             if (!mat.diffuseTexture) {
                 mat.ambientColor = new Color3(0, 0, 0);
@@ -83,9 +101,9 @@ export default class StandardShadow extends Split implements ISampleSplit {
 
             m.receiveShadows = true;
 
-            if (scaling != 1) {
+            if (scene.scaling != 1) {
                 let matrix = Matrix.Identity();
-                matrix.scaleToRef(scaling, matrix);
+                matrix.scaleToRef(scene.scaling, matrix);
                 matrix.setRowFromFloats(3, 0, 0, 0, 1);
                 (m as Mesh).bakeTransformIntoVertices(matrix);
             }

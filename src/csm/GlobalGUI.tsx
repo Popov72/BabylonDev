@@ -16,9 +16,22 @@ import {
 import MainGUI from "../MainGUI";
 import Sample from "../Sample";
 
+export interface ISceneDescription {
+    dname: string;
+    path: string;
+    name: string;
+    backfaceCulling: boolean;
+    camera: {
+        position: Vector3,
+        target: Vector3,
+    };
+    scaling: number;
+    sunColor: Color3;
+}
+
 export default class GlobalGUI extends MainGUI {
 
-    public scenes:  Array<any>;
+    public scenes:  Array<ISceneDescription>;
 
     protected _selectedScene:   number;
 

@@ -4,29 +4,32 @@ import {
     Scene,
     ShaderMaterial,
     StandardMaterial,
-    UniversalCamera,
     Texture,
     Vector3,
     Matrix,
     Mesh,
 } from "babylonjs";
 
-import Sample from "../Sample";
-import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
+import { ISceneDescription } from "./GlobalGUI";
+import SplitBase from "./SplitBase";
 import CSMGUI from "./CSMGUI";
 
-export default class CSM extends Split implements ISampleSplit {
+export default class CSM extends SplitBase {
 
     public static className: string = "CSM";
 
-    protected sunDir: Vector3;
+    public get lightColor(): string {
+        return this._sunColor.toHexString();
+    }
 
-    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
-        super(scene, camera, parent, name);
-
-        this.sunDir = new Vector3();
+    public set lightColor(lc: string) {
+        this._sunColor = Color3.FromHexString(lc);
+        this.scene.meshes.forEach((m) => {
+            if (m.name == 'skyBox' || !m.material || m.name.endsWith("_gui")) { return; }
+            (m.material as ShaderMaterial).setColor3("lightColor", this._sunColor);
+        });
     }
 
     public createGUI(): void {
@@ -35,19 +38,26 @@ export default class CSM extends Split implements ISampleSplit {
         this.gui.createGUI();
     }
 
-    public updateLightDirection(lightDir: Vector3): void {
+    public get lightDirection(): Vector3 {
+        return this._sunDir;
+    }
+
+    public set lightDirection(ld: Vector3) {
+        this._sunDir = ld;
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox' || !m.material || m.name.endsWith("_gui")) { return; }
-            (m.material as ShaderMaterial).setVector3("lightDirection", lightDir);
+            (m.material as ShaderMaterial).setVector3("lightDirection", ld);
         });
     }
 
-    public async initialize(scenePath: string, sceneName: string, ambientColor: Color3, sunDir: Vector3, sunColor: Color3, backfaceCulling: boolean, scaling: number): Promise<ISampleSplit> {
+    public async initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
+        this._sceneName = scene.dname;
 
-        this.sunDir = sunDir;
+        this._sunDir = sunDir;
+        this._sunColor = scene.sunColor.clone();
 
-        await Utils.loadObj(this.scene, scenePath, sceneName);
+        await Utils.loadObj(this.scene, scene.path, scene.name);
 
         this.scene.activeCamera = this.camera;
 
@@ -67,9 +77,9 @@ export default class CSM extends Split implements ISampleSplit {
 
             const newMat = stdMat.clone(m.name + "_" + mat.name + "_cloned");
 
-            newMat.backFaceCulling = backfaceCulling;
+            newMat.backFaceCulling = scene.backfaceCulling;
             newMat.setVector3("lightDirection", sunDir);
-            newMat.setColor3("lightColor", sunColor);
+            newMat.setColor3("lightColor", this._sunColor);
             if (diffuse) {
                 newMat.setTexture("textureSampler", diffuse);
                 newMat.setColor3("ambientColor", ambientColor);
@@ -81,9 +91,9 @@ export default class CSM extends Split implements ISampleSplit {
 
             m.material = newMat;
 
-            if (scaling != 1) {
+            if (scene.scaling != 1) {
                 let matrix = Matrix.Identity();
-                matrix.scaleToRef(scaling, matrix);
+                matrix.scaleToRef(scene.scaling, matrix);
                 matrix.setRowFromFloats(3, 0, 0, 0, 1);
                 (m as Mesh).bakeTransformIntoVertices(matrix);
             }

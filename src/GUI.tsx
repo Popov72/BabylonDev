@@ -91,7 +91,8 @@ export default class GUI {
                 textShadow: 'none',
             },
             subPropertyTitle: {
-                padding: '2px 0px 2px 20px',
+                padding: '4px 2px 4px 4px',
+                marginLeft: "-12px",
                 textAlign: 'left',
                 color: 'white',
                 whiteSpace: 'nowrap',
@@ -171,6 +172,21 @@ export default class GUI {
                         }
                     },
                 },
+                MuiFilledInput: {
+                    input: {
+                        padding: "0",
+                    },
+                    underline: {
+                        '&:before': {
+                            borderBottom: '0px solid black',
+                        },
+                    },
+                },
+                MuiFormControl: {
+                    root: {
+                        width: "100%",
+                    },
+                },
                 MuiGrid: {
                     "spacing-xs-1": {
                         "& > .MuiGrid-item": {
@@ -207,6 +223,24 @@ export default class GUI {
                 MuiSelect: {
                     icon: {
                         color: "white",
+                    },
+                },
+                MuiSwitch: {
+                    colorSecondary: {
+                        "&$checked": {
+                            color: "#69f0ae",
+                            "& + .MuiSwitch-track": {
+                                backgroundColor: "#69f0ae",
+                            },
+                        },
+                    },
+                    root: {
+                        height: "20px",
+                        padding: "0",
+                    },
+                    switchBase: {
+                        paddingTop: "4px",
+                        height: "12px",
                     },
                 },
             },
