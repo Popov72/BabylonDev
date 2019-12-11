@@ -235,12 +235,17 @@ export default class GUI {
                         },
                     },
                     root: {
+                        width: "48px",
                         height: "20px",
                         padding: "0",
                     },
                     switchBase: {
                         paddingTop: "4px",
                         height: "12px",
+                    },
+                    thumb: {
+                        width: '14px',
+                        height: '14px',
                     },
                 },
             },

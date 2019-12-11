@@ -15,4 +15,6 @@ export default interface ISampleSplit extends Split {
     lightColor: string;
     lightDirection: Vector3;
 
+    shadowMapSize: number;
+    shadowMapFilter: number;
 }

@@ -21,22 +21,18 @@ export default class StandardShadow extends SplitBase {
 
     public static className: string = "Standard";
 
-    protected shadowGenerator: ShadowGenerator;
     protected bias: number;
-    protected filter: number;
     protected filteringQuality: number;
-    protected shadowTextureSize: number;
     protected sun: DirectionalLight;
+    protected _shadowGenerator: ShadowGenerator;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
 
-        this.shadowGenerator = null as any;
-        this.filter = ShadowGenerator.FILTER_PCF;
         this.bias = 0.007;
         this.filteringQuality = ShadowGenerator.QUALITY_HIGH;
-        this.shadowTextureSize = 1024;
         this.sun = null as any;
+        this._shadowGenerator = null as any;
     }
 
     public get lightColor(): string {
@@ -48,12 +44,6 @@ export default class StandardShadow extends SplitBase {
         this.sun.diffuse = this._sunColor;
     }
 
-    public createGUI(): void {
-        this.gui = new StandardShadowGUI(this.name, this.scene.getEngine(), this._container, this);
-
-        this.gui.createGUI();
-    }
-
     public get lightDirection(): Vector3 {
         return this._sunDir;
     }
@@ -63,17 +53,42 @@ export default class StandardShadow extends SplitBase {
         this.sun.direction = ld;
     }
 
+    public get shadowMapSize(): number {
+        return this._shadowMapSize;
+    }
+
+    public set shadowMapSize(sms: number) {
+        this._shadowMapSize = sms;
+        this.createShadowGenerator();
+    }
+
+    public get shadowMapFilter(): number {
+        return this._shadowMapFilter;
+    }
+
+    public set shadowMapFilter(smf: number) {
+        this._shadowGenerator.filter = smf;
+        this._shadowMapFilter = this._shadowGenerator.filter;
+    }
+
+    public createGUI(): void {
+        this.gui = new StandardShadowGUI(this.name, this.scene.getEngine(), this._container, this);
+
+        this.gui.createGUI();
+    }
+
     public async initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
         this.scene.metadata = { "name": this.name };
-
         this._sceneName = scene.dname;
+
         this._sunDir = sunDir;
+        this._sunColor = scene.sunColor.clone();
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
         this.sun.intensity = 1;
         this.sun.shadowMinZ = -80;
         this.sun.shadowMaxZ = 150;
-        this.sun.diffuse = scene.sunColor.clone();
+        this.sun.diffuse = this._sunColor;
 
         await Utils.loadObj(this.scene, scene.path, scene.name);
 
@@ -115,13 +130,18 @@ export default class StandardShadow extends SplitBase {
     }
 
     protected createShadowGenerator(): void {
-        const shadowGenerator = new ShadowGenerator(this.shadowTextureSize, this.sun);
+        if (this._shadowGenerator) {
+            this._shadowGenerator.dispose();
+            this._shadowGenerator = null as any;
+        }
 
-        shadowGenerator.filter = this.filter;
+        const shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.sun);
+
+        shadowGenerator.filter = this._shadowMapFilter;
         shadowGenerator.bias = this.bias;
         shadowGenerator.filteringQuality = this.filteringQuality;
 
-        this.shadowGenerator = shadowGenerator;
+        this._shadowGenerator = shadowGenerator;
 
         const renderList = shadowGenerator.getShadowMap()!.renderList!;
 

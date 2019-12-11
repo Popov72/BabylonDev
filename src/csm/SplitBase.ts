@@ -5,6 +5,7 @@ import {
     Observer,
     Quaternion,
     Scene,
+    ShadowGenerator,
     UniversalCamera,
     Vector3,
 } from "babylonjs";
@@ -22,6 +23,8 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _sunColor: Color3;
     protected _animateLight: boolean;
     protected _rotateLightObservable: Nullable<Observer<Scene>>;
+    protected _shadowMapSize: number;
+    protected _shadowMapFilter: number;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -31,6 +34,8 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._sceneName = "";
         this._animateLight = false;
         this._rotateLightObservable = null;
+        this._shadowMapSize = 1024;
+        this._shadowMapFilter = ShadowGenerator.FILTER_PCF;
     }
 
     public initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
@@ -100,6 +105,22 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set lightDirection(ld: Vector3) {
         this._sunDir = ld;
+    }
+
+    public get shadowMapSize(): number {
+        return this._shadowMapSize;
+    }
+
+    public set shadowMapSize(sms: number) {
+        this._shadowMapSize = sms;
+    }
+
+    public get shadowMapFilter(): number {
+        return this._shadowMapFilter;
+    }
+
+    public set shadowMapFilter(smf: number) {
+        this._shadowMapFilter = smf;
     }
 
 }

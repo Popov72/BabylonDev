@@ -17,7 +17,8 @@ export default class CSMGUI extends SplitBaseGUI {
     protected createCustomGUIProperties(): React.ReactElement {
         const Properties = () => {
             return (
-                <Typography>Standard Shadow</Typography>
+                <>
+                </>
             );
         };
 

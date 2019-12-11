@@ -32,12 +32,6 @@ export default class CSM extends SplitBase {
         });
     }
 
-    public createGUI(): void {
-        this.gui = new CSMGUI(this.name, this.scene.getEngine(), this._container, this);
-
-        this.gui.createGUI();
-    }
-
     public get lightDirection(): Vector3 {
         return this._sunDir;
     }
@@ -48,6 +42,12 @@ export default class CSM extends SplitBase {
             if (m.name == 'skyBox' || !m.material || m.name.endsWith("_gui")) { return; }
             (m.material as ShaderMaterial).setVector3("lightDirection", ld);
         });
+    }
+
+    public createGUI(): void {
+        this.gui = new CSMGUI(this.name, this.scene.getEngine(), this._container, this);
+
+        this.gui.createGUI();
     }
 
     public async initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
