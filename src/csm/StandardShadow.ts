@@ -21,16 +21,12 @@ export default class StandardShadow extends SplitBase {
 
     public static className: string = "Standard";
 
-    protected bias: number;
-    protected filteringQuality: number;
     protected sun: DirectionalLight;
     protected _shadowGenerator: ShadowGenerator;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
 
-        this.bias = 0.007;
-        this.filteringQuality = ShadowGenerator.QUALITY_HIGH;
         this.sun = null as any;
         this._shadowGenerator = null as any;
     }
@@ -71,6 +67,105 @@ export default class StandardShadow extends SplitBase {
         this._shadowMapFilter = this._shadowGenerator.filter;
     }
 
+    public get shadowMapBias(): number {
+        return this._shadowMapBias;
+    }
+
+    public set shadowMapBias(smb: number) {
+        this._shadowMapBias = smb;
+        this._shadowGenerator.bias = smb;
+    }
+
+    public get shadowMapNormalBias(): number {
+        return this._shadowMapNormalBias;
+    }
+
+    public set shadowMapNormalBias(smnb: number) {
+        this._shadowMapNormalBias = smnb;
+        this._shadowGenerator.normalBias = smnb;
+    }
+
+    public get shadowMapDarkness(): number {
+        return this._shadowMapDarkness;
+    }
+
+    public set shadowMapDarkness(smd: number) {
+        this._shadowMapDarkness = smd;
+        this._shadowGenerator.setDarkness(smd);
+    }
+
+    public get shadowMapQuality(): number {
+        return this._shadowMapQuality;
+    }
+
+    public set shadowMapQuality(smq: number) {
+        this._shadowMapQuality = smq;
+        this._shadowGenerator.filteringQuality = smq;
+    }
+
+    public get shadowMapDepthScale(): number {
+        return this._shadowMapDepthScale;
+    }
+
+    public set shadowMapDepthScale(smds: number) {
+        this._shadowMapDepthScale = smds;
+        this._shadowGenerator.depthScale = smds;
+    }
+
+    public get shadowMapBlurScale(): number {
+        return this._shadowMapBlurScale;
+    }
+
+    public set shadowMapBlurScale(smbs: number) {
+        this._shadowMapBlurScale = smbs;
+        this._shadowGenerator.blurScale = smbs;
+    }
+
+    public get shadowMapUseKernelBlur(): boolean {
+        return this._shadowMapUseKernelBlur;
+    }
+
+    public set shadowMapUseKernelBlur(smukb: boolean) {
+        this._shadowMapUseKernelBlur = smukb;
+        this._shadowGenerator.useKernelBlur = smukb;
+    }
+
+    public get shadowMapBlurKernel(): number {
+        return this._shadowMapBlurKernel;
+    }
+
+    public set shadowMapBlurKernel(smbk: number) {
+        this._shadowMapBlurKernel = smbk;
+        this._shadowGenerator.blurKernel = smbk;
+    }
+
+    public get shadowMapBlurBoxOffset(): number {
+        return this._shadowMapBlurBoxOffset;
+    }
+
+    public set shadowMapBlurBoxOffset(smbbo: number) {
+        this._shadowMapBlurBoxOffset = smbbo;
+        this._shadowGenerator.blurBoxOffset = smbbo;
+    }
+
+    public get lightNearPlane(): number {
+        return this._lightNearPlane;
+    }
+
+    public set lightNearPlane(lnp: number) {
+        this._lightNearPlane = lnp;
+        this.sun.shadowMinZ = lnp;
+    }
+
+    public get lightFarPlane(): number {
+        return this._lightFarPlane;
+    }
+
+    public set lightFarPlane(lfp: number) {
+        this._lightFarPlane = lfp;
+        this.sun.shadowMaxZ = lfp;
+    }
+
     public createGUI(): void {
         this.gui = new StandardShadowGUI(this.name, this.scene.getEngine(), this._container, this);
 
@@ -86,15 +181,15 @@ export default class StandardShadow extends SplitBase {
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
         this.sun.intensity = 1;
-        this.sun.shadowMinZ = -80;
-        this.sun.shadowMaxZ = 150;
+        this.sun.shadowMinZ = scene.light.nearPlane;
+        this.sun.shadowMaxZ = scene.light.farPlane;
         this.sun.diffuse = this._sunColor;
+
+        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
 
         await Utils.loadObj(this.scene, scene.path, scene.name);
 
         this.scene.activeCamera = this.camera;
-
-        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
 
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox' || m.name.endsWith("_gui")) { return; }
@@ -137,9 +232,16 @@ export default class StandardShadow extends SplitBase {
 
         const shadowGenerator = new ShadowGenerator(this.shadowMapSize, this.sun);
 
+        shadowGenerator.bias = this._shadowMapBias;
+        shadowGenerator.normalBias = this._shadowMapNormalBias;
+        shadowGenerator.setDarkness(this._shadowMapDarkness);
         shadowGenerator.filter = this._shadowMapFilter;
-        shadowGenerator.bias = this.bias;
-        shadowGenerator.filteringQuality = this.filteringQuality;
+        shadowGenerator.filteringQuality = this._shadowMapQuality;
+        shadowGenerator.depthScale = this._shadowMapDepthScale;
+        shadowGenerator.blurScale = this._shadowMapBlurScale;
+        shadowGenerator.useKernelBlur = this._shadowMapUseKernelBlur;
+        shadowGenerator.blurKernel = this._shadowMapBlurKernel;
+        shadowGenerator.blurBoxOffset = this._shadowMapBlurBoxOffset;
 
         this._shadowGenerator = shadowGenerator;
 

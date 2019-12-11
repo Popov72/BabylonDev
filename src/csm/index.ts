@@ -31,7 +31,7 @@ export default class CSMSample extends Sample {
         this.registerClass("csm", CSM);
 
         this.splitMode = enumSplitMode.LINEAR;
-        this.splitType = "csm";
+        this.splitType = "std";
 
         this._gui = new GlobalGUI("Global settings", this._engine, this);
 
@@ -63,8 +63,8 @@ export default class CSMSample extends Sample {
         split.group = (this._gui as GlobalGUI).selectedScene;
         split.isLoading = true;
 
-        camera.position = gscene.camera.position;
-        camera.setTarget(gscene.camera.target);
+        camera.position = gscene.camera.position.clone();
+        camera.setTarget(gscene.camera.target.clone());
 
         return split.initialize(gscene, this._ambientColor, this._sunDir.clone()).then(() => {
             split.isLoading = false;

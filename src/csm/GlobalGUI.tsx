@@ -27,6 +27,10 @@ export interface ISceneDescription {
     };
     scaling: number;
     sunColor: Color3;
+    light: {
+        nearPlane: number,
+        farPlane: number,
+    };
 }
 
 export default class GlobalGUI extends MainGUI {
@@ -55,6 +59,10 @@ export default class GlobalGUI extends MainGUI {
                 },
                 "scaling": 0.5,
                 "sunColor": new Color3(1, 1, 1),
+                "light": {
+                    "nearPlane": -90,
+                    "farPlane": 130,
+                },
             },
             {
                 "dname": "Tower",
@@ -67,6 +75,10 @@ export default class GlobalGUI extends MainGUI {
                 },
                 "scaling": 0.025,
                 "sunColor": new Color3(1, 0.8, 0.5),
+                "light": {
+                    "nearPlane": -50,
+                    "farPlane": 150,
+                },
             }/*,
             {
                 "dname": "Dude",
@@ -90,6 +102,10 @@ export default class GlobalGUI extends MainGUI {
                 },
                 "scaling": 0.25,
                 "sunColor": new Color3(1, 0.8, 0.5),
+                "light": {
+                    "nearPlane": -92,
+                    "farPlane": 150,
+                },
             }
         ];
     }

@@ -57,11 +57,11 @@ export default class CSM extends SplitBase {
         this._sunDir = sunDir;
         this._sunColor = scene.sunColor.clone();
 
+        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
+
         await Utils.loadObj(this.scene, scene.path, scene.name);
 
         this.scene.activeCamera = this.camera;
-
-        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
 
         const stdMat = this.makeShader(this.scene),
               whiteTexture = new Texture("resources/texture/white.png", this.scene, true);

@@ -10,6 +10,7 @@ import {
     ListItem,
     ListItemSecondaryAction,
     ListItemText,
+    Slider,
     Typography,
 } from '@material-ui/core';
 
@@ -17,6 +18,7 @@ import {
     createMuiTheme,
     makeStyles,
     ThemeProvider,
+    withStyles,
 } from '@material-ui/core/styles';
 
 import { yellow } from '@material-ui/core/colors';
@@ -41,6 +43,38 @@ export enum enumDefaultPosition {
     TOP_LEFT,
     TOP_RIGHT,
 }
+
+export const PrettoSlider = withStyles({
+    root: {
+      color: '#52af77',
+      height: 8,
+      width: '90%',
+      padding: 0,
+    },
+    thumb: {
+      height: 16,
+      width: 16,
+      backgroundColor: '#fff',
+      border: '2px solid currentColor',
+      marginTop: -6,
+      marginLeft: -2,
+      '&:focus,&:hover,&$active': {
+        boxShadow: 'inherit',
+      },
+    },
+    active: {},
+    valueLabel: {
+      left: 'calc(-50% - 4px)',
+    },
+    track: {
+      height: 6,
+      borderRadius: 4,
+    },
+    rail: {
+      height: 6,
+      borderRadius: 4,
+    },
+})(Slider);
 
 export default class GUI {
 
@@ -199,9 +233,17 @@ export default class GUI {
                         'color': 'white',
                     }
                 },
+                MuiInput: {
+                    underline: {
+                        "&:before": {
+                            borderBottom: "0px solid black",
+                        },
+                    },
+                },
                 MuiInputBase: {
                     input: {
                         padding: '0',
+                        color: '#00ff00',
                     },
                 },
                 MuiListItem: {
