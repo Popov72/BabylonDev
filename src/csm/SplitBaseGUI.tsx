@@ -55,6 +55,7 @@ export default class SplitBaseGUI extends SplitGUI {
             const [lightColor, setLightColor] = React.useState(this._sparent.lightColor);
             const [lightNearPlane, setLightNearPlane] = React.useState(this._sparent.lightNearPlane);
             const [lightFarPlane, setLightFarPlane] = React.useState(this._sparent.lightFarPlane);
+            const [showLightHelper, setShowLightHelper] = React.useState(this._sparent.showLightHelper);
 
             const [shadowMapSize, setShadowMapSize] = React.useState(this._sparent.shadowMapSize);
             const [shadowMapBias, setShadowMapBias] = React.useState(this._sparent.shadowMapBias);
@@ -97,6 +98,12 @@ export default class SplitBaseGUI extends SplitGUI {
                 this._sparent.lightFarPlane = value as number;
                 setLightFarPlane(this._sparent.lightFarPlane);
             };
+
+            const changeShowLightHelper = (event: React.ChangeEvent, checked: boolean) => {
+                setShowLightHelper(checked);
+                this._sparent.showLightHelper = checked;
+            };
+
 
             const changeShadowMapSize = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
                 this._sparent.shadowMapSize = event.target.value as number;
@@ -234,6 +241,14 @@ export default class SplitBaseGUI extends SplitGUI {
                                 <Grid item xs={6} className={classes.propertyValue}>
                                     <Paper className={classes.propertyValue}>
                                         <PrettoSlider valueLabelDisplay="auto" defaultValue={lightFarPlane} min={0} max={500} step={1} onChange={changeLightFarPlane} />
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <Paper className={classes.subPropertyTitle}>Show Helper</Paper>
+                                </Grid>
+                                <Grid item xs={6} className={classes.propertyValue}>
+                                    <Paper className={classes.propertyValue}>
+                                        <Switch checked={showLightHelper} onChange={changeShowLightHelper} />                                
                                     </Paper>
                                 </Grid>
                             </Grid>

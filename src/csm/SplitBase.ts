@@ -26,6 +26,7 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _animateLight: boolean;
     protected _lightNearPlane: number;
     protected _lightFarPlane: number;
+    protected _showLightHelper: boolean;
     protected _rotateLightObservable: Nullable<Observer<Scene>>;
     protected _shadowMapSize: number;
     protected _shadowMapFilter: number;
@@ -50,6 +51,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._animateLight = false;
         this._lightNearPlane = -90;
         this._lightFarPlane = 130;
+        this._showLightHelper = false;
         this._rotateLightObservable = null;
         this._shadowMapSize = 1024;
         this._shadowMapFilter = ShadowGenerator.FILTER_PCF;
@@ -142,6 +144,8 @@ export default class SplitBase extends Split implements ISampleSplit {
 
         Matrix.FromQuaternionToRef(rotation, matrix);
         Vector3.TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
+
+        this.lightDirection = this._sunDir;
     }
 
     public get lightColor(): string {
@@ -158,6 +162,14 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set lightDirection(ld: Vector3) {
         this._sunDir = ld;
+    }
+
+    public get showLightHelper(): boolean {
+        return this._showLightHelper;
+    }
+
+    public set showLightHelper(slh: boolean) {
+        this._showLightHelper = slh;
     }
 
     public get shadowMapSize(): number {

@@ -24,6 +24,7 @@ export default class CSMSample extends Sample {
         super(engine, canvas);
 
         this._sunDir = new Vector3(32, -30, 22);
+        this._sunDir.normalize();
         this._ambientColor = new Color3(0.3, 0.3, 0.3);
         this._clearColor = new Color4(0.17773, 0.41797, 0.65234, 1);
 
