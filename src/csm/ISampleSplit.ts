@@ -17,6 +17,7 @@ export default interface ISampleSplit extends Split {
     animateLight: boolean;
     lightColor: string;
     lightDirection: Vector3;
+    autoCalcShadowZBounds: boolean;
     lightNearPlane: number;
     lightFarPlane: number;
     showLightHelper: boolean;

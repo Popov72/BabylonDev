@@ -53,8 +53,9 @@ export default class SplitBaseGUI extends SplitGUI {
 
             const [animateLight, setAnimateLight] = React.useState(this._sparent.animateLight);
             const [lightColor, setLightColor] = React.useState(this._sparent.lightColor);
-            const [lightNearPlane, setLightNearPlane] = React.useState(this._sparent.lightNearPlane);
-            const [lightFarPlane, setLightFarPlane] = React.useState(this._sparent.lightFarPlane);
+            const [lightNearPlane, setLightNearPlane] = React.useState(Math.floor(this._sparent.lightNearPlane));
+            const [lightFarPlane, setLightFarPlane] = React.useState(Math.floor(this._sparent.lightFarPlane));
+            const [autoCalcShadowZBounds, setAutoCalcShadowZBounds] = React.useState(this._sparent.autoCalcShadowZBounds);
             const [showLightHelper, setShowLightHelper] = React.useState(this._sparent.showLightHelper);
 
             const [shadowMapSize, setShadowMapSize] = React.useState(this._sparent.shadowMapSize);
@@ -97,6 +98,11 @@ export default class SplitBaseGUI extends SplitGUI {
             const changeLightFarPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.lightFarPlane = value as number;
                 setLightFarPlane(this._sparent.lightFarPlane);
+            };
+
+            const changeAutoCalcShadowZBounds = (event: React.ChangeEvent, checked: boolean) => {
+                setAutoCalcShadowZBounds(checked);
+                this._sparent.autoCalcShadowZBounds = checked;
             };
 
             const changeShowLightHelper = (event: React.ChangeEvent, checked: boolean) => {
@@ -160,17 +166,23 @@ export default class SplitBaseGUI extends SplitGUI {
                 setShadowMapBlurBoxOffset(this._sparent.shadowMapBlurBoxOffset);
             };
 
-            /*React.useEffect(() => {
+            React.useEffect(() => {
                 const handler = (event: Event) => {
-                    forceUpdate(0);
+                    switch ((event as CustomEvent).detail.type) {
+                        case 'setShadowZBounds': {
+                            setLightNearPlane(Math.floor(this._sparent.lightNearPlane));
+                            setLightFarPlane(Math.floor(this._sparent.lightFarPlane));
+                            break;
+                        }
+                    }
                 };
 
-                window.addEventListener('gui_redraw', handler);
+                window.addEventListener('gui_set_value', handler);
 
                 return () => {
-                    window.removeEventListener('gui_redraw', handler);
+                    window.removeEventListener('gui_set_value', handler);
                 };
-            }, []);*/
+            }, []);
 
             return (
                 <>
@@ -212,6 +224,14 @@ export default class SplitBaseGUI extends SplitGUI {
                         <ExpansionPanelDetails>
                             <Grid container spacing={1}>
                                 <Grid item xs={6}>
+                                    <Paper className={classes.subPropertyTitle}>Show Helper</Paper>
+                                </Grid>
+                                <Grid item xs={6} className={classes.propertyValue}>
+                                    <Paper className={classes.propertyValue}>
+                                        <Switch checked={showLightHelper} onChange={changeShowLightHelper} />                                
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <Paper className={classes.subPropertyTitle}>Animate</Paper>
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
@@ -228,29 +248,31 @@ export default class SplitBaseGUI extends SplitGUI {
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <Paper className={classes.subPropertyTitle}>Near Plane</Paper>
+                                    <Paper className={classes.subPropertyTitle}>Auto Calc Planes</Paper>
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
                                     <Paper className={classes.propertyValue}>
-                                        <PrettoSlider valueLabelDisplay="auto" defaultValue={lightNearPlane} min={-250} max={250} step={1} onChange={changeLightNearPlane} />
+                                        <Switch checked={autoCalcShadowZBounds} onChange={changeAutoCalcShadowZBounds} />                                
                                     </Paper>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <Paper className={classes.subPropertyTitle}>Far Plane</Paper>
-                                </Grid>
-                                <Grid item xs={6} className={classes.propertyValue}>
-                                    <Paper className={classes.propertyValue}>
-                                        <PrettoSlider valueLabelDisplay="auto" defaultValue={lightFarPlane} min={0} max={500} step={1} onChange={changeLightFarPlane} />
-                                    </Paper>
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <Paper className={classes.subPropertyTitle}>Show Helper</Paper>
-                                </Grid>
-                                <Grid item xs={6} className={classes.propertyValue}>
-                                    <Paper className={classes.propertyValue}>
-                                        <Switch checked={showLightHelper} onChange={changeShowLightHelper} />                                
-                                    </Paper>
-                                </Grid>
+                                { !autoCalcShadowZBounds && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Near Plane</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <PrettoSlider valueLabelDisplay="auto" defaultValue={lightNearPlane} min={-250} max={250} step={1} onChange={changeLightNearPlane} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Far Plane</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <PrettoSlider valueLabelDisplay="auto" defaultValue={lightFarPlane} min={0} max={500} step={1} onChange={changeLightFarPlane} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
                             </Grid>
                         </ExpansionPanelDetails>
                     </ExpansionPanel>

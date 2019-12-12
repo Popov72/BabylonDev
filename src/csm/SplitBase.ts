@@ -24,6 +24,7 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _cameraFarPlane: number;
     protected _sunColor: Color3;
     protected _animateLight: boolean;
+    protected _autoCalcShadowZBounds: boolean;
     protected _lightNearPlane: number;
     protected _lightFarPlane: number;
     protected _showLightHelper: boolean;
@@ -49,6 +50,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._cameraNearPlane = 0.25;
         this._cameraFarPlane = 250;
         this._animateLight = false;
+        this._autoCalcShadowZBounds = false;
         this._lightNearPlane = -90;
         this._lightFarPlane = 130;
         this._showLightHelper = false;
@@ -138,7 +140,7 @@ export default class SplitBase extends Split implements ISampleSplit {
 
         let matrix = new Matrix();
 
-        let rotY = Utils.XMScalarModAngle(deltaTime * 0.25);
+        let rotY = Utils.XMScalarModAngle(deltaTime * 0.1);
 
         let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
 
@@ -274,6 +276,14 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set lightFarPlane(lfp: number) {
         this._lightFarPlane = lfp;
+    }
+
+    public get autoCalcShadowZBounds(): boolean {
+        return this._autoCalcShadowZBounds;
+    }
+
+    public set autoCalcShadowZBounds(acszb: boolean) {
+        this._autoCalcShadowZBounds = acszb;
     }
 
 }

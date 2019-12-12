@@ -1,6 +1,7 @@
 import {
     Color3,
     DirectionalLight,
+    LightGizmo,
     Matrix,
     Mesh,
     MeshBuilder,
@@ -26,6 +27,7 @@ export default class StandardShadow extends SplitBase {
     protected sun: DirectionalLight;
     protected _shadowGenerator: ShadowGenerator;
     protected _lightHelperFrustumLines: Array<Mesh>;
+    protected _lightGizmo: LightGizmo;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -33,6 +35,7 @@ export default class StandardShadow extends SplitBase {
         this.sun = null as any;
         this._shadowGenerator = null as any;
         this._lightHelperFrustumLines = [];
+        this._lightGizmo = null as any;
     }
 
     public get lightColor(): string {
@@ -179,6 +182,36 @@ export default class StandardShadow extends SplitBase {
 
     public set showLightHelper(slh: boolean) {
         this._showLightHelper = slh;
+
+        if (this._lightGizmo && !slh) {
+            this._lightGizmo.dispose();
+            this._lightGizmo = null as any;
+        }
+
+        if (slh) {
+            this._lightGizmo = new LightGizmo();
+            this._lightGizmo.light = this.sun;
+        }
+
+        this.buildLightHelper();
+    }
+
+    public get autoCalcShadowZBounds(): boolean {
+        return this._autoCalcShadowZBounds;
+    }
+
+    public set autoCalcShadowZBounds(acszb: boolean) {
+        this._autoCalcShadowZBounds = acszb;
+        (this.sun as any).autoCalcShadowZBounds = acszb;
+        if (this._autoCalcShadowZBounds) {
+            const dummy = Matrix.Identity();
+            this.sun.setShadowProjectionMatrix(dummy, (this._shadowGenerator as any)._viewMatrix as Matrix, this._shadowGenerator.getShadowMap()!.renderList!);
+        } else {
+            this._lightNearPlane = this.sun.shadowMinZ;
+            this._lightFarPlane = this.sun.shadowMaxZ;
+            const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowZBounds' } });
+            window.dispatchEvent(event);
+        }
         this.buildLightHelper();
     }
 
