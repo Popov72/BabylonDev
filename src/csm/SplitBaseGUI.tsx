@@ -39,7 +39,7 @@ export default class SplitBaseGUI extends SplitGUI {
         super(name, engine, container, parent);
 
         this._sparent = parent;
-        this.dimensions.height = 650;
+        this.dimensions.height = 750;
     }
 
     protected createCustomGUI(): React.ReactElement {
@@ -58,6 +58,7 @@ export default class SplitBaseGUI extends SplitGUI {
             const [autoCalcShadowZBounds, setAutoCalcShadowZBounds] = React.useState(this._sparent.autoCalcShadowZBounds);
             const [showLightHelper, setShowLightHelper] = React.useState(this._sparent.showLightHelper);
 
+            const [shadowMapShowDepthMap, setShadowMapShowDepthMap] = React.useState(this._sparent.shadowMapShowDepthMap);
             const [shadowMapSize, setShadowMapSize] = React.useState(this._sparent.shadowMapSize);
             const [shadowMapBias, setShadowMapBias] = React.useState(this._sparent.shadowMapBias);
             const [shadowMapNormalBias, setShadowMapNormalBias] = React.useState(this._sparent.shadowMapNormalBias);
@@ -69,6 +70,7 @@ export default class SplitBaseGUI extends SplitGUI {
             const [shadowMapUseKernelBlur, setShadowMapUseKernelBlur] = React.useState(this._sparent.shadowMapUseKernelBlur);
             const [shadowMapBlurKernel, setShadowMapBlurKernel] = React.useState(this._sparent.shadowMapBlurKernel);
             const [shadowMapBlurBoxOffset, setShadowMapBlurBoxOffset] = React.useState(this._sparent.shadowMapBlurBoxOffset);
+            const [shadowMapLightSizeUVRatio, setShadowMapLightSizeUVRatio] = React.useState(this._sparent.shadowMapLightSizeUVRatio);
 
             const changeCameraNearPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.cameraNearPlane = value as number;
@@ -110,6 +112,11 @@ export default class SplitBaseGUI extends SplitGUI {
                 this._sparent.showLightHelper = checked;
             };
 
+
+            const changeShadowMapShowDepthMap = (event: React.ChangeEvent, checked: boolean) => {
+                setShadowMapShowDepthMap(checked);
+                this._sparent.shadowMapShowDepthMap = checked;
+            };
 
             const changeShadowMapSize = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
                 this._sparent.shadowMapSize = event.target.value as number;
@@ -164,6 +171,11 @@ export default class SplitBaseGUI extends SplitGUI {
             const changeShadowMapBlurBoxOffset = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.shadowMapBlurBoxOffset = value as number;
                 setShadowMapBlurBoxOffset(this._sparent.shadowMapBlurBoxOffset);
+            };
+
+            const changeShadowMapLightSizeUVRatio = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
+                this._sparent.shadowMapLightSizeUVRatio = event.target.value as number;
+                setShadowMapLightSizeUVRatio(this._sparent.shadowMapLightSizeUVRatio);
             };
 
             React.useEffect(() => {
@@ -283,6 +295,14 @@ export default class SplitBaseGUI extends SplitGUI {
                         <ExpansionPanelDetails>
                             <Grid container spacing={1}>
                                 <Grid item xs={6}>
+                                    <Paper className={classes.subPropertyTitle}>Show Depth Map</Paper>
+                                </Grid>
+                                <Grid item xs={6} className={classes.propertyValue}>
+                                    <Paper className={classes.propertyValue}>
+                                        <Switch checked={shadowMapShowDepthMap} onChange={changeShadowMapShowDepthMap} />                                
+                                    </Paper>
+                                </Grid>
+                                <Grid item xs={6}>
                                     <Paper className={classes.subPropertyTitle}>Size</Paper>
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
@@ -340,8 +360,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                         <MenuItem value={ShadowGenerator.FILTER_NONE}>None</MenuItem>
                                     </Select>
                                 </Grid>
-                                {(shadowMapFilter === ShadowGenerator.FILTER_PCSS || shadowMapFilter === ShadowGenerator.FILTER_PCF) &&
-                                    <>
+                                {(shadowMapFilter === ShadowGenerator.FILTER_PCSS || shadowMapFilter === ShadowGenerator.FILTER_PCF) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Filtering Quality</Paper>
                                     </Grid>
@@ -356,10 +375,18 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <MenuItem value={ShadowGenerator.QUALITY_HIGH}>High</MenuItem>
                                         </Select>
                                     </Grid>
-                                    </>
-                                }
-                                {(shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP || shadowMapFilter === ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP) &&
-                                    <>
+                                </> }
+                                {(shadowMapFilter === ShadowGenerator.FILTER_PCSS) && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Light Size UV Ratio</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <TextField type="number" value={shadowMapLightSizeUVRatio} variant="standard" inputProps={{ step: "0.001" }} onChange={changeShadowMapLightSizeUVRatio} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
+                                {(shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP || shadowMapFilter === ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Depth Scale</Paper>
                                     </Grid>
@@ -368,10 +395,8 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <TextField type="number" value={shadowMapDepthScale} variant="standard" inputProps={{ step: "1" }} onChange={changeShadowMapDepthScale} />
                                         </Paper>
                                     </Grid>
-                                    </>
-                                }
-                                {(shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP) &&
-                                    <>
+                                </> }
+                                {(shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Blur Scale</Paper>
                                     </Grid>
@@ -380,8 +405,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <PrettoSlider valueLabelDisplay="auto" defaultValue={shadowMapBlurScale} min={1} max={4} step={1} onChange={changeShadowMapBlurScale} />
                                         </Paper>
                                     </Grid>
-                                    </>
-                                }
+                                </> }
                                 {(shadowMapFilter === ShadowGenerator.FILTER_BLURCLOSEEXPONENTIALSHADOWMAP || shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Use Kernel Blur</Paper>

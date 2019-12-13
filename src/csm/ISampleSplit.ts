@@ -1,5 +1,6 @@
 import {
     Color3,
+    Mesh,
     Vector3
 } from "babylonjs";
 
@@ -22,6 +23,9 @@ export default interface ISampleSplit extends Split {
     lightFarPlane: number;
     showLightHelper: boolean;
 
+    shadowMapPlane: Mesh;
+
+    shadowMapShowDepthMap: boolean;
     shadowMapSize: number;
     shadowMapBias: number;
     shadowMapNormalBias: number;
@@ -34,5 +38,6 @@ export default interface ISampleSplit extends Split {
     shadowMapUseKernelBlur: boolean;
     shadowMapBlurKernel: number;
     shadowMapBlurBoxOffset: number;
+    shadowMapLightSizeUVRatio: number;
 
 }

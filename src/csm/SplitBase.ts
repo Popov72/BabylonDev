@@ -1,16 +1,20 @@
 import {
     Color3,
+    Engine,
     Matrix,
+    Mesh,
+    MeshBuilder,
     Nullable,
     Observer,
     Quaternion,
     Scene,
     ShadowGenerator,
+    StandardMaterial,
     UniversalCamera,
     Vector3,
 } from "babylonjs";
 
-import Sample from "../Sample";
+import Sample, { enumSplitMode } from "../Sample";
 import Split from "../Split";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
@@ -29,6 +33,9 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _lightFarPlane: number;
     protected _showLightHelper: boolean;
     protected _rotateLightObservable: Nullable<Observer<Scene>>;
+    protected _shadowMapPlane: Mesh;
+    protected _shadowMapShowDepthMap: boolean;
+    protected _showDepthMapObservable: Nullable<Observer<Scene>>;
     protected _shadowMapSize: number;
     protected _shadowMapFilter: number;
     protected _shadowMapBias: number;
@@ -40,6 +47,7 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _shadowMapUseKernelBlur: boolean;
     protected _shadowMapBlurKernel: number;
     protected _shadowMapBlurBoxOffset: number;
+    protected _shadowMapLightSizeUVRatio: number;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -55,6 +63,8 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._lightFarPlane = 130;
         this._showLightHelper = false;
         this._rotateLightObservable = null;
+        this._shadowMapShowDepthMap = false;
+        this._showDepthMapObservable = null;
         this._shadowMapSize = 1024;
         this._shadowMapFilter = ShadowGenerator.FILTER_PCF;
         this._shadowMapBias = 0.007;
@@ -66,6 +76,32 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapUseKernelBlur = true;
         this._shadowMapBlurKernel = 1;
         this._shadowMapBlurBoxOffset = 1;
+        this._shadowMapLightSizeUVRatio = 0.02;
+
+        this._shadowMapPlane = null as any;
+
+        const size = 1;
+
+        this._shadowMapPlane = MeshBuilder.CreatePlane(this.name + "_shadowmap", {
+            "width": size,
+            "height": size,
+            "sideOrientation": Mesh.DOUBLESIDE,
+        }, this.scene);
+
+        this._shadowMapPlane.position.x += size / 2;
+        this._shadowMapPlane.position.y -= size / 2;
+        this._shadowMapPlane.bakeCurrentTransformIntoVertices();
+        this._shadowMapPlane.alwaysSelectAsActiveMesh = true;
+
+        const material = new StandardMaterial(this.name + "_shadowmap_material", scene);
+
+        material.emissiveColor = new Color3(1, 1, 1);
+        material.disableLighting = true;
+        material.depthFunction = Engine.ALWAYS;
+
+        this._shadowMapPlane.material = material;
+
+        this._shadowMapPlane.setEnabled(false);
     }
 
     public render(): void {
@@ -75,6 +111,10 @@ export default class SplitBase extends Split implements ISampleSplit {
         }
 
         super.render();
+    }
+
+    public get shadowMapPlane(): Mesh {
+        return this._shadowMapPlane;
     }
 
     public initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
@@ -119,35 +159,7 @@ export default class SplitBase extends Split implements ISampleSplit {
             this._rotateLightObservable = this.scene.onBeforeRenderObservable.add(this.rotateLight.bind(this));
         }
 
-        if (this._animateLight) {
-            this.setDirectionFromSibling();
-        }
-    }
-
-    protected setDirectionFromSibling(): void {
-        for (let i = 0; i < this._container.splits.length; ++i) {
-            const ssplit = this._container.splits[i] as SplitBase;
-
-            if (ssplit !== this && ssplit.animateLight && ssplit.group === this.group) {
-                this.lightDirection = ssplit.lightDirection.clone();
-                break;
-            }
-        }
-    }
-
-    protected rotateLight(): void {
-        const deltaTime = this.scene.getEngine().getDeltaTime() / 1000;
-
-        let matrix = new Matrix();
-
-        let rotY = Utils.XMScalarModAngle(deltaTime * 0.1);
-
-        let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
-
-        Matrix.FromQuaternionToRef(rotation, matrix);
-        Vector3.TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
-
-        this.lightDirection = this._sunDir;
+        this.setDirectionFromSibling(this._animateLight);
     }
 
     public get lightColor(): string {
@@ -172,6 +184,24 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set showLightHelper(slh: boolean) {
         this._showLightHelper = slh;
+    }
+
+    public get shadowMapShowDepthMap(): boolean {
+        return this._shadowMapShowDepthMap;
+    }
+
+    public set shadowMapShowDepthMap(smsdm: boolean) {
+        if (this._shadowMapShowDepthMap && !smsdm) {
+            this.scene.onBeforeRenderObservable.remove(this._showDepthMapObservable);
+            this._showDepthMapObservable = null;
+        }
+
+        this._shadowMapShowDepthMap = smsdm;
+        this._shadowMapPlane.setEnabled(smsdm);
+
+        if (!this._showDepthMapObservable && smsdm) {
+            this._showDepthMapObservable = this.scene.onBeforeRenderObservable.add(this.showDepthMap.bind(this));
+        }
     }
 
     public get shadowMapSize(): number {
@@ -262,6 +292,14 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapBlurBoxOffset = smbbo;
     }
 
+    public get shadowMapLightSizeUVRatio(): number {
+        return this._shadowMapLightSizeUVRatio;
+    }
+
+    public set shadowMapLightSizeUVRatio(smlsuvr: number) {
+        this._shadowMapLightSizeUVRatio = smlsuvr;
+    }
+
     public get lightNearPlane(): number {
         return this._lightNearPlane;
     }
@@ -284,6 +322,64 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set autoCalcShadowZBounds(acszb: boolean) {
         this._autoCalcShadowZBounds = acszb;
+    }
+
+    protected setDirectionFromSibling(checkAnimate: boolean = true): void {
+        for (let i = 0; i < this._container.splits.length; ++i) {
+            const ssplit = this._container.splits[i] as SplitBase;
+
+            if (ssplit !== this && (ssplit.animateLight === checkAnimate) && ssplit.group === this.group) {
+                this.lightDirection = ssplit.lightDirection.clone();
+                break;
+            }
+        }
+    }
+
+    protected rotateLight(): void {
+        const deltaTime = this.scene.getEngine().getDeltaTime() / 1000;
+
+        let matrix = new Matrix();
+
+        let rotY = Utils.XMScalarModAngle(deltaTime * 0.1);
+
+        let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
+
+        Matrix.FromQuaternionToRef(rotation, matrix);
+        Vector3.TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
+
+        this.lightDirection = this._sunDir;
+    }
+
+    protected showDepthMap(): void {
+        this.camera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+
+        let invertCameraViewProj = Matrix.Invert(this.camera.getTransformationMatrix());
+
+        let h = 256 / this.scene.getEngine().getRenderWidth(true);
+
+        let pOfst = 0;
+
+        if (this._container.splitMode === enumSplitMode.LINEAR) {
+            let sidx = this._container.splits.indexOf(this),
+                sw = 2 / this._container.splits.length;
+            pOfst = sw * sidx + sw / 2 - h;
+        } else {
+            pOfst = 1 - h;
+        }
+
+        let p = new Vector3(-1, 1, -1 + 0.001);
+        let q = new Vector3(-1 + h * 2, 1, -1 + 0.001);
+
+        let pt = Vector3.TransformCoordinates(p, invertCameraViewProj);
+        let qt = Vector3.TransformCoordinates(q, invertCameraViewProj);
+        let d = qt.subtract(pt).length();
+
+        this.shadowMapPlane.scaling = new Vector3(d * 2, d * 2, 1);
+
+        p.x += pOfst;
+
+        this.shadowMapPlane.rotation = this.camera.rotation;
+        this.shadowMapPlane.position = Vector3.TransformCoordinates(p, invertCameraViewProj);
     }
 
 }

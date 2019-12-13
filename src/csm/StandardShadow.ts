@@ -73,6 +73,7 @@ export default class StandardShadow extends SplitBase {
     public set shadowMapFilter(smf: number) {
         this._shadowGenerator.filter = smf;
         this._shadowMapFilter = this._shadowGenerator.filter;
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._shadowGenerator.getShadowMap()!;
     }
 
     public get shadowMapBias(): number {
@@ -156,6 +157,15 @@ export default class StandardShadow extends SplitBase {
         this._shadowGenerator.blurBoxOffset = smbbo;
     }
 
+    public get shadowMapLightSizeUVRatio(): number {
+        return this._shadowMapLightSizeUVRatio;
+    }
+
+    public set shadowMapLightSizeUVRatio(smlsuvr: number) {
+        this._shadowMapLightSizeUVRatio = smlsuvr;
+        this._shadowGenerator.contactHardeningLightSizeUVRatio = smlsuvr;
+    }
+
     public get lightNearPlane(): number {
         return this._lightNearPlane;
     }
@@ -227,8 +237,7 @@ export default class StandardShadow extends SplitBase {
         }
 
         const light = this.sun as any;
-        const shadowGen = this._shadowGenerator as any;
-        const lightView = shadowGen._viewMatrix as Matrix;
+        const lightView = (this._shadowGenerator as any)._viewMatrix as Matrix;
         const invLightView = Matrix.Invert(lightView);
 
         const n1 = new Vector3(light._orthoRight, light._orthoTop,    this.sun.shadowMinZ);
@@ -354,8 +363,6 @@ export default class StandardShadow extends SplitBase {
             gmax.x = Math.max(gmax.x, max.x); gmax.y = Math.max(gmax.y, max.y); gmax.z = Math.max(gmax.z, max.z); 
         });
 
-        console.log(gmin, gmax);
-
         this.createShadowGenerator();
 
         return this;
@@ -379,10 +386,13 @@ export default class StandardShadow extends SplitBase {
         shadowGenerator.useKernelBlur = this._shadowMapUseKernelBlur;
         shadowGenerator.blurKernel = this._shadowMapBlurKernel;
         shadowGenerator.blurBoxOffset = this._shadowMapBlurBoxOffset;
+        shadowGenerator.contactHardeningLightSizeUVRatio = this._shadowMapLightSizeUVRatio;
 
         this._shadowGenerator = shadowGenerator;
 
         (window as any).sg= shadowGenerator;
+
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = shadowGenerator.getShadowMap()!;
 
         const renderList = shadowGenerator.getShadowMap()!.renderList!;
 
