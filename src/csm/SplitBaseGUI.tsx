@@ -1,8 +1,6 @@
 import * as React from "react";
 
 import {
-    Button,
-    Checkbox,
     ExpansionPanel,
     ExpansionPanelDetails,
     ExpansionPanelSummary,
@@ -11,15 +9,10 @@ import {
     MenuItem,
     Paper,
     Select,
-    Slider,
     Switch,
     TextField,
     Typography,
 } from '@material-ui/core';
-
-import {
-    withStyles,
-} from '@material-ui/core/styles';
 
 import {
     Engine,
@@ -39,6 +32,7 @@ export default class SplitBaseGUI extends SplitGUI {
         super(name, engine, container, parent);
 
         this._sparent = parent;
+        this.dimensions.width = 320;
         this.dimensions.height = 750;
     }
 
