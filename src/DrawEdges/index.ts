@@ -103,7 +103,7 @@ export default class DrawEdges extends SampleBasic {
             });
 
         lineMaterial1_hidden.setColor3("lineColor", lineMaterial1.emissiveColor);
-        (lineMaterial1_hidden as any).depthFunction = Engine.ALWAYS;
+        lineMaterial1_hidden.depthFunction = Engine.ALWAYS;
 
         const lineMaterial2 = new StandardMaterial("lineMaterial_2", scene);
         lineMaterial2.diffuseColor = new Color3(1, 0, 0);

@@ -94,7 +94,7 @@ export default class DepthNonLinearShader extends Split {
         spriteMaterial.backFaceCulling = false;
         spriteMaterial.disableDepthWrite = true;
         spriteMaterial.alphaMode = Engine.ALPHA_COMBINE;
-        (spriteMaterial as any).depthFunction = Engine.ALWAYS;
+        spriteMaterial.depthFunction = Engine.ALWAYS;
 
         var sprite = MeshBuilder.CreatePlane("sprite", { size: 0.3 }, this.scene);
 
