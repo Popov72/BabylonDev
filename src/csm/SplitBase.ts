@@ -85,11 +85,11 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapPlane = MeshBuilder.CreatePlane(this.name + "_shadowmap", {
             "width": size,
             "height": size,
-            "sideOrientation": Mesh.DOUBLESIDE,
         }, this.scene);
 
         this._shadowMapPlane.position.x += size / 2;
         this._shadowMapPlane.position.y -= size / 2;
+        this._shadowMapPlane.rotate(new Vector3(0, 0, 1), -Math.PI / 2);
         this._shadowMapPlane.bakeCurrentTransformIntoVertices();
         this._shadowMapPlane.alwaysSelectAsActiveMesh = true;
 
@@ -374,7 +374,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         let qt = Vector3.TransformCoordinates(q, invertCameraViewProj);
         let d = qt.subtract(pt).length();
 
-        this.shadowMapPlane.scaling = new Vector3(d * 2, d * 2, 1);
+        this.shadowMapPlane.scaling = new Vector3(d, d, 1);
 
         p.x += pOfst;
 

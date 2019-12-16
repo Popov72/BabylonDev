@@ -339,7 +339,7 @@ export default class StandardShadow extends SplitBase {
         var gmin = new Vector3(10000, 10000, 10000), gmax = new Vector3(-10000, -10000, -10000);
 
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || m.name.endsWith("_gui")) { return; }
+            if (m.name == 'skyBox' || m.name.indexOf("_shadowmap") >= 0) { return; }
 
             if (!m.material) { return; }
 
@@ -387,10 +387,11 @@ export default class StandardShadow extends SplitBase {
             this._shadowGenerator = null as any;
         }
 
-        const shadowGenerator = !isCSM ? new ShadowGenerator(this.shadowMapSize, this.sun) : new CSMShadowGenerator(this.shadowMapSize, this.sun, 2);
+        const shadowGenerator = !isCSM ? new ShadowGenerator(this.shadowMapSize, this.sun) : new CSMShadowGenerator(this.shadowMapSize, this.sun, 4);
 
         if (shadowGenerator instanceof CSMShadowGenerator) {
             shadowGenerator.activeCascade = 0;
+            shadowGenerator.stabilizeCascades = false;
         }
 
         shadowGenerator.bias = this._shadowMapBias;

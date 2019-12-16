@@ -27,7 +27,7 @@ export default class CSM extends SplitBase {
     public set lightColor(lc: string) {
         this._sunColor = Color3.FromHexString(lc);
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || !m.material || m.name.endsWith("_gui")) { return; }
+            if (m.name == 'skyBox' || !m.material || m.name.indexOf("_shadowmap") >= 0) { return; }
             (m.material as ShaderMaterial).setColor3("lightColor", this._sunColor);
         });
     }
@@ -39,7 +39,7 @@ export default class CSM extends SplitBase {
     public set lightDirection(ld: Vector3) {
         this._sunDir = ld;
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || !m.material || m.name.endsWith("_gui")) { return; }
+            if (m.name == 'skyBox' || !m.material || m.name.indexOf("_shadowmap") >= 0) { return; }
             (m.material as ShaderMaterial).setVector3("lightDirection", ld);
         });
     }
@@ -67,7 +67,7 @@ export default class CSM extends SplitBase {
               whiteTexture = new Texture("resources/texture/white.png", this.scene, true);
 
         this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || m.name.endsWith("_gui")) { return; }
+            if (m.name == 'skyBox' || m.name.indexOf("_shadowmap") >= 0) { return; }
 
             const mat = m.material;
 
