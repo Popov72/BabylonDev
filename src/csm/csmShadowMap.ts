@@ -149,7 +149,7 @@ export class CSMShadowMap extends ShadowGenerator {
                 sphereRadius = Math.max(sphereRadius, dist);
             }
 
-            //sphereRadius = Math.ceil(sphereRadius * 16) / 16;
+            sphereRadius = Math.ceil(sphereRadius * 16) / 16;
 
             maxExtents.set(sphereRadius, sphereRadius, sphereRadius);
             minExtents.set(-sphereRadius, -sphereRadius, -sphereRadius);
@@ -169,13 +169,6 @@ export class CSMShadowMap extends ShadowGenerator {
                 minExtents = Vector3.Minimize(minExtents, corner);
                 maxExtents = Vector3.Maximize(maxExtents, corner);
             }
-
-            // Adjust the min/max to accommodate the filtering size
-            /*float scale = (ShadowMapSize + AppSettings::FixedFilterKernelSize()) / static_cast<float>(ShadowMapSize);
-            minExtents.x *= scale;
-            minExtents.y *= scale;
-            maxExtents.x *= scale;
-            maxExtents.y *= scale;*/
         }
 
         return [minExtents, maxExtents, frustumCenter];
@@ -210,26 +203,18 @@ export class CSMShadowMap extends ShadowGenerator {
         this._lightMinExtents.set(minExtents.x, minExtents.y, 0);
         this._lightMaxExtents.set(maxExtents.x, maxExtents.y, cascadeExtents.z);
 
-        /*if(AppSettings::StabilizeCascades)
-        {
+        this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
+
+        if (this._parent.stabilizeCascades) {
             // Create the rounding matrix, by projecting the world-space origin and determining
             // the fractional offset in texel space
-            XMMATRIX shadowMatrix = shadowCamera.ViewProjectionMatrix().ToSIMD();
-            XMVECTOR shadowOrigin = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-            shadowOrigin = XMVector4Transform(shadowOrigin, shadowMatrix);
-            shadowOrigin = XMVectorScale(shadowOrigin, sMapSize / 2.0f);
+            const shadowOrigin = Vector3.TransformCoordinates(Vector3.Zero(), this._transformMatrix).scaleInPlace(this._mapSize / 2);
 
-            XMVECTOR roundedOrigin = XMVectorRound(shadowOrigin);
-            XMVECTOR roundOffset = XMVectorSubtract(roundedOrigin, shadowOrigin);
-            roundOffset = XMVectorScale(roundOffset, 2.0f / sMapSize);
-            roundOffset = XMVectorSetZ(roundOffset, 0.0f);
-            roundOffset = XMVectorSetW(roundOffset, 0.0f);
+            const roundedOrigin = new Vector3(Math.round(shadowOrigin.x), Math.round(shadowOrigin.y), Math.round(shadowOrigin.z)),
+                  roundOffset = roundedOrigin.subtract(shadowOrigin).scaleInPlace(2 / this._mapSize);
 
-            XMMATRIX shadowProj = shadowCamera.ProjectionMatrix().ToSIMD();
-            shadowProj.r[3] = XMVectorAdd(shadowProj.r[3], roundOffset);
-            shadowCamera.SetProjection(shadowProj);
-        }*/
-
-        this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
+            this._projectionMatrix.multiplyToRef(Matrix.Translation(roundOffset.x, roundOffset.y, 0.0), this._projectionMatrix);
+            this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
+        }
     }
 }
