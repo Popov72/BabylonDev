@@ -12,7 +12,7 @@ import {
 
 import SplitBaseGUI from "./SplitBaseGUI";
 
-export default class CSMGUI extends SplitBaseGUI {
+export default class StandardShadowGUI extends SplitBaseGUI {
 
     protected createCustomGUIProperties(): React.ReactElement {
         const Properties = () => {
