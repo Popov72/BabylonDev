@@ -40,4 +40,10 @@ export default interface ISampleSplit extends Split {
     shadowMapBlurBoxOffset: number;
     shadowMapLightSizeUVRatio: number;
 
+    csmNumCascades: number;
+    csmActiveCascade: number;
+    csmStabilizeCascades: boolean;
+    csmDepthClamp: boolean;
+    csmLambda: number;
+
 }

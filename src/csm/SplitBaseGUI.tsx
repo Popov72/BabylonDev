@@ -27,11 +27,15 @@ import ISampleSplit from "./ISampleSplit";
 export default class SplitBaseGUI extends SplitGUI {
 
     protected _sparent: ISampleSplit;
+    protected _showAutoCalcPlanes: boolean;
+    protected _showCSM: boolean;
 
     constructor(name: string, engine: Engine, container: Sample, parent: ISampleSplit) {
         super(name, engine, container, parent);
 
         this._sparent = parent;
+        this._showAutoCalcPlanes = true;
+        this._showCSM = false;
         this.dimensions.width = 320;
         this.dimensions.height = 750;
     }
@@ -65,6 +69,13 @@ export default class SplitBaseGUI extends SplitGUI {
             const [shadowMapBlurKernel, setShadowMapBlurKernel] = React.useState(this._sparent.shadowMapBlurKernel);
             const [shadowMapBlurBoxOffset, setShadowMapBlurBoxOffset] = React.useState(this._sparent.shadowMapBlurBoxOffset);
             const [shadowMapLightSizeUVRatio, setShadowMapLightSizeUVRatio] = React.useState(this._sparent.shadowMapLightSizeUVRatio);
+
+            const [csmNumCascades, setCSMNumCascades] = React.useState(this._sparent.csmNumCascades);
+            const [csmActiveCascade, setCSMActiveCascade] = React.useState(this._sparent.csmActiveCascade);
+            const [csmStabilizeCascades, setCSMStabilizeCascades] = React.useState(this._sparent.csmStabilizeCascades);
+            const [csmDepthClamp, setCSMDepthClamp] = React.useState(this._sparent.csmDepthClamp);
+            const [csmLambda, setCSMLambda] = React.useState(this._sparent.csmLambda);
+
 
             const changeCameraNearPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.cameraNearPlane = value as number;
@@ -172,6 +183,44 @@ export default class SplitBaseGUI extends SplitGUI {
                 setShadowMapLightSizeUVRatio(this._sparent.shadowMapLightSizeUVRatio);
             };
 
+
+            const changeNumCascades = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
+                this._sparent.csmNumCascades = event.target.value as number;
+                setCSMNumCascades(this._sparent.csmNumCascades);
+                setCSMActiveCascade(this._sparent.csmActiveCascade);
+            };
+
+            const changeActiveCascade = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
+                this._sparent.csmActiveCascade = event.target.value as number;
+                setCSMActiveCascade(this._sparent.csmActiveCascade);
+                setShadowMapBias(this._sparent.shadowMapBias);
+                setShadowMapNormalBias(this._sparent.shadowMapNormalBias);
+                setShadowMapDarkness(this._sparent.shadowMapDarkness);
+                setShadowMapFilter(this._sparent.shadowMapFilter);
+                setShadowMapQuality(this._sparent.shadowMapQuality);
+                setShadowMapDepthScale(this._sparent.shadowMapDepthScale);
+                setShadowMapBlurScale(this._sparent.shadowMapBlurScale);
+                setShadowMapUseKernelBlur(this._sparent.shadowMapUseKernelBlur);
+                setShadowMapBlurKernel(this._sparent.shadowMapBlurKernel);
+                setShadowMapBlurBoxOffset(this._sparent.shadowMapBlurBoxOffset);
+                setShadowMapLightSizeUVRatio(this._sparent.shadowMapLightSizeUVRatio);
+            };
+
+            const changeCSMStabilizeCascades = (event: React.ChangeEvent, checked: boolean) => {
+                setCSMStabilizeCascades(checked);
+                this._sparent.csmStabilizeCascades = checked;
+            };
+
+            const changeCSMDepthClamp = (event: React.ChangeEvent, checked: boolean) => {
+                setCSMDepthClamp(checked);
+                this._sparent.csmDepthClamp = checked;
+            };
+
+            const changeCSMLambda = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.csmLambda = value as number;
+                setCSMLambda(this._sparent.csmLambda);
+            };
+
             React.useEffect(() => {
                 const handler = (event: Event) => {
                     switch ((event as CustomEvent).detail.type) {
@@ -209,7 +258,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
                                     <Paper className={classes.propertyValue}>
-                                        <PrettoSlider valueLabelDisplay="auto" defaultValue={cameraNearPlane} min={0} max={10} step={0.01} onChange={changeCameraNearPlane} />
+                                        <PrettoSlider valueLabelDisplay="auto" value={cameraNearPlane} min={0} max={10} step={0.01} onChange={changeCameraNearPlane} />
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={6}>
@@ -217,7 +266,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
                                     <Paper className={classes.propertyValue}>
-                                        <PrettoSlider valueLabelDisplay="auto" defaultValue={cameraFarPlane} min={0} max={2000} step={10} onChange={changeCameraFarPlane} />
+                                        <PrettoSlider valueLabelDisplay="auto" value={cameraFarPlane} min={0} max={2000} step={10} onChange={changeCameraFarPlane} />
                                     </Paper>
                                 </Grid>
                             </Grid>
@@ -253,6 +302,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                         <TextField type="color" value={lightColor} variant="filled" onChange={changeLightColor} />
                                     </Paper>
                                 </Grid>
+                                { this._showAutoCalcPlanes && <>
                                 <Grid item xs={6}>
                                     <Paper className={classes.subPropertyTitle}>Auto Calc Planes</Paper>
                                 </Grid>
@@ -261,13 +311,13 @@ export default class SplitBaseGUI extends SplitGUI {
                                         <Switch checked={autoCalcShadowZBounds} onChange={changeAutoCalcShadowZBounds} />                                
                                     </Paper>
                                 </Grid>
-                                { !autoCalcShadowZBounds && <>
+                                { true && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Near Plane</Paper>
                                     </Grid>
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
-                                            <PrettoSlider valueLabelDisplay="auto" defaultValue={lightNearPlane} min={-250} max={250} step={1} onChange={changeLightNearPlane} />
+                                            <PrettoSlider disabled={autoCalcShadowZBounds} valueLabelDisplay="auto" value={lightNearPlane} min={-250} max={250} step={1} onChange={changeLightNearPlane} />
                                         </Paper>
                                     </Grid>
                                     <Grid item xs={6}>
@@ -275,16 +325,76 @@ export default class SplitBaseGUI extends SplitGUI {
                                     </Grid>
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
-                                            <PrettoSlider valueLabelDisplay="auto" defaultValue={lightFarPlane} min={0} max={500} step={1} onChange={changeLightFarPlane} />
+                                            <PrettoSlider disabled={autoCalcShadowZBounds} valueLabelDisplay="auto" value={lightFarPlane} min={0} max={500} step={1} onChange={changeLightFarPlane} />
                                         </Paper>
                                     </Grid>
+                                </> }
                                 </> }
                             </Grid>
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
+                    { this._showCSM && <>
+                        <ExpansionPanel defaultExpanded={true}>
+                            <ExpansionPanelSummary expandIcon={<Icon>expand_more</Icon>}>
+                                <Typography>Cascaded Shadow Maps</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+                                <Grid container spacing={1}>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Num of Cascades</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={csmNumCascades}
+                                            onChange={changeNumCascades}
+                                        >
+                                            { [...Array(8).keys()].map((_, i) => <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>) }
+                                        </Select>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Active Cascade</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={csmActiveCascade}
+                                            onChange={changeActiveCascade}
+                                        >
+                                            { [...Array(csmNumCascades).keys()].map((_, i) => <MenuItem key={i} value={i}>{i + 1}</MenuItem>) }
+                                        </Select>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Stabilize Cascades</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={csmStabilizeCascades} onChange={changeCSMStabilizeCascades} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Depth Clamp</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={csmDepthClamp} onChange={changeCSMDepthClamp} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Lambda</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <PrettoSlider valueLabelDisplay="auto" value={csmLambda} min={0} max={1} step={0.01} onChange={changeCSMLambda} />
+                                        </Paper>
+                                    </Grid>
+                                </Grid>
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
+                    </> }
                     <ExpansionPanel defaultExpanded={true}>
                         <ExpansionPanelSummary expandIcon={<Icon>expand_more</Icon>}>
-                            <Typography>Shadow Map</Typography>
+                            <Typography>{ this._showCSM ? "Cascade" : "Shadow Map" }</Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
                             <Grid container spacing={1}>
@@ -332,7 +442,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
                                     <Paper className={classes.propertyValue}>
-                                        <PrettoSlider valueLabelDisplay="auto" defaultValue={shadowMapDarkness} min={0} max={1} step={0.01} onChange={changeShadowMapDarkness} />
+                                        <PrettoSlider valueLabelDisplay="auto" value={shadowMapDarkness} min={0} max={1} step={0.01} onChange={changeShadowMapDarkness} />
                                     </Paper>
                                 </Grid>
                                 <Grid item xs={6}>

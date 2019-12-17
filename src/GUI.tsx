@@ -61,6 +61,11 @@ export const PrettoSlider = withStyles({
       '&:focus,&:hover,&$active': {
         boxShadow: 'inherit',
       },
+      '&.Mui-disabled': {
+        width: 12,
+        height: 12,
+        marginTop: -4,
+      },
     },
     active: {},
     valueLabel: {
@@ -162,7 +167,7 @@ export default class GUI {
                 MuiContainer: {
                     fixed: {
                         padding: '0',
-                        backgroundColor: '#e0e0e040',
+                        backgroundColor: '#e0e0e080',
                         border: '1px solid white',
                         color: 'white',
                         height: '100%',

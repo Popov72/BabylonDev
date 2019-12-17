@@ -47,7 +47,6 @@ export class CSMShadowMap extends ShadowGenerator {
     constructor(mapSize: number, light: IShadowLight, usefulFloatFirst: boolean, parent: ShadowCSMGenerator) {
         super(mapSize, light, usefulFloatFirst);
 
-        this._depthClampNear = true;
         this._light._shadowGenerator = parent;
         this._parent = parent;
         this._cascade = null;
@@ -160,7 +159,7 @@ export class CSMShadowMap extends ShadowGenerator {
             minExtents.set(-sphereRadius, -sphereRadius, -sphereRadius);
         } else {
             // Create a temporary view matrix for the light
-            const upDir = camera.getDirection(new Vector3(1, 0, 0));
+            const upDir = Vector3.Up();//camera.getDirection(new Vector3(1, 0, 0));
 
             const lightCameraPos = frustumCenter,
                   lookAt = frustumCenter.add(this._lightDirection);
@@ -171,9 +170,16 @@ export class CSMShadowMap extends ShadowGenerator {
             for (let cornerIndex = 0; cornerIndex < frustumCornersWorldSpace.length; ++cornerIndex) {
                 const corner = Vector3.TransformCoordinates(frustumCornersWorldSpace[cornerIndex], lightView);
 
-                minExtents = Vector3.Minimize(minExtents, corner);
-                maxExtents = Vector3.Maximize(maxExtents, corner);
+                minExtents.minimizeInPlace(corner);
+                maxExtents.maximizeInPlace(corner);
             }
+
+            /*let worldUnitsPerTexel = maxExtents.subtract(minExtents).scaleInPlace(1 / this._mapSize);
+
+            minExtents.x = Math.floor(minExtents.x / worldUnitsPerTexel.x) * worldUnitsPerTexel.x;
+            minExtents.y = Math.floor(minExtents.y / worldUnitsPerTexel.y) * worldUnitsPerTexel.y;
+            maxExtents.x = Math.floor(maxExtents.x / worldUnitsPerTexel.x) * worldUnitsPerTexel.x;
+            maxExtents.y = Math.floor(maxExtents.y / worldUnitsPerTexel.y) * worldUnitsPerTexel.y;*/
         }
 
         return [minExtents, maxExtents, frustumCenter];
@@ -195,18 +201,31 @@ export class CSMShadowMap extends ShadowGenerator {
         const shadowCameraPos = frustumCenter.add(this._lightDirection.scale(minExtents.z));
 
         // Come up with a new orthographic camera for the shadow caster
-        const upDir = this._parent.stabilizeCascades ? Vector3.Up() : camera.getDirection(new Vector3(1, 0, 0));
+        const upDir =/* this._parent.stabilizeCascades ?*/ Vector3.Up()/* : camera.getDirection(new Vector3(1, 0, 0))*/;
 
         Matrix.LookAtLHToRef(shadowCameraPos, frustumCenter, upDir, this._viewMatrix);
 
-        if (this._scene.useRightHandedSystem) {
-            Matrix.OrthoOffCenterRHToRef(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0, cascadeExtents.z, this._projectionMatrix);
-        } else {
-            Matrix.OrthoOffCenterLHToRef(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0, cascadeExtents.z, this._projectionMatrix);
+        let minZ = 0, maxZ = cascadeExtents.z;
+
+        // If we don't use depth clamp, we must compute znear so that all shadow casters are in the light frustum
+        if (!this._parent.depthClamp) {
+            const boundingInfo = this._parent.shadowCastersBoundingInfo;
+
+            boundingInfo.update(this._viewMatrix);
+
+            if (boundingInfo.boundingBox.minimumWorld.z < minZ) {
+                minZ = boundingInfo.boundingBox.minimumWorld.z;
+            }
         }
 
-        this._lightMinExtents.set(minExtents.x, minExtents.y, 0);
-        this._lightMaxExtents.set(maxExtents.x, maxExtents.y, cascadeExtents.z);
+        if (this._scene.useRightHandedSystem) {
+            Matrix.OrthoOffCenterRHToRef(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, minZ, maxZ, this._projectionMatrix);
+        } else {
+            Matrix.OrthoOffCenterLHToRef(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, minZ, maxZ, this._projectionMatrix);
+        }
+
+        this._lightMinExtents.set(minExtents.x, minExtents.y, minZ);
+        this._lightMaxExtents.set(maxExtents.x, maxExtents.y, maxZ);
 
         this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
 

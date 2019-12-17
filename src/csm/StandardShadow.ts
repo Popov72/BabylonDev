@@ -1,4 +1,5 @@
 import {
+    AbstractMesh,
     Color3,
     DirectionalLight,
     IShadowGenerator,
@@ -216,14 +217,16 @@ export default class StandardShadow extends SplitBase {
 
     public set autoCalcShadowZBounds(acszb: boolean) {
         this._autoCalcShadowZBounds = acszb;
-        (this.sun as any).autoCalcShadowZBounds = acszb;
+        this.sun.autoCalcShadowZBounds = acszb;
         if (this._autoCalcShadowZBounds) {
             const dummy = Matrix.Identity();
             this.sun.setShadowProjectionMatrix(dummy, (this.getStandardGenerator() as any)._viewMatrix as Matrix, this.getStandardGenerator().getShadowMaps()[0].renderList!);
         } else {
             this._lightNearPlane = this.sun.shadowMinZ;
             this._lightFarPlane = this.sun.shadowMaxZ;
+
             const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowZBounds' } });
+
             window.dispatchEvent(event);
         }
         this.buildLightHelper();
@@ -424,19 +427,33 @@ export default class StandardShadow extends SplitBase {
 
         const renderList = shadowGenerator.renderList!;
 
-        let num = 0, lstm: Array<Mesh> = [];
+        let num = 0, lstm: Array<AbstractMesh> = [];
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox') { return; }
             renderList.push(m);
             /*if (m.name == "mesh_108_Mesh_main_floor_subset_6" || m.name == "mesh_121_Mesh_g_bace_main05_subset_0") {
                 if (m.name=="mesh_121_Mesh_g_bace_main05_subset_0")
                     renderList.push(m);
-            } else
-                lstm.push(m);*/
+            } else {
+                lstm.push(m);
+            }*/
         });
         lstm.forEach((m) => {
             m.dispose();
         });
+    }
+
+    public render(): void {
+        this.scene.render();
+
+        if (this._animateLight && this._autoCalcShadowZBounds) {
+            this._lightNearPlane = this.sun.shadowMinZ;
+            this._lightFarPlane = this.sun.shadowMaxZ;
+
+            const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowZBounds' } });
+
+            window.dispatchEvent(event);
+        }
     }
 
 }

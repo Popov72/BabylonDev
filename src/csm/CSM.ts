@@ -26,50 +26,76 @@ export default class CSM extends StandardShadow {
 
     public static className: string = "CSM";
 
-    protected _numCascades: number;
-    protected _activeCascade: number;
-    protected _stabilizeCascades: boolean;
-
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
 
-        this._numCascades = 4;
-        this._activeCascade = CSMShadowGenerator.CASCADE_1;
-        this._stabilizeCascades = false;
+        (window as any).csm = this;
+        //this._shadowMapPlane.rotate(new Vector3(0, 0, 1), -Math.PI / 2);
+        //this._shadowMapPlane.bakeCurrentTransformIntoVertices();
     }
 
     protected getCSMGenerator(): CSMShadowGenerator {
         return (this._shadowGenerator as unknown as CSMShadowGenerator);
     }
 
-    public get numCascades(): number {
-        return this._numCascades;
+    public get csmNumCascades(): number {
+        return this._csmNumCascades;
     }
 
-    public set numCascades(num: number) {
-        this._numCascades = num;
-        this.getCSMGenerator().numCascades = num;
-        this.activeCascade = this.getCSMGenerator().activeCascade;
+    public set csmNumCascades(num: number) {
+        this._csmNumCascades = num;
+        this.getCSMGenerator().dispose();
+        this._csmActiveCascade = 0;
+        this.createShadowGenerator();
+    }
+
+    public get csmActiveCascade(): number {
+        return this._csmActiveCascade;
+    }
+
+    public set csmActiveCascade(cac: number) {
+        this._csmActiveCascade = cac;
+        this.getCSMGenerator().activeCascade = cac;
         this.setShadowMapViewerTexture();
+
+        this._shadowMapFilter = this.getCSMGenerator().filter;
+        this._shadowMapBias = this.getCSMGenerator().bias;
+        this._shadowMapNormalBias = this.getCSMGenerator().normalBias;
+        this._shadowMapDarkness = this.getCSMGenerator().darkness;
+        this._shadowMapQuality = this.getCSMGenerator().filteringQuality;
+        this._shadowMapDepthScale = this.getCSMGenerator().depthScale;
+        this._shadowMapBlurScale = this.getCSMGenerator().blurScale;
+        this._shadowMapUseKernelBlur = this.getCSMGenerator().useKernelBlur;
+        this._shadowMapBlurKernel = this.getCSMGenerator().blurKernel;
+        this._shadowMapBlurBoxOffset = this.getCSMGenerator().blurBoxOffset;
+        this._shadowMapLightSizeUVRatio = this.getCSMGenerator().contactHardeningLightSizeUVRatio;
     }
 
-    public get activeCascade(): number {
-        return this._activeCascade;
+    public get csmStabilizeCascades(): boolean {
+        return this._csmStabilizeCascades;
     }
 
-    public set activeCascade(num: number) {
-        this._activeCascade = num;
-        this.getCSMGenerator().activeCascade = num;
-        this.setShadowMapViewerTexture();
+    public set csmStabilizeCascades(ssc: boolean) {
+        this._csmStabilizeCascades = ssc;
+        this.getCSMGenerator().stabilizeCascades = ssc;
     }
 
-    public get stabilizeCascades(): boolean {
-        return this._stabilizeCascades;
+    public get csmDepthClamp(): boolean {
+        return this._csmDepthClamp;
     }
 
-    public set stabilizeCascades(sc: boolean) {
-        this._stabilizeCascades = sc;
-        this.getCSMGenerator().stabilizeCascades = sc;
+    public set csmDepthClamp(cdc: boolean) {
+        this._csmDepthClamp = cdc;
+        this.getCSMGenerator().depthClamp = cdc;
+    }
+
+    public get csmLambda(): number {
+        return this._csmLambda;
+    }
+
+    public set csmLambda(cl: number) {
+        this._csmLambda = cl;
+        this.getCSMGenerator().lambda = cl;
     }
 
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
@@ -94,11 +120,11 @@ export default class CSM extends StandardShadow {
     }
 
     protected createGenerator(): ShadowGenerator {
-        return (new CSMShadowGenerator(this.shadowMapSize, this.sun, this._numCascades)) as unknown as ShadowGenerator;
+        return (new CSMShadowGenerator(this.shadowMapSize, this.sun, this._csmNumCascades)) as unknown as ShadowGenerator;
     }
 
     protected setShadowMapViewerTexture(): void {
-        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._activeCascade !== CSMShadowGenerator.CASCADE_ALL ? this.getCSMGenerator().getShadowMaps()[this._activeCascade] : null;
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._csmActiveCascade !== CSMShadowGenerator.CASCADE_ALL ? this.getCSMGenerator().getShadowMaps()[this._csmActiveCascade] : null;
     }
 
     protected createShadowGenerator(): void {
@@ -106,10 +132,19 @@ export default class CSM extends StandardShadow {
 
         const shadowGenerator = this.getCSMGenerator();
 
-        shadowGenerator.activeCascade = this._activeCascade;
-        shadowGenerator.stabilizeCascades = this._stabilizeCascades;
+        shadowGenerator.activeCascade = CSMShadowGenerator.CASCADE_ALL;
+        shadowGenerator.stabilizeCascades = this._csmStabilizeCascades;
+        shadowGenerator.depthClamp = this._csmDepthClamp;
+        shadowGenerator.lambda = this._csmLambda;
+        shadowGenerator.freezeShadowCastersBoundingInfo = true;
+
+        shadowGenerator.activeCascade = this._csmActiveCascade;
 
         this.setShadowMapViewerTexture();
+    }
+
+    public render(): void {
+        this.scene.render();
     }
 
 }

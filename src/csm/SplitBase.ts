@@ -49,6 +49,12 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _shadowMapBlurBoxOffset: number;
     protected _shadowMapLightSizeUVRatio: number;
 
+    protected _csmNumCascades: number;
+    protected _csmActiveCascade: number;
+    protected _csmStabilizeCascades: boolean;
+    protected _csmDepthClamp: boolean;
+    protected _csmLambda: number;
+
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
 
@@ -78,6 +84,12 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapBlurBoxOffset = 1;
         this._shadowMapLightSizeUVRatio = 0.02;
 
+        this._csmNumCascades = 4;
+        this._csmActiveCascade = 0;
+        this._csmStabilizeCascades = false;
+        this._csmDepthClamp = true;
+        this._csmLambda = 0.5;
+
         this._shadowMapPlane = null as any;
 
         const size = 1;
@@ -89,7 +101,6 @@ export default class SplitBase extends Split implements ISampleSplit {
 
         this._shadowMapPlane.position.x += size / 2;
         this._shadowMapPlane.position.y -= size / 2;
-        this._shadowMapPlane.rotate(new Vector3(0, 0, 1), -Math.PI / 2);
         this._shadowMapPlane.bakeCurrentTransformIntoVertices();
         this._shadowMapPlane.alwaysSelectAsActiveMesh = true;
 
@@ -322,6 +333,46 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set autoCalcShadowZBounds(acszb: boolean) {
         this._autoCalcShadowZBounds = acszb;
+    }
+
+    public get csmNumCascades(): number {
+        return this._csmNumCascades;
+    }
+
+    public set csmNumCascades(num: number) {
+        this._csmNumCascades = num;
+    }
+
+    public get csmActiveCascade(): number {
+        return this._csmActiveCascade;
+    }
+
+    public set csmActiveCascade(cac: number) {
+        this._csmActiveCascade = cac;
+    }
+
+    public get csmStabilizeCascades(): boolean {
+        return this._csmStabilizeCascades;
+    }
+
+    public set csmStabilizeCascades(csc: boolean) {
+        this._csmStabilizeCascades = csc;
+    }
+
+    public get csmDepthClamp(): boolean {
+        return this._csmDepthClamp;
+    }
+
+    public set csmDepthClamp(cdc: boolean) {
+        this._csmDepthClamp = cdc;
+    }
+
+    public get csmLambda(): number {
+        return this._csmLambda;
+    }
+
+    public set csmLambda(cl: number) {
+        this._csmLambda = cl;
     }
 
     protected setDirectionFromSibling(checkAnimate: boolean = true): void {

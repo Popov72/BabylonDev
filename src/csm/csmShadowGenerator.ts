@@ -1,16 +1,19 @@
 import {
     AbstractMesh,
+    BoundingInfo,
     Effect,
     IShadowGenerator,
     IShadowLight,
     MaterialDefines,
     Matrix,
     Nullable,
+    Observer,
     RenderTargetTexture,
     Scene,
     ShadowGenerator,
     SubMesh,
     Vector3,
+    Observable,
 } from 'babylonjs';
 
 import { CSMShadowMap } from './csmShadowMap';
@@ -32,6 +35,10 @@ export class CSMShadowGenerator implements IShadowGenerator {
     public static readonly CASCADE_2 = 1;
     public static readonly CASCADE_3 = 2;
     public static readonly CASCADE_4 = 3;
+    public static readonly CASCADE_5 = 4;
+    public static readonly CASCADE_6 = 5;
+    public static readonly CASCADE_7 = 6;
+    public static readonly CASCADE_8 = 7;
 
     protected _activeCascade: number;
 
@@ -40,6 +47,9 @@ export class CSMShadowGenerator implements IShadowGenerator {
     }
 
     public set activeCascade(index: number) {
+        if (index !== CSMShadowGenerator.CASCADE_ALL && (index < 0 || index >= this._numCascades)) {
+            index = 0;
+        }
         this._activeCascade = index;
     }
 
@@ -153,6 +163,14 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._getActiveCascades().forEach((cascade) => cascade.generator.forceBackFacesOnly = value);
     }
 
+    public get depthClamp(): boolean {
+        return this._activeCascade >= 0 && this._activeCascade < this._cascades.length ? this._cascades[this._activeCascade].generator.depthClamp : false;
+    }
+
+    public set depthClamp(value: boolean) {
+        this._getActiveCascades().forEach((cascade) => cascade.generator.depthClamp = value);
+    }
+
     public get viewMatrix(): Nullable<Matrix> {
         return this._activeCascade >= 0 && this._activeCascade < this._cascades.length ? this._cascades[this._activeCascade].generator.viewMatrix : null;
     }
@@ -204,17 +222,21 @@ export class CSMShadowGenerator implements IShadowGenerator {
         return this._numCascades;
     }
 
-    public set numCascades(num: number) {
+    /*public set numCascades(num: number) {
         if (num === this._numCascades) {
             return;
         }
+
+        const freeze = this._freezeShadowCastersBoundingInfo;
 
         this.dispose();
 
         this._numCascades = num;
 
         this._initializeGenerator();
-    }
+
+        this.freezeShadowCastersBoundingInfo = freeze;
+    }*/
 
     protected _lambda: number;
 
@@ -224,6 +246,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
 
     public set lambda(value: number) {
         this._lambda = value;
+        this._setDistanceSplit();
     }
 
     protected _minDistance: number;
@@ -256,6 +279,40 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._stabilizeCascades = value;
     }
 
+    protected _freezeShadowCastersBoundingInfo: boolean = false;
+    private _freezeShadowCastersBoundingInfoObservable: Nullable<Observer<Scene>> = null;
+
+    public get freezeShadowCastersBoundingInfo(): boolean {
+        return this._freezeShadowCastersBoundingInfo;
+    }
+
+    public set freezeShadowCastersBoundingInfo(freeze: boolean) {
+        if (this._freezeShadowCastersBoundingInfoObservable && freeze) {
+            this._scene.onBeforeRenderObservable.remove(this._freezeShadowCastersBoundingInfoObservable);
+            this._freezeShadowCastersBoundingInfoObservable = null;
+        }
+
+        if (!this._freezeShadowCastersBoundingInfoObservable && !freeze) {
+            this._freezeShadowCastersBoundingInfoObservable = this._scene.onBeforeRenderObservable.add(this._computeShadowCastersBoundingInfo.bind(this));
+        }
+
+        this._freezeShadowCastersBoundingInfo = freeze;
+
+        if (freeze) {
+            this._computeShadowCastersBoundingInfo();
+        }
+    }
+
+    protected _shadowCastersBoundingInfo: BoundingInfo;
+
+    public get shadowCastersBoundingInfo(): BoundingInfo {
+        return this._shadowCastersBoundingInfo;
+    }
+
+    public set shadowCastersBoundingInfo(boundingInfo: BoundingInfo) {
+        this._shadowCastersBoundingInfo = boundingInfo;
+    }
+
     protected _cascades: Array<ICascade>;
 
     public get cascade(): Nullable<ICascade> {
@@ -267,6 +324,10 @@ export class CSMShadowGenerator implements IShadowGenerator {
     protected _usefulFloatFirst: boolean | undefined;
 
     constructor(mapSize: number, light: IShadowLight, numCascades: number = 4, usefulFloatFirst?: boolean) {
+        if (numCascades < 1) {
+            numCascades = 1;
+        }
+
         this._cascades = [];
         this._activeCascade = CSMShadowGenerator.CASCADE_ALL;
         this._renderList = [];
@@ -275,6 +336,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._minDistance = 0;
         this._maxDistance = 1;
         this._stabilizeCascades = false;
+        this._shadowCastersBoundingInfo = new BoundingInfo(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
         this._mapSize = mapSize;
         this._usefulFloatFirst = usefulFloatFirst;
@@ -282,6 +344,8 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._scene = light.getScene();
 
         ShadowGenerator._SceneComponentInitialization(this._scene);
+
+        this.freezeShadowCastersBoundingInfo = false;
 
         this._initializeGenerator();
     }
@@ -340,6 +404,27 @@ export class CSMShadowGenerator implements IShadowGenerator {
             this._cascades[cascadeIndex].splitDistance = (d - near) / cameraRange;
         }
 
+    }
+
+    protected _computeShadowCastersBoundingInfo(): void {
+        const min = new Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE),
+              max = new Vector3(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+
+        for (let meshIndex = 0; meshIndex < this._renderList.length; meshIndex++) {
+            const mesh = this._renderList[meshIndex];
+
+            if (!mesh) {
+                continue;
+            }
+
+            const boundingInfo = mesh.getBoundingInfo(),
+                  boundingBox = boundingInfo.boundingBox;
+
+            min.minimizeInPlace(boundingBox.minimumWorld);
+            max.maximizeInPlace(boundingBox.maximumWorld);
+        }
+
+        this._shadowCastersBoundingInfo.reConstruct(min, max);
     }
 
     public get mustRender(): boolean {
@@ -416,6 +501,10 @@ export class CSMShadowGenerator implements IShadowGenerator {
         }
         this._cascades = [];
         this._numCascades = 0;
+        if (this._freezeShadowCastersBoundingInfoObservable) {
+            this._scene.onBeforeRenderObservable.remove(this._freezeShadowCastersBoundingInfoObservable);
+            this._freezeShadowCastersBoundingInfoObservable = null;
+        }
     }
 
 }
