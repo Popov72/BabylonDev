@@ -1,6 +1,7 @@
 import {
     Color3,
     DirectionalLight,
+    IShadowGenerator,
     LightGizmo,
     Matrix,
     Mesh,
@@ -20,17 +21,12 @@ import { ISceneDescription } from "./GlobalGUI";
 import SplitBase from "./SplitBase";
 import StandardShadowGUI from "./StandardShadowGUI";
 
-import { CSMShadowGenerator } from "./csmShadowGenerator";
-import { CSMShadowMap } from "./csmShadowMap";
-
-const isCSM = true;
-
 export default class StandardShadow extends SplitBase {
 
     public static className: string = "Standard";
 
     protected sun: DirectionalLight;
-    protected _shadowGenerator: ShadowGenerator | CSMShadowGenerator;
+    protected _shadowGenerator: IShadowGenerator;
     protected _lightHelperFrustumLines: Array<Mesh>;
     protected _lightGizmo: LightGizmo;
 
@@ -41,6 +37,10 @@ export default class StandardShadow extends SplitBase {
         this._shadowGenerator = null as any;
         this._lightHelperFrustumLines = [];
         this._lightGizmo = null as any;
+    }
+
+    protected getStandardGenerator(): ShadowGenerator {
+        return this._shadowGenerator as unknown as ShadowGenerator;
     }
 
     public get lightColor(): string {
@@ -76,9 +76,8 @@ export default class StandardShadow extends SplitBase {
     }
 
     public set shadowMapFilter(smf: number) {
-        this._shadowGenerator.filter = smf;
-        this._shadowMapFilter = this._shadowGenerator.filter;
-        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._shadowGenerator.getShadowMaps()[0];
+        this.getStandardGenerator().filter = smf;
+        this._shadowMapFilter = this.getStandardGenerator().filter;
     }
 
     public get shadowMapBias(): number {
@@ -87,7 +86,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapBias(smb: number) {
         this._shadowMapBias = smb;
-        this._shadowGenerator.bias = smb;
+        this.getStandardGenerator().bias = smb;
     }
 
     public get shadowMapNormalBias(): number {
@@ -96,7 +95,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapNormalBias(smnb: number) {
         this._shadowMapNormalBias = smnb;
-        this._shadowGenerator.normalBias = smnb;
+        this.getStandardGenerator().normalBias = smnb;
     }
 
     public get shadowMapDarkness(): number {
@@ -105,7 +104,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapDarkness(smd: number) {
         this._shadowMapDarkness = smd;
-        this._shadowGenerator.darkness = smd;
+        this.getStandardGenerator().darkness = smd;
     }
 
     public get shadowMapQuality(): number {
@@ -114,7 +113,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapQuality(smq: number) {
         this._shadowMapQuality = smq;
-        this._shadowGenerator.filteringQuality = smq;
+        this.getStandardGenerator().filteringQuality = smq;
     }
 
     public get shadowMapDepthScale(): number {
@@ -123,7 +122,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapDepthScale(smds: number) {
         this._shadowMapDepthScale = smds;
-        this._shadowGenerator.depthScale = smds;
+        this.getStandardGenerator().depthScale = smds;
     }
 
     public get shadowMapBlurScale(): number {
@@ -132,7 +131,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapBlurScale(smbs: number) {
         this._shadowMapBlurScale = smbs;
-        this._shadowGenerator.blurScale = smbs;
+        this.getStandardGenerator().blurScale = smbs;
     }
 
     public get shadowMapUseKernelBlur(): boolean {
@@ -141,7 +140,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapUseKernelBlur(smukb: boolean) {
         this._shadowMapUseKernelBlur = smukb;
-        this._shadowGenerator.useKernelBlur = smukb;
+        this.getStandardGenerator().useKernelBlur = smukb;
     }
 
     public get shadowMapBlurKernel(): number {
@@ -150,7 +149,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapBlurKernel(smbk: number) {
         this._shadowMapBlurKernel = smbk;
-        this._shadowGenerator.blurKernel = smbk;
+        this.getStandardGenerator().blurKernel = smbk;
     }
 
     public get shadowMapBlurBoxOffset(): number {
@@ -159,7 +158,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapBlurBoxOffset(smbbo: number) {
         this._shadowMapBlurBoxOffset = smbbo;
-        this._shadowGenerator.blurBoxOffset = smbbo;
+        this.getStandardGenerator().blurBoxOffset = smbbo;
     }
 
     public get shadowMapLightSizeUVRatio(): number {
@@ -168,7 +167,7 @@ export default class StandardShadow extends SplitBase {
 
     public set shadowMapLightSizeUVRatio(smlsuvr: number) {
         this._shadowMapLightSizeUVRatio = smlsuvr;
-        this._shadowGenerator.contactHardeningLightSizeUVRatio = smlsuvr;
+        this.getStandardGenerator().contactHardeningLightSizeUVRatio = smlsuvr;
     }
 
     public get lightNearPlane(): number {
@@ -220,11 +219,7 @@ export default class StandardShadow extends SplitBase {
         (this.sun as any).autoCalcShadowZBounds = acszb;
         if (this._autoCalcShadowZBounds) {
             const dummy = Matrix.Identity();
-            if (isCSM) {
-                this.sun.setShadowProjectionMatrix(dummy, (this._shadowGenerator as any)._cascades[0].generator._viewMatrix as Matrix, this._shadowGenerator.getShadowMaps()[0].renderList!);
-            } else {
-                this.sun.setShadowProjectionMatrix(dummy, (this._shadowGenerator as any)._viewMatrix as Matrix, this._shadowGenerator.getShadowMaps()[0].renderList!);
-            }
+            this.sun.setShadowProjectionMatrix(dummy, (this.getStandardGenerator() as any)._viewMatrix as Matrix, this.getStandardGenerator().getShadowMaps()[0].renderList!);
         } else {
             this._lightNearPlane = this.sun.shadowMinZ;
             this._lightFarPlane = this.sun.shadowMaxZ;
@@ -232,6 +227,19 @@ export default class StandardShadow extends SplitBase {
             window.dispatchEvent(event);
         }
         this.buildLightHelper();
+    }
+
+    protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
+        const light = this.sun as any;
+
+        return {
+            "min": new Vector3(light._orthoLeft, light._orthoBottom, this.sun.shadowMinZ),
+            "max": new Vector3(light._orthoRight, light._orthoTop, this.sun.shadowMaxZ),
+        }
+    }
+
+    protected getViewMatrix(): Matrix | null {
+        return this.getStandardGenerator().viewMatrix;
     }
 
     protected buildLightHelper(): void {
@@ -245,25 +253,29 @@ export default class StandardShadow extends SplitBase {
             return;
         }
 
-        const light = this.sun as any;
-        const csmSM = isCSM ? (this._shadowGenerator as any)._cascades[0].generator as CSMShadowMap : null;
-        const lightView = isCSM ? (csmSM as any)._viewMatrix as Matrix : (this._shadowGenerator as any)._viewMatrix as Matrix;
+        const lightExtents = this.getLightExtents();
+        const lightView = this.getViewMatrix();
+
+        if (!lightExtents || !lightView) {
+            return;
+        }
+
         const invLightView = Matrix.Invert(lightView);
 
-        const n1 = isCSM ? new Vector3(csmSM!.lightMaxExtents.x, csmSM!.lightMaxExtents.y, csmSM!.lightMinExtents.z) : new Vector3(light._orthoRight, light._orthoTop,    this.sun.shadowMinZ);
-        const n2 = isCSM ? new Vector3(csmSM!.lightMaxExtents.x, csmSM!.lightMinExtents.y, csmSM!.lightMinExtents.z) : new Vector3(light._orthoRight, light._orthoBottom, this.sun.shadowMinZ);
-        const n3 = isCSM ? new Vector3(csmSM!.lightMinExtents.x, csmSM!.lightMinExtents.y, csmSM!.lightMinExtents.z) : new Vector3(light._orthoLeft,  light._orthoBottom, this.sun.shadowMinZ);
-        const n4 = isCSM ? new Vector3(csmSM!.lightMinExtents.x, csmSM!.lightMaxExtents.y, csmSM!.lightMinExtents.z) : new Vector3(light._orthoLeft,  light._orthoTop,    this.sun.shadowMinZ);
+        const n1 = new Vector3(lightExtents.max.x, lightExtents.max.y, lightExtents.min.z);
+        const n2 = new Vector3(lightExtents.max.x, lightExtents.min.y, lightExtents.min.z);
+        const n3 = new Vector3(lightExtents.min.x, lightExtents.min.y, lightExtents.min.z);
+        const n4 = new Vector3(lightExtents.min.x, lightExtents.max.y, lightExtents.min.z);
 
         const near1 = Vector3.TransformCoordinates(n1, invLightView);
         const near2 = Vector3.TransformCoordinates(n2, invLightView);
         const near3 = Vector3.TransformCoordinates(n3, invLightView);
         const near4 = Vector3.TransformCoordinates(n4, invLightView);
         
-        const f1 = isCSM ? new Vector3(csmSM!.lightMaxExtents.x, csmSM!.lightMaxExtents.y, csmSM!.lightMaxExtents.z) : new Vector3(light._orthoRight, light._orthoTop,    this.sun.shadowMaxZ);
-        const f2 = isCSM ? new Vector3(csmSM!.lightMaxExtents.x, csmSM!.lightMinExtents.y, csmSM!.lightMaxExtents.z) : new Vector3(light._orthoRight, light._orthoBottom, this.sun.shadowMaxZ);
-        const f3 = isCSM ? new Vector3(csmSM!.lightMinExtents.x, csmSM!.lightMinExtents.y, csmSM!.lightMaxExtents.z) : new Vector3(light._orthoLeft,  light._orthoBottom, this.sun.shadowMaxZ);
-        const f4 = isCSM ? new Vector3(csmSM!.lightMinExtents.x, csmSM!.lightMaxExtents.y, csmSM!.lightMaxExtents.z) : new Vector3(light._orthoLeft,  light._orthoTop,    this.sun.shadowMaxZ);
+        const f1 = new Vector3(lightExtents.max.x, lightExtents.max.y, lightExtents.max.z);
+        const f2 = new Vector3(lightExtents.max.x, lightExtents.min.y, lightExtents.max.z);
+        const f3 = new Vector3(lightExtents.min.x, lightExtents.min.y, lightExtents.max.z);
+        const f4 = new Vector3(lightExtents.min.x, lightExtents.max.y, lightExtents.max.z);
 
         const far1 = Vector3.TransformCoordinates(f1, invLightView);
         const far2 = Vector3.TransformCoordinates(f2, invLightView);
@@ -322,13 +334,12 @@ export default class StandardShadow extends SplitBase {
         this._sunColor = scene.sunColor.clone();
 
         this.sun = new DirectionalLight("sun", sunDir, this.scene);
-        //this.sun.position.set(0, -40, 0);
         this.sun.intensity = 1;
         this.sun.shadowMinZ = scene.light.nearPlane;
         this.sun.shadowMaxZ = scene.light.farPlane;
         this.sun.diffuse = this._sunColor;
 
-        (window as any).sun= this.sun;
+        (window as any).sun = this.sun;
 
         Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
 
@@ -381,18 +392,17 @@ export default class StandardShadow extends SplitBase {
         return this;
     }
 
+    protected createGenerator(): ShadowGenerator {
+        return new ShadowGenerator(this.shadowMapSize, this.sun);
+    }
+
     protected createShadowGenerator(): void {
         if (this._shadowGenerator) {
             this._shadowGenerator.dispose();
             this._shadowGenerator = null as any;
         }
 
-        const shadowGenerator = !isCSM ? new ShadowGenerator(this.shadowMapSize, this.sun) : new CSMShadowGenerator(this.shadowMapSize, this.sun, 4);
-
-        if (shadowGenerator instanceof CSMShadowGenerator) {
-            shadowGenerator.activeCascade = 0;
-            shadowGenerator.stabilizeCascades = false;
-        }
+        const shadowGenerator = this.createGenerator();
 
         shadowGenerator.bias = this._shadowMapBias;
         shadowGenerator.normalBias = this._shadowMapNormalBias;
@@ -412,7 +422,7 @@ export default class StandardShadow extends SplitBase {
 
         (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = shadowGenerator.getShadowMaps()[0];
 
-        const renderList = shadowGenerator.renderList!; //shadowGenerator.getShadowMap()!.renderList!;
+        const renderList = shadowGenerator.renderList!;
 
         let num = 0, lstm: Array<Mesh> = [];
         this.scene.meshes.forEach((m) => {

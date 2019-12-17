@@ -1,47 +1,90 @@
 import {
     Color3,
-    Effect,
-    Scene,
-    ShaderMaterial,
-    StandardMaterial,
-    Texture,
-    Vector3,
+    DirectionalLight,
+    LightGizmo,
     Matrix,
     Mesh,
+    MeshBuilder,
+    Scene,
+    ShadowGenerator,
+    StandardMaterial,
+    UniversalCamera,
+    Vector3,
+    VertexData,
 } from "babylonjs";
 
+import Sample from "../Sample";
 import Utils from "../Utils";
 import ISampleSplit from "./ISampleSplit";
 import { ISceneDescription } from "./GlobalGUI";
-import SplitBase from "./SplitBase";
+import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
+import { CSMShadowGenerator } from "./csmShadowGenerator";
+import { CSMShadowMap } from "./csmShadowMap";
 
-export default class CSM extends SplitBase {
+export default class CSM extends StandardShadow {
 
     public static className: string = "CSM";
 
-    public get lightColor(): string {
-        return this._sunColor.toHexString();
+    protected _numCascades: number;
+    protected _activeCascade: number;
+    protected _stabilizeCascades: boolean;
+
+    constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
+        super(scene, camera, parent, name);
+
+        this._numCascades = 4;
+        this._activeCascade = CSMShadowGenerator.CASCADE_1;
+        this._stabilizeCascades = false;
     }
 
-    public set lightColor(lc: string) {
-        this._sunColor = Color3.FromHexString(lc);
-        this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || !m.material || m.name.indexOf("_shadowmap") >= 0) { return; }
-            (m.material as ShaderMaterial).setColor3("lightColor", this._sunColor);
-        });
+    protected getCSMGenerator(): CSMShadowGenerator {
+        return (this._shadowGenerator as unknown as CSMShadowGenerator);
     }
 
-    public get lightDirection(): Vector3 {
-        return this._sunDir;
+    public get numCascades(): number {
+        return this._numCascades;
     }
 
-    public set lightDirection(ld: Vector3) {
-        this._sunDir = ld;
-        this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || !m.material || m.name.indexOf("_shadowmap") >= 0) { return; }
-            (m.material as ShaderMaterial).setVector3("lightDirection", ld);
-        });
+    public set numCascades(num: number) {
+        this._numCascades = num;
+        this.getCSMGenerator().numCascades = num;
+        this.activeCascade = this.getCSMGenerator().activeCascade;
+        this.setShadowMapViewerTexture();
+    }
+
+    public get activeCascade(): number {
+        return this._activeCascade;
+    }
+
+    public set activeCascade(num: number) {
+        this._activeCascade = num;
+        this.getCSMGenerator().activeCascade = num;
+        this.setShadowMapViewerTexture();
+    }
+
+    public get stabilizeCascades(): boolean {
+        return this._stabilizeCascades;
+    }
+
+    public set stabilizeCascades(sc: boolean) {
+        this._stabilizeCascades = sc;
+        this.getCSMGenerator().stabilizeCascades = sc;
+    }
+
+    protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
+        const cascade = this.getCSMGenerator().cascade;
+
+        if (!cascade) {
+            return null;
+        }
+
+        const csmSM = cascade.generator;
+
+        return {
+            "min": csmSM.lightMinExtents,
+            "max": csmSM.lightMaxExtents,
+        }
     }
 
     public createGUI(): void {
@@ -50,125 +93,23 @@ export default class CSM extends SplitBase {
         this.gui.createGUI();
     }
 
-    public async initialize(scene: ISceneDescription, ambientColor: Color3, sunDir: Vector3): Promise<ISampleSplit> {
-        this.scene.metadata = { "name": this.name };
-        this._sceneName = scene.dname;
-
-        this._sunDir = sunDir;
-        this._sunColor = scene.sunColor.clone();
-
-        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
-
-        await Utils.loadObj(this.scene, scene.path, scene.name);
-
-        this.scene.activeCamera = this.camera;
-
-        const stdMat = this.makeShader(this.scene),
-              whiteTexture = new Texture("resources/texture/white.png", this.scene, true);
-
-        this.scene.meshes.forEach((m) => {
-            if (m.name == 'skyBox' || m.name.indexOf("_shadowmap") >= 0) { return; }
-
-            const mat = m.material;
-
-            if (!mat || !(mat instanceof StandardMaterial)) { return; }
-
-            let diffuse: Texture = mat.diffuseTexture as Texture;
-
-            const newMat = stdMat.clone(m.name + "_" + mat.name + "_cloned");
-
-            newMat.backFaceCulling = scene.backfaceCulling;
-            newMat.setVector3("lightDirection", sunDir);
-            newMat.setColor3("lightColor", this._sunColor);
-            if (diffuse) {
-                newMat.setTexture("textureSampler", diffuse);
-                newMat.setColor3("ambientColor", ambientColor);
-            } else {
-                newMat.setTexture("textureSampler", whiteTexture);
-                newMat.setColor3("ambientColor", new Color3(0, 0, 0));
-            }
-            //newMat.freeze();
-
-            m.material = newMat;
-
-            if (scene.scaling != 1) {
-                let matrix = Matrix.Identity();
-                matrix.scaleToRef(scene.scaling, matrix);
-                matrix.setRowFromFloats(3, 0, 0, 0, 1);
-                (m as Mesh).bakeTransformIntoVertices(matrix);
-            }
-        });
-
-        return this;
+    protected createGenerator(): ShadowGenerator {
+        return (new CSMShadowGenerator(this.shadowMapSize, this.sun, this._numCascades)) as unknown as ShadowGenerator;
     }
 
-    protected makeShader(scene: Scene): ShaderMaterial {
-        Effect.ShadersStore.ppStdVertexShader = `
-            precision highp float;
+    protected setShadowMapViewerTexture(): void {
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._activeCascade !== CSMShadowGenerator.CASCADE_ALL ? this.getCSMGenerator().getShadowMaps()[this._activeCascade] : null;
+    }
 
-            attribute vec3 position;
-            attribute vec3 normal;
-            attribute vec2 uv;
+    protected createShadowGenerator(): void {
+        super.createShadowGenerator();
 
-            uniform mat4 world;
-            uniform mat4 view;
-            uniform mat4 projection;
-            uniform mat4 worldViewProjection;
+        const shadowGenerator = this.getCSMGenerator();
 
-            varying vec2 vUV;
-            varying vec3 vNormal;
-            varying vec3 vPosition;
+        shadowGenerator.activeCascade = this._activeCascade;
+        shadowGenerator.stabilizeCascades = this._stabilizeCascades;
 
-            void main() {
-                vec3 positionUpdated = position;
-
-                vec4 worldPos = world * vec4(positionUpdated, 1.0);
-                vNormal = normalize(vec3(world * vec4(normal, 0.0)));
-                vPosition = worldPos.xyz;
-                vUV = uv;
-
-                gl_Position = projection * view * worldPos;
-            }
-        `;
-
-        Effect.ShadersStore.ppStdFragmentShader = `
-            precision highp float;
-
-            uniform sampler2D textureSampler;
-            uniform vec3 lightColor;
-            uniform vec3 lightDirection;
-            uniform vec3 ambientColor;
-
-            varying vec2 vUV;
-            varying vec3 vNormal;
-            varying vec3 vPosition;
-
-            void main(void)
-            {
-                vec3 lightVectorW = normalize(-lightDirection);
-                float ndl = max(0., dot(vNormal, lightVectorW));
-                vec4 baseColor = texture2D(textureSampler, vUV);
-                vec3 diffuse = clamp(ndl*lightColor + ambientColor, 0.0, 1.0)*baseColor.rgb;
-                vec4 c = vec4(diffuse, 1.0);
-                //if (c.a < 0.3) discard;
-                gl_FragColor = c;
-            }
-        `;
-
-        const stdMaterial = new ShaderMaterial(
-            'standard material',
-            scene,
-            'ppStd',
-            {
-                attributes: [ 'position', 'normal', 'uv' ],
-                uniforms: [ 'world', 'worldView', 'worldViewProjection', 'view', 'projection', 'lightDirection']
-            }
-        );
-
-        //const renderTarget = new RenderTargetTexture('caustic texture', 512, scene);
-        //scene.customRenderTargets.push(renderTarget);
-
-        return stdMaterial;
+        this.setShadowMapViewerTexture();
     }
 
 }

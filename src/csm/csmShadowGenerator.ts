@@ -153,6 +153,10 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._getActiveCascades().forEach((cascade) => cascade.generator.forceBackFacesOnly = value);
     }
 
+    public get viewMatrix(): Nullable<Matrix> {
+        return this._activeCascade >= 0 && this._activeCascade < this._cascades.length ? this._cascades[this._activeCascade].generator.viewMatrix : null;
+    }
+
     public getClassName(): string {
         return "CSMShadowGenerator";
     }
@@ -206,6 +210,9 @@ export class CSMShadowGenerator implements IShadowGenerator {
         }
 
         this.dispose();
+
+        this._numCascades = num;
+
         this._initializeGenerator();
     }
 
@@ -250,6 +257,11 @@ export class CSMShadowGenerator implements IShadowGenerator {
     }
 
     protected _cascades: Array<ICascade>;
+
+    public get cascade(): Nullable<ICascade> {
+        return this._activeCascade >= 0 && this._activeCascade < this._cascades.length ? this._cascades[this._activeCascade] : null;
+    }
+
     protected _scene: Scene;
     protected _mapSize: number;
     protected _usefulFloatFirst: boolean | undefined;
@@ -292,6 +304,10 @@ export class CSMShadowGenerator implements IShadowGenerator {
             cascade.generator.renderList = this._renderList;
 
             this._cascades.push(cascade);
+        }
+
+        if (this._activeCascade !== CSMShadowGenerator.CASCADE_ALL && this._activeCascade >= this._numCascades) {
+            this._activeCascade = 0;
         }
 
         this._setDistanceSplit();
@@ -345,8 +361,8 @@ export class CSMShadowGenerator implements IShadowGenerator {
     isReady(subMesh: SubMesh, useInstances: boolean): boolean {
         let ready = true;
 
-        for (let i = 0; i < this._cascades.length && ready; ++i) {
-            ready = ready && this._cascades[i].generator.isReady(subMesh, useInstances);
+        for (let cascadeIndex = 0; cascadeIndex < this._cascades.length && ready; ++cascadeIndex) {
+            ready = ready && this._cascades[cascadeIndex].generator.isReady(subMesh, useInstances);
         }
 
         return ready;
@@ -376,7 +392,9 @@ export class CSMShadowGenerator implements IShadowGenerator {
     }
 
     recreate(): void {
-        this._cascades[0].generator.recreate();
+        for (let cascadeIndex = 0; cascadeIndex < this._cascades.length; ++cascadeIndex) {
+            this._cascades[cascadeIndex].generator.recreate();
+        }
     }
 
     forceCompilation(onCompiled?: (generator: ShadowGenerator) => void, options?: Partial<{ useInstances: boolean }>): void {
@@ -398,7 +416,6 @@ export class CSMShadowGenerator implements IShadowGenerator {
         }
         this._cascades = [];
         this._numCascades = 0;
-        this._activeCascade = CSMShadowGenerator.CASCADE_ALL;
     }
 
 }

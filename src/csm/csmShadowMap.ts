@@ -47,11 +47,16 @@ export class CSMShadowMap extends ShadowGenerator {
     constructor(mapSize: number, light: IShadowLight, usefulFloatFirst: boolean, parent: ShadowCSMGenerator) {
         super(mapSize, light, usefulFloatFirst);
 
+        this._depthClampNear = true;
         this._light._shadowGenerator = parent;
         this._parent = parent;
         this._cascade = null;
         this._lightMinExtents = new Vector3(0, 0, 0);
         this._lightMaxExtents = new Vector3(0, 0, 0);
+    }
+
+    public get viewMatrix(): Matrix {
+        return this._viewMatrix;
     }
 
     public get cascade(): Nullable<ICascade> {
