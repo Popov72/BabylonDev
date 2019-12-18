@@ -23,7 +23,8 @@ export default class CSMSample extends Sample {
     constructor(engine: Engine, canvas: HTMLCanvasElement) {
         super(engine, canvas);
 
-        this._sunDir = new Vector3(32, -30, 22);
+        this._sunDir = new Vector3(-1, -1, -1);
+//        this._sunDir = new Vector3(32, -30, 22);
         this._sunDir.normalize();
         this._ambientColor = new Color3(0.3, 0.3, 0.3);
         this._clearColor = new Color4(0.17773, 0.41797, 0.65234, 1);
@@ -32,7 +33,7 @@ export default class CSMSample extends Sample {
         this.registerClass("csm", CSM);
 
         this.splitMode = enumSplitMode.LINEAR;
-        this.splitType = "std";
+        this.splitType = "csm";
 
         this._gui = new GlobalGUI("Global settings", this._engine, this);
 
