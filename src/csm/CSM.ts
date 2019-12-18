@@ -1,26 +1,16 @@
 import {
-    Color3,
-    DirectionalLight,
-    LightGizmo,
-    Matrix,
-    Mesh,
-    MeshBuilder,
+    /*CSMShadowGenerator,*/
     Scene,
     ShadowGenerator,
     StandardMaterial,
     UniversalCamera,
     Vector3,
-    VertexData,
 } from "babylonjs";
 
 import Sample from "../Sample";
-import Utils from "../Utils";
-import ISampleSplit from "./ISampleSplit";
-import { ISceneDescription } from "./GlobalGUI";
 import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
 import { CSMShadowGenerator } from "./csmShadowGenerator";
-import { CSMShadowMap } from "./csmShadowMap";
 
 export default class CSM extends StandardShadow {
 
