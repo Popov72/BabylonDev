@@ -220,8 +220,7 @@ export default class StandardShadow extends SplitBase {
         this._autoCalcShadowZBounds = acszb;
         this.sun.autoCalcShadowZBounds = acszb;
         if (this._autoCalcShadowZBounds) {
-            const dummy = Matrix.Identity();
-            this.sun.setShadowProjectionMatrix(dummy, (this.getStandardGenerator() as any)._viewMatrix as Matrix, this.getStandardGenerator().getShadowMaps()[0].renderList!);
+            this.sun.setShadowProjectionMatrix(Matrix.Identity(), this.getStandardGenerator().viewMatrix, this.getStandardGenerator().getShadowMaps()[0].renderList!);
         } else {
             this._lightNearPlane = this.sun.shadowMinZ;
             this._lightFarPlane = this.sun.shadowMaxZ;
@@ -351,8 +350,6 @@ export default class StandardShadow extends SplitBase {
 
         this.scene.activeCamera = this.camera;
 
-        var gmin = new Vector3(10000, 10000, 10000), gmax = new Vector3(-10000, -10000, -10000);
-
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox' || m.name.indexOf("_shadowmap") >= 0) { return; }
 
@@ -380,16 +377,7 @@ export default class StandardShadow extends SplitBase {
                 (m as Mesh).bakeTransformIntoVertices(matrix);
                 m.refreshBoundingInfo();
             }
-
-            var boundingInfo = m.getBoundingInfo();
-            var boundingBox = boundingInfo.boundingBox;
-            var min = boundingBox.minimumWorld, max = boundingBox.maximumWorld;
-
-            gmin.x = Math.min(gmin.x, min.x); gmin.y = Math.min(gmin.y, min.y); gmin.z = Math.min(gmin.z, min.z); 
-            gmax.x = Math.max(gmax.x, max.x); gmax.y = Math.max(gmax.y, max.y); gmax.z = Math.max(gmax.z, max.z); 
         });
-
-        console.log(gmin, gmax);
 
         this.createShadowGenerator();
 
