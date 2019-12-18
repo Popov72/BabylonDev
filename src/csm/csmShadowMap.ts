@@ -200,15 +200,19 @@ export class CSMShadowMap extends ShadowGenerator {
 
         let minZ = 0, maxZ = cascadeExtents.z;
 
-        // If we don't use depth clamp, we must compute znear so that all shadow casters are in the light frustum
+        // Try to tighten minZ and maxZ based on the bounding box of the shadow casters
+        const boundingInfo = this._parent.shadowCastersBoundingInfo;
+
+        boundingInfo.update(this._viewMatrix);
+        
+        maxZ = Math.min(maxZ, boundingInfo.boundingBox.maximumWorld.z);
+
         if (!this._parent.depthClamp) {
-            const boundingInfo = this._parent.shadowCastersBoundingInfo;
-
-            boundingInfo.update(this._viewMatrix);
-
-            if (boundingInfo.boundingBox.minimumWorld.z < minZ) {
-                minZ = boundingInfo.boundingBox.minimumWorld.z;
-            }
+            // If we don't use depth clamping, we must set minZ so that all shadow casters are in the light frustum
+            minZ = Math.min(minZ, boundingInfo.boundingBox.minimumWorld.z);
+        } else {
+            // If using depth clamping, we can adjust minZ to reduce the [minZ, maxZ] range (and get some additional precision in the shadow map)
+            minZ = Math.max(minZ, boundingInfo.boundingBox.minimumWorld.z);
         }
 
         if (this._scene.useRightHandedSystem) {
