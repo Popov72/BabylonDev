@@ -13,7 +13,6 @@ import {
     ShadowGenerator,
     SubMesh,
     Vector3,
-    Observable,
 } from 'babylonjs';
 
 import { CSMShadowMap } from './csmShadowMap';
@@ -426,18 +425,6 @@ export class CSMShadowGenerator implements IShadowGenerator {
         return this.renderList.length > 0;
     }
 
-    getShadowMap(): Nullable<RenderTargetTexture> {
-        throw "getShadowMap: Don't call me!";
-    }
-
-    getShadowMapForRendering(): Nullable<RenderTargetTexture> {
-        throw "getShadowMapForRendering: Don't call me!";
-    }
-
-    getTransformMatrix(): Matrix {
-        throw "getTransformMatrix: Don't call me!";
-    }
-
     isReady(subMesh: SubMesh, useInstances: boolean): boolean {
         let ready = true;
 
@@ -464,10 +451,12 @@ export class CSMShadowGenerator implements IShadowGenerator {
     }
 
     prepareDefines(defines: MaterialDefines, lightIndex: number): void {
+        // todo. For the time being, only the first shadow map is sampled
         this._cascades[0].generator.prepareDefines(defines, lightIndex);
     }
 
     bindShadowLight(lightIndex: string, effect: Effect): void {
+        // todo. For the time being, only the first shadow map is sampled
         this._cascades[0].generator.bindShadowLight(lightIndex, effect);
     }
 

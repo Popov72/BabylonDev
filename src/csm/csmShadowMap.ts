@@ -1,15 +1,8 @@
 import {
-    AbstractMesh,
-    Effect,
-    IShadowGenerator,
     IShadowLight,
-    MaterialDefines,
     Matrix,
     Nullable,
-    RenderTargetTexture,
-    Scene,
     ShadowGenerator,
-    SubMesh,
     Vector3,
 } from 'babylonjs';
 
