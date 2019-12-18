@@ -56,7 +56,6 @@ export default class CSM extends StandardShadow {
     public set csmActiveCascade(cac: number) {
         this._csmActiveCascade = cac;
         this.getCSMGenerator().activeCascade = cac;
-        this.setShadowMapViewerTexture();
 
         this._shadowMapFilter = this.getCSMGenerator().filter;
         this._shadowMapBias = this.getCSMGenerator().bias;
@@ -69,6 +68,8 @@ export default class CSM extends StandardShadow {
         this._shadowMapBlurKernel = this.getCSMGenerator().blurKernel;
         this._shadowMapBlurBoxOffset = this.getCSMGenerator().blurBoxOffset;
         this._shadowMapLightSizeUVRatio = this.getCSMGenerator().contactHardeningLightSizeUVRatio;
+
+        this.setShadowMapViewerTexture();
     }
 
     public get csmStabilizeCascades(): boolean {
@@ -120,11 +121,16 @@ export default class CSM extends StandardShadow {
     }
 
     protected createGenerator(): ShadowGenerator {
-        return (new CSMShadowGenerator(this.shadowMapSize, this.sun, this._csmNumCascades)) as unknown as ShadowGenerator;
+        const generator = new CSMShadowGenerator(this.shadowMapSize, this.sun, this._csmNumCascades);;
+
+        generator.activeCascade = CSMShadowGenerator.CASCADE_ALL;
+
+        return generator as unknown as ShadowGenerator;
     }
 
     protected setShadowMapViewerTexture(): void {
-        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._csmActiveCascade !== CSMShadowGenerator.CASCADE_ALL ? this.getCSMGenerator().getShadowMaps()[this._csmActiveCascade] : null;
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = 
+            this._csmActiveCascade !== CSMShadowGenerator.CASCADE_ALL && this._shadowMapFilter !== ShadowGenerator.FILTER_PCF ? this.getCSMGenerator().getShadowMaps()[this._csmActiveCascade] : null;
     }
 
     protected createShadowGenerator(): void {
@@ -132,7 +138,6 @@ export default class CSM extends StandardShadow {
 
         const shadowGenerator = this.getCSMGenerator();
 
-        shadowGenerator.activeCascade = CSMShadowGenerator.CASCADE_ALL;
         shadowGenerator.stabilizeCascades = this._csmStabilizeCascades;
         shadowGenerator.depthClamp = this._csmDepthClamp;
         shadowGenerator.lambda = this._csmLambda;

@@ -79,6 +79,7 @@ export default class StandardShadow extends SplitBase {
     public set shadowMapFilter(smf: number) {
         this.getStandardGenerator().filter = smf;
         this._shadowMapFilter = this.getStandardGenerator().filter;
+        this.setShadowMapViewerTexture();
     }
 
     public get shadowMapBias(): number {
@@ -399,6 +400,10 @@ export default class StandardShadow extends SplitBase {
         return new ShadowGenerator(this.shadowMapSize, this.sun);
     }
 
+    protected setShadowMapViewerTexture(): void {
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._shadowMapFilter !== ShadowGenerator.FILTER_PCF ? this._shadowGenerator.getShadowMaps()[0] : null;
+    }
+
     protected createShadowGenerator(): void {
         if (this._shadowGenerator) {
             this._shadowGenerator.dispose();
@@ -406,6 +411,8 @@ export default class StandardShadow extends SplitBase {
         }
 
         const shadowGenerator = this.createGenerator();
+
+        this._shadowGenerator = shadowGenerator;
 
         shadowGenerator.bias = this._shadowMapBias;
         shadowGenerator.normalBias = this._shadowMapNormalBias;
@@ -419,11 +426,9 @@ export default class StandardShadow extends SplitBase {
         shadowGenerator.blurBoxOffset = this._shadowMapBlurBoxOffset;
         shadowGenerator.contactHardeningLightSizeUVRatio = this._shadowMapLightSizeUVRatio;
 
-        this._shadowGenerator = shadowGenerator;
+        this.setShadowMapViewerTexture();
 
         (window as any).sg = shadowGenerator;
-
-        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = shadowGenerator.getShadowMaps()[0];
 
         const renderList = shadowGenerator.renderList!;
 
