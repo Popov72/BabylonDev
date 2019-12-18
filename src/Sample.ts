@@ -28,12 +28,29 @@ export default class Sample {
 
     protected static _sampleList: Map<string, ISampleDescription> = new Map();
 
+    protected static readonly cameraKeys = {
+        "azerty": {
+            "Up": 90, // Z
+            "Down": 83, // S
+            "Left": 81, // Q
+            "Right": 68, // D
+        },
+
+        "qwerty": {
+            "Up": 87, // W
+            "Down": 83, // S
+            "Left": 65, // A
+            "Right": 68, // D
+        },
+    };
+
     protected _engine:          Engine;
     protected _canvas:          HTMLCanvasElement;
     protected _mapKeys:         Map<String, boolean>;
     protected _clearColor:      Color4;
     protected _cameraSpeed:     number;
     protected _gui:             MainGUI | null;
+    protected _qwertyMode:      boolean;
 
     public splits:          Array<Split>;
     public splitMode:       enumSplitMode;
@@ -68,6 +85,7 @@ export default class Sample {
         this._mapKeys = new Map<String, boolean>();
         this._clearColor = new Color4(0, 0, 0, 1);
         this._cameraSpeed = cameraSpeed;
+        this._qwertyMode = false;
 
         this.splits = [];
         this.splitMode = enumSplitMode.LINEAR;
@@ -77,6 +95,15 @@ export default class Sample {
 
         (window as any).__sample = this;
         (window as any).__ss = this.splits;
+    }
+
+    public get qwertyMode(): boolean {
+        return this._qwertyMode;
+    }
+
+    public set qwertyMode(qm: boolean) {
+        this._qwertyMode = qm;
+        this.splits.forEach((split) => this.setCameraKeys(split.camera));
     }
 
     public get splitNumber(): number {
@@ -122,14 +149,14 @@ export default class Sample {
 
         if (this._mapKeys.get("F10") && this._gui) {
             this._mapKeys.set("F10", false);
-                this._gui.toggleGUI();
-            }
+            this._gui.toggleGUI();
+        }
 
         this.splits.forEach((split, splitIndex) => {
             if (this._mapKeys.get(`F${splitIndex + 1}`) && split.gui) {
                 this._mapKeys.set(`F${splitIndex + 1}`, false);
                 split.gui.toggleGUI();
-        }
+            }
         });
 
         if (this._mapKeys.get("/")) {
@@ -293,6 +320,13 @@ export default class Sample {
         });
     }
 
+    protected setCameraKeys(camera: UniversalCamera): void {
+        camera.keysUp = [Sample.cameraKeys[this._qwertyMode ? "qwerty" : "azerty"].Up];
+        camera.keysDown = [Sample.cameraKeys[this._qwertyMode ? "qwerty" : "azerty"].Down];
+        camera.keysLeft = [Sample.cameraKeys[this._qwertyMode ? "qwerty" : "azerty"].Left];
+        camera.keysRight = [Sample.cameraKeys[this._qwertyMode ? "qwerty" : "azerty"].Right];
+    }
+
     protected createSceneAndCamera(attachControls: boolean = true): [Scene, UniversalCamera] {
         const scene = new Scene(this._engine);
         const camera = new UniversalCamera("camera" + this.splits.length, new Vector3(0, 5, -10), scene);
@@ -303,10 +337,7 @@ export default class Sample {
         camera.inertia = 0;
         camera.angularSensibility = 500;
 
-        camera.keysUp.push(90); // Z
-        camera.keysDown.push(83); // S
-        camera.keysLeft.push(81); // Q
-        camera.keysRight.push(68); // D
+        this.setCameraKeys(camera);
 
         scene.onKeyboardObservable.add((kbInfo) => {
             switch (kbInfo.type) {

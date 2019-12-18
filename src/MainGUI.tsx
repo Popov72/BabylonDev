@@ -6,7 +6,12 @@ import {
     MenuItem,
     Paper,
     Select,
+    Switch,
 } from '@material-ui/core';
+
+import {
+    withStyles,
+} from '@material-ui/core/styles';
 
 import {
     Engine,
@@ -25,7 +30,7 @@ export default class MainGUI extends GUI {
         this._parent = parent;
 
         this.dimensions.width = 250;
-        this.dimensions.height = 184;
+        this.dimensions.height = 214;
         this.showCloseButton = false;
         this.defaultPosition = enumDefaultPosition.TOP_LEFT;
     }
@@ -35,10 +40,17 @@ export default class MainGUI extends GUI {
     }
 
     protected createCustomGUI(): React.ReactElement {
+        const GridQwerty = withStyles({
+            root: {
+                maxWidth: 60,
+            },
+        })(Grid);
+
         const Properties = () => {
             const classes = this._useStyles();
             const [splitLayout, setSplitLayout] = React.useState(this._parent.splitMode);
             const [splitType, setSplitType] = React.useState(this._parent.splitType);
+            const [qwertyMode, setQwertyMode] = React.useState(this._parent.qwertyMode);
 
             const changeSplitLayout = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
                 this._parent.splitMode = event.target.value as number;
@@ -50,8 +62,38 @@ export default class MainGUI extends GUI {
                 setSplitType(this._parent.splitType);
             };
 
+            const changeQwertyMode = (event: React.ChangeEvent, checked: boolean) => {
+                setQwertyMode(checked);
+                this._parent.qwertyMode = checked;
+            };
+
+            React.useEffect(() => {
+                const handler = (event: Event) => {
+                    switch ((event as CustomEvent).detail.type) {
+                        case 'setSplitLayout': {
+                            setSplitLayout(this._parent.splitMode);
+                            break;
+                        }
+                    }
+                };
+
+                window.addEventListener('gui_set_value', handler);
+
+                return () => {
+                    window.removeEventListener('gui_set_value', handler);
+                };
+            }, []);
+
             return (
                 <Grid container spacing={1}>
+                    <Grid item xs={6}>
+                        <Paper className={classes.propertyTitle}>QWERTY mode</Paper>
+                    </Grid>
+                    <GridQwerty item xs={6} className={classes.propertyValue}>
+                        <Paper className={classes.propertyValue}>
+                            <Switch checked={qwertyMode} onChange={changeQwertyMode} />
+                        </Paper>
+                    </GridQwerty>
                     <Grid item xs={6}>
                         <Paper className={classes.propertyTitle}>Split layout</Paper>
                     </Grid>
