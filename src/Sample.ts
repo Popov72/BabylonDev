@@ -118,14 +118,24 @@ export default class Sample {
                     split.gui.toggleGUI();
                 }
             });
-            if (this._mapKeys.get("Shift") && this._gui) {
+        }
+
+        if (this._mapKeys.get("F10") && this._gui) {
+            this._mapKeys.set("F10", false);
                 this._gui.toggleGUI();
             }
+
+        this.splits.forEach((split, splitIndex) => {
+            if (this._mapKeys.get(`F${splitIndex + 1}`) && split.gui) {
+                this._mapKeys.set(`F${splitIndex + 1}`, false);
+                split.gui.toggleGUI();
         }
+        });
 
         if (this._mapKeys.get("/")) {
             this._mapKeys.set("/", false);
             this.splitMode = this.splitMode === enumSplitMode.LINEAR ? enumSplitMode.SIDE_BY_SIDE : enumSplitMode.LINEAR;
+            window.dispatchEvent(new CustomEvent('gui_set_value', { detail: { type: 'setSplitLayout' } }));
         }
     }
 
@@ -302,6 +312,9 @@ export default class Sample {
             switch (kbInfo.type) {
                 case BABYLON.KeyboardEventTypes.KEYDOWN:
                     this._mapKeys.set(kbInfo.event.key, true);
+                    if (kbInfo.event.key == "F1") {
+                        kbInfo.event.preventDefault();
+                    }
                     break;
                 case BABYLON.KeyboardEventTypes.KEYUP:
                     this._mapKeys.set(kbInfo.event.key, false);
