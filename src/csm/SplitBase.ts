@@ -54,6 +54,7 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _csmStabilizeCascades: boolean;
     protected _csmDepthClamp: boolean;
     protected _csmLambda: number;
+    protected _csmUseRightDirectionAsUpForOrthoProj: boolean;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -89,6 +90,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmStabilizeCascades = false;
         this._csmDepthClamp = true;
         this._csmLambda = 0.5;
+        this._csmUseRightDirectionAsUpForOrthoProj = true;
 
         this._shadowMapPlane = null as any;
 
@@ -373,6 +375,14 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set csmLambda(cl: number) {
         this._csmLambda = cl;
+    }
+
+    public get csmUseRightDirectionAsUpForOrthoProj(): boolean {
+        return this._csmUseRightDirectionAsUpForOrthoProj;
+    }
+
+    public set csmUseRightDirectionAsUpForOrthoProj(curdfop: boolean) {
+        this._csmUseRightDirectionAsUpForOrthoProj = curdfop;
     }
 
     protected setDirectionFromSibling(checkAnimate: boolean = true): void {

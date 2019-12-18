@@ -45,5 +45,6 @@ export default interface ISampleSplit extends Split {
     csmStabilizeCascades: boolean;
     csmDepthClamp: boolean;
     csmLambda: number;
+    csmUseRightDirectionAsUpForOrthoProj: boolean;
 
 }

@@ -159,7 +159,7 @@ export class CSMShadowMap extends ShadowGenerator {
             minExtents.set(-sphereRadius, -sphereRadius, -sphereRadius);
         } else {
             // Create a temporary view matrix for the light
-            const upDir = Vector3.Up();//camera.getDirection(new Vector3(1, 0, 0));
+            const upDir = this._parent.useRightDirectionAsUpForOrthoProj ? camera.getDirection(new Vector3(1, 0, 0)) : Vector3.Up();
 
             const lightCameraPos = frustumCenter,
                   lookAt = frustumCenter.add(this._lightDirection);
@@ -173,13 +173,6 @@ export class CSMShadowMap extends ShadowGenerator {
                 minExtents.minimizeInPlace(corner);
                 maxExtents.maximizeInPlace(corner);
             }
-
-            /*let worldUnitsPerTexel = maxExtents.subtract(minExtents).scaleInPlace(1 / this._mapSize);
-
-            minExtents.x = Math.floor(minExtents.x / worldUnitsPerTexel.x) * worldUnitsPerTexel.x;
-            minExtents.y = Math.floor(minExtents.y / worldUnitsPerTexel.y) * worldUnitsPerTexel.y;
-            maxExtents.x = Math.floor(maxExtents.x / worldUnitsPerTexel.x) * worldUnitsPerTexel.x;
-            maxExtents.y = Math.floor(maxExtents.y / worldUnitsPerTexel.y) * worldUnitsPerTexel.y;*/
         }
 
         return [minExtents, maxExtents, frustumCenter];
@@ -201,7 +194,7 @@ export class CSMShadowMap extends ShadowGenerator {
         const shadowCameraPos = frustumCenter.add(this._lightDirection.scale(minExtents.z));
 
         // Come up with a new orthographic camera for the shadow caster
-        const upDir =/* this._parent.stabilizeCascades ?*/ Vector3.Up()/* : camera.getDirection(new Vector3(1, 0, 0))*/;
+        const upDir = this._parent.stabilizeCascades || !this._parent.useRightDirectionAsUpForOrthoProj ? Vector3.Up() : camera.getDirection(new Vector3(1, 0, 0));
 
         Matrix.LookAtLHToRef(shadowCameraPos, frustumCenter, upDir, this._viewMatrix);
 

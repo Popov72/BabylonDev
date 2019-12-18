@@ -99,6 +99,15 @@ export default class CSM extends StandardShadow {
         this.getCSMGenerator().lambda = cl;
     }
 
+    public get csmUseRightDirectionAsUpForOrthoProj(): boolean {
+        return this._csmUseRightDirectionAsUpForOrthoProj;
+    }
+
+    public set csmUseRightDirectionAsUpForOrthoProj(curdfop: boolean) {
+        this._csmUseRightDirectionAsUpForOrthoProj = curdfop;
+        this.getCSMGenerator().useRightDirectionAsUpForOrthoProj = curdfop;
+    }
+
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
         const cascade = this.getCSMGenerator().cascade;
 

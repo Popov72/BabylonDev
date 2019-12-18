@@ -75,6 +75,7 @@ export default class SplitBaseGUI extends SplitGUI {
             const [csmStabilizeCascades, setCSMStabilizeCascades] = React.useState(this._sparent.csmStabilizeCascades);
             const [csmDepthClamp, setCSMDepthClamp] = React.useState(this._sparent.csmDepthClamp);
             const [csmLambda, setCSMLambda] = React.useState(this._sparent.csmLambda);
+            const [csmUseRightDirectionAsUpForOrthoProj, setCSMUseRightDirectionAsUpForOrthoProj] = React.useState(this._sparent.csmUseRightDirectionAsUpForOrthoProj);
 
 
             const changeCameraNearPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
@@ -219,6 +220,11 @@ export default class SplitBaseGUI extends SplitGUI {
             const changeCSMLambda = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.csmLambda = value as number;
                 setCSMLambda(this._sparent.csmLambda);
+            };
+
+            const changeCSMUseRightDirectionAsUpForOrthoProj = (event: React.ChangeEvent, checked: boolean) => {
+                setCSMUseRightDirectionAsUpForOrthoProj(checked);
+                this._sparent.csmUseRightDirectionAsUpForOrthoProj = checked;
             };
 
             React.useEffect(() => {
@@ -386,6 +392,14 @@ export default class SplitBaseGUI extends SplitGUI {
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
                                             <PrettoSlider valueLabelDisplay="auto" value={csmLambda} min={0} max={1} step={0.01} onChange={changeCSMLambda} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Use Right as Up</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                        <Switch checked={csmUseRightDirectionAsUpForOrthoProj} onChange={changeCSMUseRightDirectionAsUpForOrthoProj} />
                                         </Paper>
                                     </Grid>
                                 </Grid>
