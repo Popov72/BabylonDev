@@ -330,7 +330,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._minDistance = 0;
         this._maxDistance = 1;
         this._stabilizeCascades = false;
-        this._useRightDirectionAsUpForOrthoProj = true;
+        this._useRightDirectionAsUpForOrthoProj = false;
         this._shadowCastersBoundingInfo = new BoundingInfo(new Vector3(0, 0, 0), new Vector3(0, 0, 0));
 
         this._mapSize = mapSize;

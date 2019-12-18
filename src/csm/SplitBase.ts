@@ -90,7 +90,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmStabilizeCascades = false;
         this._csmDepthClamp = true;
         this._csmLambda = 0.5;
-        this._csmUseRightDirectionAsUpForOrthoProj = true;
+        this._csmUseRightDirectionAsUpForOrthoProj = false;
 
         this._shadowMapPlane = null as any;
 
