@@ -1,5 +1,5 @@
 import {
-    /*CSMShadowGenerator,*/
+    CSMShadowGenerator,
     Scene,
     ShadowGenerator,
     StandardMaterial,
@@ -10,7 +10,7 @@ import {
 import Sample from "../Sample";
 import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
-import { CSMShadowGenerator } from "./csmShadowGenerator";
+//import { CSMShadowGenerator } from "./csmShadowGenerator";
 
 export default class CSM extends StandardShadow {
 
