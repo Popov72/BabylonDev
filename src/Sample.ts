@@ -62,6 +62,9 @@ export default class Sample {
     }
 
     public static registerSampleClass(name: string, sample: ISampleDescription): void {
+        if (Sample._sampleList.get(name)) {
+            throw `registerSampleClass: name "${name} already registered!"`;
+        }
         Sample._sampleList.set(name, sample);
     }
 
