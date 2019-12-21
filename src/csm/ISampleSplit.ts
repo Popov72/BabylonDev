@@ -42,6 +42,7 @@ export default interface ISampleSplit extends Split {
 
     csmNumCascades: number;
     csmActiveCascade: number;
+    csmVisualizeCascades: boolean;
     csmStabilizeCascades: boolean;
     csmDepthClamp: boolean;
     csmLambda: number;

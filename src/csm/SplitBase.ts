@@ -51,6 +51,7 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     protected _csmNumCascades: number;
     protected _csmActiveCascade: number;
+    protected _csmVisualizeCascades: boolean;
     protected _csmStabilizeCascades: boolean;
     protected _csmDepthClamp: boolean;
     protected _csmLambda: number;
@@ -87,6 +88,7 @@ export default class SplitBase extends Split implements ISampleSplit {
 
         this._csmNumCascades = 4;
         this._csmActiveCascade = 0;
+        this._csmVisualizeCascades = false;
         this._csmStabilizeCascades = false;
         this._csmDepthClamp = true;
         this._csmLambda = 0.5;
@@ -351,6 +353,14 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set csmActiveCascade(cac: number) {
         this._csmActiveCascade = cac;
+    }
+
+    public get csmVisualizeCascades(): boolean {
+        return this._csmVisualizeCascades;
+    }
+
+    public set csmVisualizeCascades(cvc: boolean) {
+        this._csmVisualizeCascades = cvc;
     }
 
     public get csmStabilizeCascades(): boolean {

@@ -144,6 +144,17 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._shadowCastersBoundingInfo = boundingInfo;
     }
 
+    protected _debug: boolean;
+
+    public get debug(): boolean {
+        return this._debug;
+    }
+
+    public set debug(dbg: boolean) {
+        this._debug = dbg;
+        this._light._markMeshesAsLightDirty();
+    }
+
     protected _cascades: Array<ICascade>;
 
     public get cascade(): Nullable<ICascade> {
@@ -342,6 +353,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._lightMatrices = new Float32Array(numCascades * 16);
         this._samplers = new Array(numCascades);
         this._cascadeDepths = new Array(numCascades);
+        this._debug = false;
 
         this._mapSize = mapSize;
         this._usefulFloatFirst = usefulFloatFirst;
@@ -472,6 +484,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
 
         defines["SHADOWCSM" + lightIndex] = true;
         defines["SHADOWCSM" + lightIndex + "_NUMCASCADES"] = this._numCascades;
+        defines["SHADOWCSM" + lightIndex + "_DEBUG"] = this._debug;
     }
 
     bindShadowLight(lightIndex: string, effect: Effect): void {

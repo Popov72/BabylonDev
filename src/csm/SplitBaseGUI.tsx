@@ -72,6 +72,7 @@ export default class SplitBaseGUI extends SplitGUI {
 
             const [csmNumCascades, setCSMNumCascades] = React.useState(this._sparent.csmNumCascades);
             const [csmActiveCascade, setCSMActiveCascade] = React.useState(this._sparent.csmActiveCascade);
+            const [csmVisualizeCascades, setCSMVisualizeCascades] = React.useState(this._sparent.csmVisualizeCascades);
             const [csmStabilizeCascades, setCSMStabilizeCascades] = React.useState(this._sparent.csmStabilizeCascades);
             const [csmDepthClamp, setCSMDepthClamp] = React.useState(this._sparent.csmDepthClamp);
             const [csmLambda, setCSMLambda] = React.useState(this._sparent.csmLambda);
@@ -205,6 +206,11 @@ export default class SplitBaseGUI extends SplitGUI {
                 setShadowMapBlurKernel(this._sparent.shadowMapBlurKernel);
                 setShadowMapBlurBoxOffset(this._sparent.shadowMapBlurBoxOffset);
                 setShadowMapLightSizeUVRatio(this._sparent.shadowMapLightSizeUVRatio);
+            };
+
+            const changeCSMVisualizeCascades = (event: React.ChangeEvent, checked: boolean) => {
+                setCSMVisualizeCascades(checked);
+                this._sparent.csmVisualizeCascades = checked;
             };
 
             const changeCSMStabilizeCascades = (event: React.ChangeEvent, checked: boolean) => {
@@ -369,6 +375,14 @@ export default class SplitBaseGUI extends SplitGUI {
                                         >
                                             { [...Array(csmNumCascades).keys()].map((_, i) => <MenuItem key={i} value={i}>{i + 1}</MenuItem>) }
                                         </Select>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Visualize Cascades</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={csmVisualizeCascades} onChange={changeCSMVisualizeCascades} />
+                                        </Paper>
                                     </Grid>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Stabilize Cascades</Paper>

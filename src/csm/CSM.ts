@@ -1,5 +1,5 @@
 import {
-    CSMShadowGenerator,
+    //CSMShadowGenerator,
     Scene,
     ShadowGenerator,
     StandardMaterial,
@@ -10,7 +10,7 @@ import {
 import Sample from "../Sample";
 import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
-//import { CSMShadowGenerator } from "./csmShadowGenerator";
+import { CSMShadowGenerator } from "./csmShadowGenerator";
 
 export default class CSM extends StandardShadow {
 
@@ -60,6 +60,15 @@ export default class CSM extends StandardShadow {
         this._shadowMapLightSizeUVRatio = this.getCSMGenerator().contactHardeningLightSizeUVRatio;
 
         this.setShadowMapViewerTexture();
+    }
+
+    public get csmVisualizeCascades(): boolean {
+        return this._csmVisualizeCascades;
+    }
+
+    public set csmVisualizeCascades(cvc: boolean) {
+        this._csmVisualizeCascades = cvc;
+        this.getCSMGenerator().debug = cvc;
     }
 
     public get csmStabilizeCascades(): boolean {
