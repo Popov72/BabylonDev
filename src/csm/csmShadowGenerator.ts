@@ -471,6 +471,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
         this._cascades[0].generator.prepareDefines(defines, lightIndex);
 
         defines["SHADOWCSM" + lightIndex] = true;
+        defines["SHADOWCSM" + lightIndex + "_NUMCASCADES"] = this._numCascades;
     }
 
     bindShadowLight(lightIndex: string, effect: Effect): void {
@@ -502,7 +503,11 @@ export class CSMShadowGenerator implements IShadowGenerator {
 
             matrix.copyToArray(this._lightMatrices, cascadeIndex * 16);
 
-            this._samplers[cascadeIndex] = cascade.generator.getShadowMapForRendering()!;
+            if (masterGenerator.filter === ShadowGenerator.FILTER_PCF) {
+                effect.setDepthStencilTexture("shadowSampler" + lightIndex + "_" + cascadeIndex, cascade.generator.getShadowMapForRendering());
+            } else {
+                this._samplers[cascadeIndex] = cascade.generator.getShadowMapForRendering()!;
+            }
 
             this._cascadeDepths[cascadeIndex] = camera.minZ + cascade.splitDistance * cameraRange;
         }
@@ -512,7 +517,9 @@ export class CSMShadowGenerator implements IShadowGenerator {
         }
 
         effect.setInt("numCascades" + lightIndex, this._cascades.length);
-        effect.setTextureArray("shadowSampler" + lightIndex, this._samplers);
+        if (masterGenerator.filter !== ShadowGenerator.FILTER_PCF) {
+            effect.setTextureArray("shadowSampler" + lightIndex, this._samplers);
+        }
         effect.setArray("cascadeSplits" + lightIndex, this._cascadeDepths);
 
         if (masterGenerator.filter === ShadowGenerator.FILTER_PCF) {
