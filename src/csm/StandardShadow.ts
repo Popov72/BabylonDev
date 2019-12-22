@@ -63,6 +63,7 @@ export default class StandardShadow extends SplitBase {
     protected _shadowGenerator: IShadowGenerator;
     protected _lightHelperFrustumLines: Array<Mesh>;
     protected _lightGizmo: LightGizmo;
+    protected _skyBox: Mesh;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -377,7 +378,7 @@ export default class StandardShadow extends SplitBase {
 
         (window as any).sun = this.sun;
 
-        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
+        this._skyBox = Utils.addSkybox("Clouds.dds", this.scene, 100);
 
         await Utils.loadObj(this.scene, scene.path, scene.name);
 
@@ -1076,16 +1077,17 @@ export default class StandardShadow extends SplitBase {
     }
 
     public render(): void {
+        this._skyBox.position.copyFrom(this.camera.position);
         this.scene.render();
 
-        if (this._animateLight && this._autoCalcShadowZBounds) {
+        /*if (this._animateLight && this._autoCalcShadowZBounds) {
             this._lightNearPlane = this.sun.shadowMinZ;
             this._lightFarPlane = this.sun.shadowMaxZ;
 
             const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowZBounds' } });
 
             window.dispatchEvent(event);
-        }
+        }*/
     }
 
 }
