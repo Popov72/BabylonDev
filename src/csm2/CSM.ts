@@ -30,6 +30,27 @@ export default class CSM extends StandardShadow {
         return (this._shadowGenerator as unknown as CascadedShadowGenerator);
     }
 
+    public get cameraNearPlane(): number {
+        return this._cameraNearPlane;
+    }
+
+    public set cameraNearPlane(cnp: number) {
+        this._cameraNearPlane = cnp;
+        this.camera.minZ = cnp;
+        this.getCSMGenerator().frustumLength = this._cameraNearPlane; // make frustumLength change
+        this.getCSMGenerator().frustumLength = this._cameraFarPlane; // so trigger a cascade recomputation
+    }
+
+    public get cameraFarPlane(): number {
+        return this._cameraFarPlane;
+    }
+
+    public set cameraFarPlane(cfp: number) {
+        this._cameraFarPlane = cfp;
+        this.camera.maxZ = cfp;
+        this.getCSMGenerator().frustumLength = cfp;
+    }
+
     public get csmNumCascades(): number {
         return this._csmNumCascades;
     }
@@ -85,6 +106,15 @@ export default class CSM extends StandardShadow {
         this.getCSMGenerator().lambda = cl;
     }
 
+    public get csmSplitBlendPercentage(): number {
+        return this._csmSplitBlendPercentage;
+    }
+
+    public set csmSplitBlendPercentage(csbp: number) {
+        this._csmSplitBlendPercentage = csbp;
+        this.getCSMGenerator().splitBlendPercentage = csbp;
+    }
+
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
         /*const cascade = this.getCSMGenerator().cascade;
 
@@ -129,6 +159,7 @@ export default class CSM extends StandardShadow {
         shadowGenerator.depthClamp = this._csmDepthClamp;
         shadowGenerator.lambda = this._csmLambda;
         shadowGenerator.debug = this._csmVisualizeCascades
+        shadowGenerator.splitBlendPercentage = this._csmSplitBlendPercentage;
         //!shadowGenerator.freezeShadowCastersBoundingInfo = true;
 
         this.setShadowMapViewerTexture();

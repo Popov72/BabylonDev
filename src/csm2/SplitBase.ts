@@ -57,6 +57,7 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _csmStabilizeCascades: boolean;
     protected _csmDepthClamp: boolean;
     protected _csmLambda: number;
+    protected _csmSplitBlendPercentage: number;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -76,7 +77,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._showDepthMapObservable = null;
         this._shadowMapSize = 1024;
         this._shadowMapFilter = ShadowGenerator.FILTER_PCF;
-        this._shadowMapBias = 0.005;
+        this._shadowMapBias = 0.003;
         this._shadowMapNormalBias = 0;
         this._shadowMapDarkness = 0;
         this._shadowMapQuality = ShadowGenerator.QUALITY_MEDIUM;
@@ -93,6 +94,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmStabilizeCascades = false;
         this._csmDepthClamp = true;
         this._csmLambda = 0.5;
+        this._csmSplitBlendPercentage = 0.0;
 
         this._shadowMapPlane = null as any;
 
@@ -429,6 +431,14 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set csmLambda(cl: number) {
         this._csmLambda = cl;
+    }
+
+    public get csmSplitBlendPercentage(): number {
+        return this._csmSplitBlendPercentage;
+    }
+
+    public set csmSplitBlendPercentage(csbp: number) {
+        this._csmSplitBlendPercentage = csbp;
     }
 
     protected setDirectionFromSibling(checkAnimate: boolean = true): void {

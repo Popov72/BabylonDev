@@ -65,17 +65,21 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     public static readonly MAX_CASCADES_COUNT = 4;
 
     /**
+     * Shadow generator mode None: no filtering applied.
+     */
+    public static readonly FILTER_NONE = 0;
+    /**
      * Shadow generator mode PCF: Percentage Closer Filtering
      * benefits from Webgl 2 shadow samplers. Fallback to Poisson Sampling in Webgl 1
      * (https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch11.html)
      */
-    public static readonly FILTER_PCF = 0;
+    public static readonly FILTER_PCF = 6;
     /**
      * Shadow generator mode PCSS: Percentage Closering Soft Shadow.
      * benefits from Webgl 2 shadow samplers. Fallback to Poisson Sampling in Webgl 1
      * Contact Hardening
      */
-    public static readonly FILTER_PCSS = 1;
+    public static readonly FILTER_PCSS = 7;
 
     /**
      * Reserved for PCF and PCSS
@@ -179,6 +183,22 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this._light._markMeshesAsLightDirty();
     }
 
+    /**
+     * Gets if the current filter is set to "PCF" (percentage closer filtering).
+     */
+    public get usePercentageCloserFiltering(): boolean {
+        return this.filter === CascadedShadowGenerator.FILTER_PCF;
+    }
+    /**
+     * Sets the current filter to "PCF" (percentage closer filtering).
+     */
+    public set usePercentageCloserFiltering(value: boolean) {
+        if (!value && this.filter !== CascadedShadowGenerator.FILTER_PCF) {
+            return;
+        }
+        this.filter = (value ? CascadedShadowGenerator.FILTER_PCF : CascadedShadowGenerator.FILTER_NONE);
+    }
+
     private _filteringQuality = CascadedShadowGenerator.QUALITY_HIGH;
     /**
      * Gets the PCF or PCSS Quality.
@@ -215,7 +235,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         if (!value && this.filter !== CascadedShadowGenerator.FILTER_PCSS) {
             return;
         }
-        this.filter = (value ? CascadedShadowGenerator.FILTER_PCSS : CascadedShadowGenerator.FILTER_PCF);
+        this.filter = (value ? CascadedShadowGenerator.FILTER_PCSS : CascadedShadowGenerator.FILTER_NONE);
     }
 
     private _contactHardeningLightSizeUVRatio = 0.1;
@@ -414,14 +434,13 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
     private _effect: Effect;
 
-    private _viewMatrix = Matrix.Zero();
+    private _viewMatrix: Array<Matrix>;
     private _cachedPosition: Vector3 = new Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     private _cachedDirection: Vector3 = new Vector3(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
     private _cachedDefines: string;
-    private _currentRenderID: number;
+    private _currentRenderID: Array<number>;
     private _mapSize: number;
     private _currentLayer = 0;
-    private _currentLayerCache = 0;
     private _textureType: number;
     private _defaultTextureMatrix = Matrix.Identity();
     private _storedUniqueId: Nullable<number>;
@@ -468,6 +487,10 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this._light._markMeshesAsLightDirty();
     }
 
+    public depthClamp: boolean = false;
+
+    public splitBlendPercentage: number = 0.1;
+
     private _lambda = 0.5;
 
     /**
@@ -488,8 +511,6 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this._initCascades();
     }
 
-    public depthClamp: boolean = false;
-
     private _initCascades(): void {
         let camera = this._scene.activeCamera;
         if (!camera) {
@@ -499,6 +520,8 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         if (!this._frustumLength) {
             this._frustumLength = camera.maxZ;
         }
+
+        this._currentRenderID = new Array(this._cascades);
 
         // inits and sets all static params related to CSM
         let engine = this._scene.getEngine();
@@ -563,8 +586,10 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         }
 
         // initialize the CSM transformMatrices
+        this._viewMatrix = [];
         this._transformMatrices = [];
         for (let index = 0; index < this.cascades; index++) {
+            this._viewMatrix[index] = Matrix.Zero();
             this._transformMatrices[index] = Matrix.Zero();
         }
         this._transformMatricesAsArray = new Float32Array(this.cascades * 16);
@@ -573,7 +598,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     private _uniformSplit(amount: number, near: number, far: number): Array<number> {
         let r = [];
         for (let i = 1; i < amount; i++) {
-            r.push((near + (far - near) * i / amount) / far);
+            r.push(i / amount);
         }
         r.push(1);
         return r;
@@ -582,7 +607,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     private _logarithmicSplit(amount: number, near: number, far: number): Array<number> {
         let r = [];
         for (let i = 1; i < amount; i++) {
-            r.push((near * (far / near) ** (i / amount)) / far);
+            r.push((near * (far / near) ** (i / amount) - near) / (far - near));
         }
         r.push(1);
         return r;
@@ -608,12 +633,8 @@ export class CascadedShadowGenerator implements IShadowGenerator {
      */
     public getCSMTransformMatrix(mapIndex: number): Matrix {
         var scene = this._scene;
-        if (this._currentRenderID === scene.getRenderId() && this._currentLayerCache === this._currentLayer) {
+        if (this._currentRenderID[mapIndex] === scene.getRenderId()) {
             return this._transformMatrices[mapIndex];
-        }
-
-        if (!this._viewSpaceBoundingSpheres || this._viewSpaceBoundingSpheres.length === 0) {
-            this._initCascades();
         }
 
         let camera = scene.activeCamera;
@@ -621,15 +642,14 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             return this._transformMatrices[mapIndex];
         }
 
-        this._currentRenderID = scene.getRenderId();
-        this._currentLayerCache = this._currentLayer;
+        this._currentRenderID[mapIndex] = scene.getRenderId();
 
         var lightPosition = this._light.position;
         if (this._light.computeTransformedInformation()) {
             lightPosition = this._light.transformedPosition;
         }
 
-        Vector3.NormalizeToRef(this._light.getShadowDirection(this._currentLayer), this._lightDirection);
+        Vector3.NormalizeToRef(this._light.getShadowDirection(0), this._lightDirection);
         if (Math.abs(Vector3.Dot(this._lightDirection, Vector3.Up())) === 1.0) {
             this._lightDirection.z = 0.0000000000001; // Required to avoid perfectly perpendicular light
         }
@@ -642,11 +662,11 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             let bs = new BoundingSphere(this._viewSpaceBoundingSpheres[mapIndex].minimum, this._viewSpaceBoundingSpheres[mapIndex].maximum, camera.getWorldMatrix());
             // get view matrix
             let shadowCamPos = bs.centerWorld.subtract(this._lightDirection.scale(bs.radius));
-            Matrix.LookAtLHToRef(shadowCamPos, bs.centerWorld, Vector3.Up(), this._viewMatrix);
+            Matrix.LookAtLHToRef(shadowCamPos, bs.centerWorld, Vector3.Up(), this._viewMatrix[mapIndex]);
             // get ortho matrix
             let OrthoMatrix = Matrix.OrthoLH(2.0 * bs.radius, 2.0 * bs.radius, 0, 2.0 * bs.radius);
             // get projection matrix
-            this._viewMatrix.multiplyToRef(OrthoMatrix, this._transformMatrices[mapIndex]);
+            this._viewMatrix[mapIndex].multiplyToRef(OrthoMatrix, this._transformMatrices[mapIndex]);
 
             // rounding the transform matrix to prevent shimmering artifacts from camera movement
             let shadowOrigin = Vector3.TransformCoordinates(Vector3.Zero(), this._transformMatrices[mapIndex]);
@@ -1133,7 +1153,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             }
             // else default to high.
         }
-        else {
+        else if (this.usePercentageCloserFiltering) {
             defines["SHADOWPCF" + lightIndex] = true;
             if (this._filteringQuality === CascadedShadowGenerator.QUALITY_LOW) {
                 defines["SHADOWLOWQUALITY" + lightIndex] = true;
@@ -1171,18 +1191,21 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
         const width = shadowMap.getSize().width;
 
-        effect.setMatrices("lightMatrixCSM" + lightIndex, this._transformMatricesAsArray);
-        effect.setMatrix("camViewMatCSM" + lightIndex, camera.getViewMatrix());
-        effect.setArray("viewFrustumZCSM" + lightIndex, this._viewSpaceFrustumsZ);
+        effect.setMatrices("lightMatrix" + lightIndex, this._transformMatricesAsArray);
+        effect.setArray("viewFrustumZ" + lightIndex, this._viewSpaceFrustumsZ);
+        effect.setFloat("splitBlendFactor" + lightIndex, this.splitBlendPercentage === 0 ? 10000 : 1 / this.splitBlendPercentage);
 
         // Only PCF uses depth stencil texture.
-        if (this._filter === CascadedShadowGenerator.FILTER_PCSS) {
+        if (this._filter === CascadedShadowGenerator.FILTER_PCF) {
+            effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
+            light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), width, 1 / width, this.frustumEdgeFalloff, lightIndex);
+        } else if (this._filter === CascadedShadowGenerator.FILTER_PCSS) {
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
             effect.setTexture("depthSampler" + lightIndex, shadowMap);
             light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), 1 / width, this._contactHardeningLightSizeUVRatio * width, this.frustumEdgeFalloff, lightIndex);
         }
         else {
-            effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
+            effect.setTexture("shadowSampler" + lightIndex, shadowMap);
             light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), width, 1 / width, this.frustumEdgeFalloff, lightIndex);
         }
 
@@ -1269,6 +1292,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         serializationObject.bias = this.bias;
         serializationObject.normalBias = this.normalBias;
 
+        serializationObject.usePercentageCloserFiltering = this.usePercentageCloserFiltering;
         serializationObject.useContactHardeningShadow = this.useContactHardeningShadow;
         serializationObject.filteringQuality = this.filteringQuality;
         serializationObject.contactHardeningLightSizeUVRatio = this.contactHardeningLightSizeUVRatio;
@@ -1309,7 +1333,10 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             });
         }
 
-        if (parsedShadowGenerator.useContactHardeningShadow) {
+        if (parsedShadowGenerator.usePercentageCloserFiltering) {
+            shadowGenerator.usePercentageCloserFiltering = true;
+        }
+        else if (parsedShadowGenerator.useContactHardeningShadow) {
             shadowGenerator.useContactHardeningShadow = true;
         }
 

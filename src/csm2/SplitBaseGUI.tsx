@@ -77,6 +77,7 @@ export default class SplitBaseGUI extends SplitGUI {
             const [csmStabilizeCascades, setCSMStabilizeCascades] = React.useState(this._sparent.csmStabilizeCascades);
             const [csmDepthClamp, setCSMDepthClamp] = React.useState(this._sparent.csmDepthClamp);
             const [csmLambda, setCSMLambda] = React.useState(this._sparent.csmLambda);
+            const [csmSplitBlendPercentage, setCSMSplitBlendPercentage] = React.useState(this._sparent.csmSplitBlendPercentage);
 
             const changeCameraNearPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.cameraNearPlane = value as number;
@@ -218,6 +219,11 @@ export default class SplitBaseGUI extends SplitGUI {
             const changeCSMLambda = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.csmLambda = value as number;
                 setCSMLambda(this._sparent.csmLambda);
+            };
+
+            const changeCSMSplitBlendPercentage = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.csmSplitBlendPercentage = value as number;
+                setCSMSplitBlendPercentage(this._sparent.csmSplitBlendPercentage);
             };
 
             React.useEffect(() => {
@@ -373,14 +379,16 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <Switch checked={csmVisualizeCascades} onChange={changeCSMVisualizeCascades} />
                                         </Paper>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <Paper className={classes.subPropertyTitle}>Stabilize Cascades</Paper>
-                                    </Grid>
-                                    <Grid item xs={6} className={classes.propertyValue}>
-                                        <Paper className={classes.propertyValue}>
-                                            <Switch checked={csmStabilizeCascades} onChange={changeCSMStabilizeCascades} />
-                                        </Paper>
-                                    </Grid>
+                                    { false && <>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Stabilize Cascades</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Paper className={classes.propertyValue}>
+                                                <Switch checked={csmStabilizeCascades} onChange={changeCSMStabilizeCascades} />
+                                            </Paper>
+                                        </Grid>
+                                    </> }
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Depth Clamp</Paper>
                                     </Grid>
@@ -395,6 +403,14 @@ export default class SplitBaseGUI extends SplitGUI {
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
                                             <PrettoSlider valueLabelDisplay="auto" value={csmLambda} min={0} max={1} step={0.01} onChange={changeCSMLambda} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Split Blend</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <PrettoSlider valueLabelDisplay="auto" value={csmSplitBlendPercentage} min={0} max={1} step={0.01} onChange={changeCSMSplitBlendPercentage} />
                                         </Paper>
                                     </Grid>
                                 </Grid>
@@ -484,10 +500,11 @@ export default class SplitBaseGUI extends SplitGUI {
                                             >
                                             <MenuItem value={CascadedShadowGenerator.FILTER_PCSS}>PCSS</MenuItem>
                                             <MenuItem value={CascadedShadowGenerator.FILTER_PCF}>PCF</MenuItem>
+                                            <MenuItem value={CascadedShadowGenerator.FILTER_NONE}>None</MenuItem>
                                         </Select>
                                     </> }
                                 </Grid>
-                                {(shadowMapFilter === ShadowGenerator.FILTER_PCSS || shadowMapFilter === ShadowGenerator.FILTER_PCF) && <>
+                                {((shadowMapFilter === ShadowGenerator.FILTER_PCSS || shadowMapFilter === ShadowGenerator.FILTER_PCF) && !this._showCSM || (shadowMapFilter === CascadedShadowGenerator.FILTER_PCSS || shadowMapFilter === CascadedShadowGenerator.FILTER_PCF) && this._showCSM) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Filtering Quality</Paper>
                                     </Grid>
@@ -503,7 +520,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                         </Select>
                                     </Grid>
                                 </> }
-                                {(shadowMapFilter === ShadowGenerator.FILTER_PCSS) && <>
+                                {((shadowMapFilter === ShadowGenerator.FILTER_PCSS) && !this._showCSM || (shadowMapFilter === CascadedShadowGenerator.FILTER_PCSS) && this._showCSM) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Light Size UV Ratio</Paper>
                                     </Grid>

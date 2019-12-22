@@ -345,7 +345,7 @@ export default class StandardShadow extends SplitBase {
 
         (window as any).sun = this.sun;
 
-        this._skybox = Utils.addSkybox("Clouds.dds", this.scene, 100/*this.camera.maxZ - 1*/);
+        this._skybox = Utils.addSkybox("Clouds.dds", this.scene, 100);
 
         await Utils.loadObj(this.scene, scene.path, scene.name);
 
@@ -408,6 +408,12 @@ export default class StandardShadow extends SplitBase {
         shadowGenerator.darkness = this._shadowMapDarkness;
         shadowGenerator.filter = this._shadowMapFilter;
         shadowGenerator.filteringQuality = this._shadowMapQuality;
+        shadowGenerator.depthScale = this._shadowMapDepthScale;
+        shadowGenerator.blurScale = this._shadowMapBlurScale;
+        shadowGenerator.useKernelBlur = this._shadowMapUseKernelBlur;
+        shadowGenerator.blurKernel = this._shadowMapBlurKernel;
+        shadowGenerator.blurBoxOffset = this._shadowMapBlurBoxOffset;
+        shadowGenerator.contactHardeningLightSizeUVRatio = this._shadowMapLightSizeUVRatio;
 
         this.setShadowMapViewerTexture();
 
