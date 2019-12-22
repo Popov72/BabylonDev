@@ -67,7 +67,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
 
     public set lambda(value: number) {
         this._lambda = value;
-        this._setDistanceSplit();
+        this.setDistanceSplit();
     }
 
     protected _minDistance: number;
@@ -390,10 +390,10 @@ export class CSMShadowGenerator implements IShadowGenerator {
             this._activeCascade = 0;
         }
 
-        this._setDistanceSplit();
+        this.setDistanceSplit();
     }
 
-    protected _setDistanceSplit(): void {
+    public setDistanceSplit(): void {
         let camera = this._scene.activeCamera;
         if (!camera) {
             return;
@@ -419,7 +419,6 @@ export class CSMShadowGenerator implements IShadowGenerator {
             this._cascades[cascadeIndex].prevSplitDistance = cascadeIndex === 0 ? this._minDistance : this._cascades[cascadeIndex - 1].splitDistance;
             this._cascades[cascadeIndex].splitDistance = (d - near) / cameraRange;
         }
-
     }
 
     protected _computeShadowCastersBoundingInfo(): void {

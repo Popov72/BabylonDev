@@ -28,6 +28,26 @@ export default class CSM extends StandardShadow {
         return (this._shadowGenerator as unknown as CSMShadowGenerator);
     }
 
+    public get cameraNearPlane(): number {
+        return this._cameraNearPlane;
+    }
+
+    public set cameraNearPlane(cnp: number) {
+        this._cameraNearPlane = cnp;
+        this.camera.minZ = cnp;
+        this.getCSMGenerator().setDistanceSplit();
+    }
+
+    public get cameraFarPlane(): number {
+        return this._cameraFarPlane;
+    }
+
+    public set cameraFarPlane(cfp: number) {
+        this._cameraFarPlane = cfp;
+        this.camera.maxZ = cfp;
+        this.getCSMGenerator().setDistanceSplit();
+    }
+
     public get csmNumCascades(): number {
         return this._csmNumCascades;
     }
@@ -154,10 +174,6 @@ export default class CSM extends StandardShadow {
         shadowGenerator.activeCascade = this._csmActiveCascade;
 
         this.setShadowMapViewerTexture();
-    }
-
-    public render(): void {
-        this.scene.render();
     }
 
 }
