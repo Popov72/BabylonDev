@@ -84,7 +84,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapUseKernelBlur = true;
         this._shadowMapBlurKernel = 1;
         this._shadowMapBlurBoxOffset = 1;
-        this._shadowMapLightSizeUVRatio = 0.02;
+        this._shadowMapLightSizeUVRatio = 0.005;
 
         this._csmNumCascades = 4;
         this._csmActiveCascade = 0;
