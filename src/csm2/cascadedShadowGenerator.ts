@@ -34,6 +34,23 @@ import {
  * Based on: https://johanmedestrom.wordpress.com/2016/03/18/opengl-cascaded-shadow-maps/
  */
 export class CascadedShadowGenerator implements IShadowGenerator {
+
+    public get renderList(): Array<AbstractMesh> {
+        return [];
+    }
+
+    public get mustRender(): boolean {
+        return true;
+    }
+
+    public getShadowMaps(): Array<RenderTargetTexture> {
+        return [];
+    }
+
+    public recreate(): void {
+        this.recreateShadowMap();
+    }
+
     /**
      * Defines the default number of cascades used by the CSM.
      */

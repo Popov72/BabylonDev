@@ -477,20 +477,32 @@ export default class SplitBaseGUI extends SplitGUI {
                                     <Paper className={classes.subPropertyTitle}>Filter Type</Paper>
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
-                                    <Select
-                                        className={classes.propertyValue}
-                                        value={shadowMapFilter}
-                                        onChange={changeShadowMapFilter}
-                                        >
-                                        <MenuItem value={ShadowGenerator.FILTER_PCSS}>PCSS</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_PCF}>PCF</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_BLURCLOSEEXPONENTIALSHADOWMAP}>CESM (Blur)</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_CLOSEEXPONENTIALSHADOWMAP}>CESM</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP}>ESM (Blur)</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP}>ESM</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_POISSONSAMPLING}>Poisson</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_NONE}>None</MenuItem>
-                                    </Select>
+                                    { !this._showCSM && <>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={shadowMapFilter}
+                                            onChange={changeShadowMapFilter}
+                                            >
+                                            <MenuItem value={ShadowGenerator.FILTER_PCSS}>PCSS</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_PCF}>PCF</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_BLURCLOSEEXPONENTIALSHADOWMAP}>CESM (Blur)</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_CLOSEEXPONENTIALSHADOWMAP}>CESM</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP}>ESM (Blur)</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP}>ESM</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_POISSONSAMPLING}>Poisson</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_NONE}>None</MenuItem>
+                                        </Select>
+                                    </> }
+                                    { this._showCSM && <>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={shadowMapFilter}
+                                            onChange={changeShadowMapFilter}
+                                            >
+                                            <MenuItem value={ShadowGenerator.FILTER_PCF}>PCF</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_NONE}>None</MenuItem>
+                                        </Select>
+                                    </> }
                                 </Grid>
                                 {(shadowMapFilter === ShadowGenerator.FILTER_PCSS || shadowMapFilter === ShadowGenerator.FILTER_PCF) && <>
                                     <Grid item xs={6}>

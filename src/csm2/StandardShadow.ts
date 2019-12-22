@@ -390,7 +390,7 @@ export default class StandardShadow extends SplitBase {
     }
 
     protected setShadowMapViewerTexture(): void {
-        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._shadowMapFilter !== ShadowGenerator.FILTER_PCF ? this._shadowGenerator.getShadowMap() : null;
+        (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._shadowMapFilter !== ShadowGenerator.FILTER_PCF ? (this._shadowGenerator as any).getShadowMap() : null;
     }
 
     protected createShadowGenerator(): void {
