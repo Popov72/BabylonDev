@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 
 import {
+    CascadedShadowGenerator,
     Engine,
     ShadowGenerator,
 } from 'babylonjs';
@@ -63,6 +64,12 @@ export default class SplitBaseGUI extends SplitGUI {
             const [shadowMapDarkness, setShadowMapDarkness] = React.useState(this._sparent.shadowMapDarkness);
             const [shadowMapFilter, setShadowMapFilter] = React.useState(this._sparent.shadowMapFilter);
             const [shadowMapQuality, setShadowMapQuality] = React.useState(this._sparent.shadowMapQuality);
+            const [shadowMapDepthScale, setShadowMapDepthScale] = React.useState(this._sparent.shadowMapDepthScale);
+            const [shadowMapBlurScale, setShadowMapBlurScale] = React.useState(this._sparent.shadowMapBlurScale);
+            const [shadowMapUseKernelBlur, setShadowMapUseKernelBlur] = React.useState(this._sparent.shadowMapUseKernelBlur);
+            const [shadowMapBlurKernel, setShadowMapBlurKernel] = React.useState(this._sparent.shadowMapBlurKernel);
+            const [shadowMapBlurBoxOffset, setShadowMapBlurBoxOffset] = React.useState(this._sparent.shadowMapBlurBoxOffset);
+            const [shadowMapLightSizeUVRatio, setShadowMapLightSizeUVRatio] = React.useState(this._sparent.shadowMapLightSizeUVRatio);
 
             const [csmNumCascades, setCSMNumCascades] = React.useState(this._sparent.csmNumCascades);
             const [csmActiveCascade, setCSMActiveCascade] = React.useState(this._sparent.csmActiveCascade);
@@ -145,6 +152,37 @@ export default class SplitBaseGUI extends SplitGUI {
                 this._sparent.shadowMapQuality = event.target.value as number;
                 setShadowMapQuality(this._sparent.shadowMapQuality);
             };
+
+            const changeShadowMapDepthScale = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
+                this._sparent.shadowMapDepthScale = event.target.value as number;
+                setShadowMapDepthScale(this._sparent.shadowMapDepthScale);
+            };
+
+            const changeShadowMapBlurScale = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.shadowMapBlurScale = value as number;
+                setShadowMapBlurScale(this._sparent.shadowMapBlurScale);
+            };
+
+            const changeShadowMapUseKernelBlur = (event: React.ChangeEvent, checked: boolean) => {
+                setShadowMapUseKernelBlur(checked);
+                this._sparent.shadowMapUseKernelBlur = checked;
+            };
+
+            const changeShadowMapBlurKernel = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.shadowMapBlurKernel = value as number;
+                setShadowMapBlurKernel(this._sparent.shadowMapBlurKernel);
+            };
+
+            const changeShadowMapBlurBoxOffset = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.shadowMapBlurBoxOffset = value as number;
+                setShadowMapBlurBoxOffset(this._sparent.shadowMapBlurBoxOffset);
+            };
+
+            const changeShadowMapLightSizeUVRatio = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
+                this._sparent.shadowMapLightSizeUVRatio = event.target.value as number;
+                setShadowMapLightSizeUVRatio(this._sparent.shadowMapLightSizeUVRatio);
+            };
+
 
             const changeNumCascades = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
                 this._sparent.csmNumCascades = event.target.value as number;
@@ -313,18 +351,20 @@ export default class SplitBaseGUI extends SplitGUI {
                                             { [...Array(8).keys()].map((_, i) => <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>) }
                                         </Select>
                                     </Grid>
-                                    <Grid item xs={6}>
-                                        <Paper className={classes.subPropertyTitle}>Active Cascade</Paper>
-                                    </Grid>
-                                    <Grid item xs={6} className={classes.propertyValue}>
-                                        <Select
-                                            className={classes.propertyValue}
-                                            value={csmActiveCascade}
-                                            onChange={changeActiveCascade}
-                                        >
-                                            { [...Array(csmNumCascades).keys()].map((_, i) => <MenuItem key={i} value={i}>{i + 1}</MenuItem>) }
-                                        </Select>
-                                    </Grid>
+                                    { false && <>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Active Cascade</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Select
+                                                className={classes.propertyValue}
+                                                value={csmActiveCascade}
+                                                onChange={changeActiveCascade}
+                                            >
+                                                { [...Array(csmNumCascades).keys()].map((_, i) => <MenuItem key={i} value={i}>{i + 1}</MenuItem>) }
+                                            </Select>
+                                        </Grid>
+                                    </> }
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Visualize Cascades</Paper>
                                     </Grid>
@@ -367,14 +407,16 @@ export default class SplitBaseGUI extends SplitGUI {
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
                             <Grid container spacing={1}>
-                                <Grid item xs={6}>
-                                    <Paper className={classes.subPropertyTitle}>Show Depth Map</Paper>
-                                </Grid>
-                                <Grid item xs={6} className={classes.propertyValue}>
-                                    <Paper className={classes.propertyValue}>
-                                        <Switch checked={shadowMapShowDepthMap} onChange={changeShadowMapShowDepthMap} />
-                                    </Paper>
-                                </Grid>
+                                { !this._showCSM && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Show Depth Map</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch disabled={this._showCSM} checked={shadowMapShowDepthMap} onChange={changeShadowMapShowDepthMap} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
                                 <Grid item xs={6}>
                                     <Paper className={classes.subPropertyTitle}>Size</Paper>
                                 </Grid>
@@ -418,15 +460,32 @@ export default class SplitBaseGUI extends SplitGUI {
                                     <Paper className={classes.subPropertyTitle}>Filter Type</Paper>
                                 </Grid>
                                 <Grid item xs={6} className={classes.propertyValue}>
-                                    <Select
-                                        className={classes.propertyValue}
-                                        value={shadowMapFilter}
-                                        onChange={changeShadowMapFilter}
-                                        >
-                                        <MenuItem value={ShadowGenerator.FILTER_PCSS}>PCSS</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_PCF}>PCF</MenuItem>
-                                        <MenuItem value={ShadowGenerator.FILTER_NONE}>None</MenuItem>
-                                    </Select>
+                                    { !this._showCSM && <>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={shadowMapFilter}
+                                            onChange={changeShadowMapFilter}
+                                            >
+                                            <MenuItem value={ShadowGenerator.FILTER_PCSS}>PCSS</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_PCF}>PCF</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_BLURCLOSEEXPONENTIALSHADOWMAP}>CESM (Blur)</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_CLOSEEXPONENTIALSHADOWMAP}>CESM</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP}>ESM (Blur)</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP}>ESM</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_POISSONSAMPLING}>Poisson</MenuItem>
+                                            <MenuItem value={ShadowGenerator.FILTER_NONE}>None</MenuItem>
+                                        </Select>
+                                    </> }
+                                    { this._showCSM && <>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={shadowMapFilter}
+                                            onChange={changeShadowMapFilter}
+                                            >
+                                            <MenuItem value={CascadedShadowGenerator.FILTER_PCSS}>PCSS</MenuItem>
+                                            <MenuItem value={CascadedShadowGenerator.FILTER_PCF}>PCF</MenuItem>
+                                        </Select>
+                                    </> }
                                 </Grid>
                                 {(shadowMapFilter === ShadowGenerator.FILTER_PCSS || shadowMapFilter === ShadowGenerator.FILTER_PCF) && <>
                                     <Grid item xs={6}>
@@ -443,6 +502,66 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <MenuItem value={ShadowGenerator.QUALITY_HIGH}>High</MenuItem>
                                         </Select>
                                     </Grid>
+                                </> }
+                                {(shadowMapFilter === ShadowGenerator.FILTER_PCSS) && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Light Size UV Ratio</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <TextField type="number" value={shadowMapLightSizeUVRatio} variant="standard" inputProps={{ step: "0.001" }} onChange={changeShadowMapLightSizeUVRatio} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
+                                {!this._showCSM && (shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP || shadowMapFilter === ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP) && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Depth Scale</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <TextField type="number" value={shadowMapDepthScale} variant="standard" inputProps={{ step: "1" }} onChange={changeShadowMapDepthScale} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
+                                {!this._showCSM && (shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP) && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Blur Scale</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <PrettoSlider valueLabelDisplay="auto" defaultValue={shadowMapBlurScale} min={1} max={4} step={1} onChange={changeShadowMapBlurScale} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
+                                {!this._showCSM && (shadowMapFilter === ShadowGenerator.FILTER_BLURCLOSEEXPONENTIALSHADOWMAP || shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP) && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Use Kernel Blur</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={shadowMapUseKernelBlur} onChange={changeShadowMapUseKernelBlur} />                                
+                                        </Paper>
+                                    </Grid>
+                                    {shadowMapUseKernelBlur && <>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Blur Kernel</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Paper className={classes.propertyValue}>
+                                                <PrettoSlider valueLabelDisplay="auto" defaultValue={shadowMapBlurKernel} min={1} max={64} step={1} onChange={changeShadowMapBlurKernel} />
+                                            </Paper>
+                                        </Grid>
+                                    </> }
+                                    {!shadowMapUseKernelBlur && <>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Blur Box Offset</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Paper className={classes.propertyValue}>
+                                                <PrettoSlider valueLabelDisplay="auto" defaultValue={shadowMapBlurBoxOffset} min={1} max={64} step={1} onChange={changeShadowMapBlurBoxOffset} />
+                                            </Paper>
+                                        </Grid>
+                                    </> }
                                 </> }
                             </Grid>
                         </ExpansionPanelDetails>

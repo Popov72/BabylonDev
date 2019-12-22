@@ -1,6 +1,7 @@
 import {
     Color3,
     CubeTexture,
+    Mesh,
     MeshBuilder,
     SceneLoader,
     StandardMaterial,
@@ -35,7 +36,7 @@ export default class Utils {
         return fTemp;
     }
 
-    public static addSkybox(skyboxName: string = "Runyon_Canyon_A_2k_cube_specular.dds", scene: Scene, size: number = 1000): void {
+    public static addSkybox(skyboxName: string = "Runyon_Canyon_A_2k_cube_specular.dds", scene: Scene, size: number = 1000): Mesh {
         const skybox = MeshBuilder.CreateBox("skyBox", { size: size }, scene);
         const skyboxMaterial = new StandardMaterial("skyBox", scene);
 
@@ -46,7 +47,11 @@ export default class Utils {
         skyboxMaterial.specularColor = new Color3(0, 0, 0);
         skyboxMaterial.disableLighting = true;
         skyboxMaterial.disableDepthWrite = true;
+
         skybox.material = skyboxMaterial;
+        skybox.alwaysSelectAsActiveMesh = true;
+
+        return skybox;
     }
 
     public static async loadObj(scene: Scene, path: string, name: string) {

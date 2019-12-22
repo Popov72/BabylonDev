@@ -30,6 +30,7 @@ export default class StandardShadow extends SplitBase {
     protected _shadowGenerator: IShadowGenerator;
     protected _lightHelperFrustumLines: Array<Mesh>;
     protected _lightGizmo: LightGizmo;
+    protected _skybox: Mesh;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -116,6 +117,60 @@ export default class StandardShadow extends SplitBase {
     public set shadowMapQuality(smq: number) {
         this._shadowMapQuality = smq;
         this.getStandardGenerator().filteringQuality = smq;
+    }
+
+    public get shadowMapDepthScale(): number {
+        return this._shadowMapDepthScale;
+    }
+
+    public set shadowMapDepthScale(smds: number) {
+        this._shadowMapDepthScale = smds;
+        this.getStandardGenerator().depthScale = smds;
+    }
+
+    public get shadowMapBlurScale(): number {
+        return this._shadowMapBlurScale;
+    }
+
+    public set shadowMapBlurScale(smbs: number) {
+        this._shadowMapBlurScale = smbs;
+        this.getStandardGenerator().blurScale = smbs;
+    }
+
+    public get shadowMapUseKernelBlur(): boolean {
+        return this._shadowMapUseKernelBlur;
+    }
+
+    public set shadowMapUseKernelBlur(smukb: boolean) {
+        this._shadowMapUseKernelBlur = smukb;
+        this.getStandardGenerator().useKernelBlur = smukb;
+    }
+
+    public get shadowMapBlurKernel(): number {
+        return this._shadowMapBlurKernel;
+    }
+
+    public set shadowMapBlurKernel(smbk: number) {
+        this._shadowMapBlurKernel = smbk;
+        this.getStandardGenerator().blurKernel = smbk;
+    }
+
+    public get shadowMapBlurBoxOffset(): number {
+        return this._shadowMapBlurBoxOffset;
+    }
+
+    public set shadowMapBlurBoxOffset(smbbo: number) {
+        this._shadowMapBlurBoxOffset = smbbo;
+        this.getStandardGenerator().blurBoxOffset = smbbo;
+    }
+
+    public get shadowMapLightSizeUVRatio(): number {
+        return this._shadowMapLightSizeUVRatio;
+    }
+
+    public set shadowMapLightSizeUVRatio(smlsuvr: number) {
+        this._shadowMapLightSizeUVRatio = smlsuvr;
+        this.getStandardGenerator().contactHardeningLightSizeUVRatio = smlsuvr;
     }
 
     public get lightNearPlane(): number {
@@ -290,7 +345,7 @@ export default class StandardShadow extends SplitBase {
 
         (window as any).sun = this.sun;
 
-        Utils.addSkybox("Clouds.dds", this.scene, this.camera.maxZ - 1);
+        this._skybox = Utils.addSkybox("Clouds.dds", this.scene, 100/*this.camera.maxZ - 1*/);
 
         await Utils.loadObj(this.scene, scene.path, scene.name);
 
@@ -371,16 +426,17 @@ export default class StandardShadow extends SplitBase {
     }
 
     public render(): void {
+        this._skybox.position.copyFrom(this.camera.position);
         this.scene.render();
 
-        if (this._animateLight && this._autoCalcShadowZBounds) {
+        /*if (this._animateLight && this._autoCalcShadowZBounds) {
             this._lightNearPlane = this.sun.shadowMinZ;
             this._lightFarPlane = this.sun.shadowMaxZ;
 
             const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowZBounds' } });
 
             window.dispatchEvent(event);
-        }
+        }*/
     }
 
 }

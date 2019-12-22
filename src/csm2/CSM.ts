@@ -19,6 +19,8 @@ export default class CSM extends StandardShadow {
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
 
+        this._shadowMapFilter = CascadedShadowGenerator.FILTER_PCF;
+
         (window as any).csm = this;
         //this._shadowMapPlane.rotate(new Vector3(0, 0, 1), -Math.PI / 2);
         //this._shadowMapPlane.bakeCurrentTransformIntoVertices();
@@ -130,10 +132,6 @@ export default class CSM extends StandardShadow {
         //!shadowGenerator.freezeShadowCastersBoundingInfo = true;
 
         this.setShadowMapViewerTexture();
-    }
-
-    public render(): void {
-        this.scene.render();
     }
 
 }

@@ -1,5 +1,6 @@
 import {
     Color3,
+    Effect,
     Engine,
     Matrix,
     Mesh,
@@ -8,6 +9,7 @@ import {
     Observer,
     Quaternion,
     Scene,
+    ShaderMaterial,
     ShadowGenerator,
     StandardMaterial,
     UniversalCamera,
@@ -42,6 +44,12 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _shadowMapNormalBias: number;
     protected _shadowMapDarkness: number;
     protected _shadowMapQuality: number;
+    protected _shadowMapDepthScale: number;
+    protected _shadowMapBlurScale: number;
+    protected _shadowMapUseKernelBlur: boolean;
+    protected _shadowMapBlurKernel: number;
+    protected _shadowMapBlurBoxOffset: number;
+    protected _shadowMapLightSizeUVRatio: number;
 
     protected _csmNumCascades: number;
     protected _csmActiveCascade: number;
@@ -72,6 +80,12 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapNormalBias = 0;
         this._shadowMapDarkness = 0;
         this._shadowMapQuality = ShadowGenerator.QUALITY_MEDIUM;
+        this._shadowMapDepthScale = 25;
+        this._shadowMapBlurScale = 2;
+        this._shadowMapUseKernelBlur = true;
+        this._shadowMapBlurKernel = 1;
+        this._shadowMapBlurBoxOffset = 1;
+        this._shadowMapLightSizeUVRatio = 0.02;
 
         this._csmNumCascades = 4;
         this._csmActiveCascade = 0;
@@ -94,6 +108,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapPlane.bakeCurrentTransformIntoVertices();
         this._shadowMapPlane.alwaysSelectAsActiveMesh = true;
 
+        //const material = this.buildShaderMaterial();
         const material = new StandardMaterial(this.name + "_shadowmap_material", scene);
 
         material.emissiveColor = new Color3(1, 1, 1);
@@ -103,6 +118,49 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapPlane.material = material;
 
         this._shadowMapPlane.setEnabled(false);
+    }
+
+    protected buildShaderMaterial(): ShaderMaterial {
+        Effect.ShadersStore["customVertexShader"]= `   
+        precision highp float;
+
+        attribute vec3 position;
+        attribute vec2 uv;
+        
+        uniform mat4 world;
+        uniform mat4 worldViewProjection;
+        
+        varying vec2 vUv;
+        
+        void main(void) {
+            vUv = uv;
+            gl_Position = worldViewProjection * vec4(position, 1.0);
+        }
+        `;        
+
+        Effect.ShadersStore["customFragmentShader"]=`
+        precision highp float;
+
+        varying vec2 vUv;
+    	uniform highp sampler2DArrayShadow textureSampler;
+        
+        void main(void) {
+            float shadow = texelFetch(textureSampler, vUv, 0);
+            gl_FragColor = shadow;//vec4(vec3(shadow), 1.0);
+        }
+        `;
+
+        var mat = new ShaderMaterial("shader", this.scene, {
+            vertex: "custom",
+            fragment: "custom",
+            },
+            {
+                attributes: ["position", "uv"],
+                uniforms: ["world", "worldViewProjection"],
+            }
+        );
+
+        return mat;
     }
 
     public render(): void {
@@ -251,6 +309,54 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set shadowMapQuality(smq: number) {
         this._shadowMapQuality = smq;
+    }
+
+    public get shadowMapDepthScale(): number {
+        return this._shadowMapDepthScale;
+    }
+
+    public set shadowMapDepthScale(smds: number) {
+        this._shadowMapDepthScale = smds;
+    }
+
+    public get shadowMapBlurScale(): number {
+        return this._shadowMapBlurScale;
+    }
+
+    public set shadowMapBlurScale(smbs: number) {
+        this._shadowMapBlurScale = smbs;
+    }
+
+    public get shadowMapUseKernelBlur(): boolean {
+        return this._shadowMapUseKernelBlur;
+    }
+
+    public set shadowMapUseKernelBlur(smukb: boolean) {
+        this._shadowMapUseKernelBlur = smukb;
+    }
+
+    public get shadowMapBlurKernel(): number {
+        return this._shadowMapBlurKernel;
+    }
+
+    public set shadowMapBlurKernel(smbk: number) {
+        this._shadowMapBlurKernel = smbk;
+    }
+
+    public get shadowMapBlurBoxOffset(): number {
+        return this._shadowMapBlurBoxOffset;
+    }
+
+    public set shadowMapBlurBoxOffset(smbbo: number) {
+        this._shadowMapBlurBoxOffset = smbbo;
+    }
+
+    public get shadowMapLightSizeUVRatio(): number {
+        return this._shadowMapLightSizeUVRatio;
+    }
+
+    public set shadowMapLightSizeUVRatio(smlsuvr: number) {
+        this._shadowMapLightSizeUVRatio = smlsuvr;
     }
 
     public get lightNearPlane(): number {
