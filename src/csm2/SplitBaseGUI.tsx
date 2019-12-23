@@ -188,7 +188,6 @@ export default class SplitBaseGUI extends SplitGUI {
                 setShadowMapLightSizeUVRatio(this._sparent.shadowMapLightSizeUVRatio);
             };
 
-
             const changeNumCascades = (event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>, child: React.ReactNode) => {
                 this._sparent.csmNumCascades = event.target.value as number;
                 setCSMNumCascades(this._sparent.csmNumCascades);
@@ -616,7 +615,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                     </Grid>
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
-                                            <Switch checked={shadowMapUseKernelBlur} onChange={changeShadowMapUseKernelBlur} />                                
+                                            <Switch checked={shadowMapUseKernelBlur} onChange={changeShadowMapUseKernelBlur} />
                                         </Paper>
                                     </Grid>
                                     {shadowMapUseKernelBlur && <>
