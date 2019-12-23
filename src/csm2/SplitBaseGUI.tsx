@@ -78,6 +78,10 @@ export default class SplitBaseGUI extends SplitGUI {
             const [csmDepthClamp, setCSMDepthClamp] = React.useState(this._sparent.csmDepthClamp);
             const [csmLambda, setCSMLambda] = React.useState(this._sparent.csmLambda);
             const [csmSplitBlendPercentage, setCSMSplitBlendPercentage] = React.useState(this._sparent.csmSplitBlendPercentage);
+            const [csmLightSizeCorrection, setCSMLightSizeCorrection] = React.useState(this._sparent.csmLightSizeCorrection);
+            const [csmDepthCorrection, setCSMDepthCorrection] = React.useState(this._sparent.csmDepthCorrection);
+            const [csmPenumbraDarkness, setCSMPenumbraDarkness] = React.useState(this._sparent.csmPenumbraDarkness);
+            const [csmShadowMaxZ, setCSMShadowMaxZ] = React.useState(this._sparent.csmShadowMaxZ);
 
             const changeCameraNearPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.cameraNearPlane = value as number;
@@ -224,6 +228,26 @@ export default class SplitBaseGUI extends SplitGUI {
             const changeCSMSplitBlendPercentage = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.csmSplitBlendPercentage = value as number;
                 setCSMSplitBlendPercentage(this._sparent.csmSplitBlendPercentage);
+            };
+
+            const changeCSMLightSizeCorrection = (event: React.ChangeEvent, checked: boolean) => {
+                setCSMLightSizeCorrection(checked);
+                this._sparent.csmLightSizeCorrection = checked;
+            };
+
+            const changeCSMDepthCorrection = (event: React.ChangeEvent<{}>, checked: boolean) => {
+                setCSMDepthCorrection(checked);
+                this._sparent.csmDepthCorrection = checked;
+            };
+
+            const changeCSMPenumbraDarkness = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.csmPenumbraDarkness = value as number;
+                setCSMPenumbraDarkness(this._sparent.csmPenumbraDarkness);
+            };
+
+            const changeCSMShadowMaxZ = (event: React.ChangeEvent<{}>, value: number | number[]) => {
+                this._sparent.csmShadowMaxZ = value as number;
+                setCSMShadowMaxZ(this._sparent.csmShadowMaxZ);
             };
 
             React.useEffect(() => {
@@ -390,14 +414,6 @@ export default class SplitBaseGUI extends SplitGUI {
                                         </Grid>
                                     </> }
                                     <Grid item xs={6}>
-                                        <Paper className={classes.subPropertyTitle}>Depth Clamp</Paper>
-                                    </Grid>
-                                    <Grid item xs={6} className={classes.propertyValue}>
-                                        <Paper className={classes.propertyValue}>
-                                            <Switch checked={csmDepthClamp} onChange={changeCSMDepthClamp} />
-                                        </Paper>
-                                    </Grid>
-                                    <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Lambda</Paper>
                                     </Grid>
                                     <Grid item xs={6} className={classes.propertyValue}>
@@ -406,11 +422,19 @@ export default class SplitBaseGUI extends SplitGUI {
                                         </Paper>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Paper className={classes.subPropertyTitle}>Split Blend</Paper>
+                                        <Paper className={classes.subPropertyTitle}>Cascade Blend</Paper>
                                     </Grid>
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
                                             <PrettoSlider valueLabelDisplay="auto" value={csmSplitBlendPercentage} min={0} max={1} step={0.01} onChange={changeCSMSplitBlendPercentage} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Shadow MaxZ</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <PrettoSlider valueLabelDisplay="auto" value={csmShadowMaxZ} min={0} max={500} step={10} onChange={changeCSMShadowMaxZ} />
                                         </Paper>
                                     </Grid>
                                 </Grid>
@@ -448,6 +472,16 @@ export default class SplitBaseGUI extends SplitGUI {
                                         <MenuItem value={256}>256x256</MenuItem>
                                     </Select>
                                 </Grid>
+                                { this._showCSM && <>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Depth Clamp</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={csmDepthClamp} onChange={changeCSMDepthClamp} />
+                                        </Paper>
+                                    </Grid>
+                                </> }
                                 <Grid item xs={6}>
                                     <Paper className={classes.subPropertyTitle}>Bias</Paper>
                                 </Grid>
@@ -529,6 +563,32 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <TextField type="number" value={shadowMapLightSizeUVRatio} variant="standard" inputProps={{ step: "0.001" }} onChange={changeShadowMapLightSizeUVRatio} />
                                         </Paper>
                                     </Grid>
+                                    { this._showCSM && <>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Penumbra Darkness</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Paper className={classes.propertyValue}>
+                                                <PrettoSlider valueLabelDisplay="auto" value={csmPenumbraDarkness} min={0} max={1} step={0.01} onChange={changeCSMPenumbraDarkness} />
+                                            </Paper>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Light Size Correction</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Paper className={classes.propertyValue}>
+                                                <Switch checked={csmLightSizeCorrection} onChange={changeCSMLightSizeCorrection} />
+                                            </Paper>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Paper className={classes.subPropertyTitle}>Depth Correction</Paper>
+                                        </Grid>
+                                        <Grid item xs={6} className={classes.propertyValue}>
+                                            <Paper className={classes.propertyValue}>
+                                                <Switch checked={csmDepthCorrection} onChange={changeCSMDepthCorrection} />
+                                            </Paper>
+                                        </Grid>
+                                    </> }
                                 </> }
                                 {!this._showCSM && (shadowMapFilter === ShadowGenerator.FILTER_BLUREXPONENTIALSHADOWMAP || shadowMapFilter === ShadowGenerator.FILTER_EXPONENTIALSHADOWMAP) && <>
                                     <Grid item xs={6}>

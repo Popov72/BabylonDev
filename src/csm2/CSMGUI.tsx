@@ -30,7 +30,7 @@ export default class CSMGUI extends SplitBaseGUI {
 
         this._showAutoCalcPlanes = false;
         this._showCSM = true;
-        this.dimensions.height = 900;
+        this.dimensions.height = 920;
     }
 
     protected createCustomGUIProperties(): React.ReactElement {

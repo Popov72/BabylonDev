@@ -1482,7 +1482,7 @@ var GlobalGUI = /** @class */ (function (_super) {
                 "backfaceCulling": false,
                 "camera": {
                     "position": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Vector3"](40, 5, 5),
-                    "target": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Vector3"](0, 5, 5),
+                    "target": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Vector3"](0, 0, 5),
                 },
                 "scaling": 0.5,
                 "sunColor": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Color3"](1, 1, 1),
@@ -1617,7 +1617,7 @@ var SplitBase = /** @class */ (function (_super) {
         _this._showDepthMapObservable = null;
         _this._shadowMapSize = 1024;
         _this._shadowMapFilter = babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].FILTER_PCF;
-        _this._shadowMapBias = 0.003;
+        _this._shadowMapBias = 0.007;
         _this._shadowMapNormalBias = 0;
         _this._shadowMapDarkness = 0;
         _this._shadowMapQuality = babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].QUALITY_MEDIUM;
@@ -1631,8 +1631,8 @@ var SplitBase = /** @class */ (function (_super) {
         _this._csmActiveCascade = 0;
         _this._csmVisualizeCascades = false;
         _this._csmStabilizeCascades = true;
-        _this._csmDepthClamp = true;
-        _this._csmLambda = 0.5;
+        _this._csmDepthClamp = false;
+        _this._csmLambda = 0.7;
         _this._csmUseRightDirectionAsUpForOrthoProj = false;
         _this._shadowMapPlane = null;
         var size = 1;
@@ -4406,8 +4406,9 @@ var CSM = /** @class */ (function (_super) {
         set: function (cnp) {
             this._cameraNearPlane = cnp;
             this.camera.minZ = cnp;
-            this.getCSMGenerator().frustumLength = this._cameraNearPlane; // make frustumLength change
-            this.getCSMGenerator().frustumLength = this._cameraFarPlane; // so trigger a cascade recomputation
+            var val = this.getCSMGenerator().shadowMaxZ;
+            this.getCSMGenerator().shadowMaxZ = this._cameraNearPlane; // make shadowMaxZ change
+            this.getCSMGenerator().shadowMaxZ = val; // so trigger a cascade recomputation
         },
         enumerable: true,
         configurable: true
@@ -4419,7 +4420,9 @@ var CSM = /** @class */ (function (_super) {
         set: function (cfp) {
             this._cameraFarPlane = cfp;
             this.camera.maxZ = cfp;
-            this.getCSMGenerator().frustumLength = cfp;
+            var val = this.getCSMGenerator().shadowMaxZ;
+            this.getCSMGenerator().shadowMaxZ = this._cameraNearPlane; // make shadowMaxZ change
+            this.getCSMGenerator().shadowMaxZ = val; // so trigger a cascade recomputation
         },
         enumerable: true,
         configurable: true
@@ -4496,7 +4499,51 @@ var CSM = /** @class */ (function (_super) {
         },
         set: function (csbp) {
             this._csmSplitBlendPercentage = csbp;
-            this.getCSMGenerator().splitBlendPercentage = csbp;
+            this.getCSMGenerator().cascadeBlendPercentage = csbp;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSM.prototype, "csmLightSizeCorrection", {
+        get: function () {
+            return this._csmLightSizeCorrection;
+        },
+        set: function (smlsc) {
+            this._csmLightSizeCorrection = smlsc;
+            this.getCSMGenerator().lightSizeCorrection = smlsc;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSM.prototype, "csmDepthCorrection", {
+        get: function () {
+            return this._csmDepthCorrection;
+        },
+        set: function (smdc) {
+            this._csmDepthCorrection = smdc;
+            this.getCSMGenerator().depthCorrection = smdc;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSM.prototype, "csmPenumbraDarkness", {
+        get: function () {
+            return this._csmPenumbraDarkness;
+        },
+        set: function (cpd) {
+            this._csmPenumbraDarkness = cpd;
+            this.getCSMGenerator().penumbraDarkness = cpd;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSM.prototype, "csmShadowMaxZ", {
+        get: function () {
+            return this._csmShadowMaxZ;
+        },
+        set: function (csmz) {
+            this._csmShadowMaxZ = csmz;
+            this.getCSMGenerator().shadowMaxZ = csmz;
         },
         enumerable: true,
         configurable: true
@@ -4535,8 +4582,12 @@ var CSM = /** @class */ (function (_super) {
         shadowGenerator.depthClamp = this._csmDepthClamp;
         shadowGenerator.lambda = this._csmLambda;
         shadowGenerator.debug = this._csmVisualizeCascades;
-        shadowGenerator.splitBlendPercentage = this._csmSplitBlendPercentage;
-        //!shadowGenerator.freezeShadowCastersBoundingInfo = true;
+        shadowGenerator.cascadeBlendPercentage = this._csmSplitBlendPercentage;
+        shadowGenerator.lightSizeCorrection = this._csmLightSizeCorrection;
+        shadowGenerator.depthCorrection = this._csmDepthCorrection;
+        shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
+        shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
+        shadowGenerator.freezeShadowCastersBoundingInfo = true;
         this.setShadowMapViewerTexture();
     };
     CSM.className = "CSM";
@@ -4580,7 +4631,7 @@ var CSMGUI = /** @class */ (function (_super) {
         var _this = _super.call(this, name, engine, container, parent) || this;
         _this._showAutoCalcPlanes = false;
         _this._showCSM = true;
-        _this.dimensions.height = 860;
+        _this.dimensions.height = 920;
         return _this;
     }
     CSMGUI.prototype.createCustomGUIProperties = function () {
@@ -4658,7 +4709,7 @@ var GlobalGUI = /** @class */ (function (_super) {
                 "backfaceCulling": false,
                 "camera": {
                     "position": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Vector3"](40, 5, 5),
-                    "target": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Vector3"](0, 5, 5),
+                    "target": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Vector3"](0, 0, 5),
                 },
                 "scaling": 0.5,
                 "sunColor": new babylonjs__WEBPACK_IMPORTED_MODULE_2__["Color3"](1, 1, 1),
@@ -4793,7 +4844,7 @@ var SplitBase = /** @class */ (function (_super) {
         _this._showDepthMapObservable = null;
         _this._shadowMapSize = 1024;
         _this._shadowMapFilter = babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].FILTER_PCF;
-        _this._shadowMapBias = 0.003;
+        _this._shadowMapBias = 0.007;
         _this._shadowMapNormalBias = 0;
         _this._shadowMapDarkness = 0;
         _this._shadowMapQuality = babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].QUALITY_MEDIUM;
@@ -4802,14 +4853,18 @@ var SplitBase = /** @class */ (function (_super) {
         _this._shadowMapUseKernelBlur = true;
         _this._shadowMapBlurKernel = 1;
         _this._shadowMapBlurBoxOffset = 1;
-        _this._shadowMapLightSizeUVRatio = 0.005;
+        _this._shadowMapLightSizeUVRatio = 0.01;
         _this._csmNumCascades = 4;
         _this._csmActiveCascade = 0;
         _this._csmVisualizeCascades = false;
         _this._csmStabilizeCascades = false;
-        _this._csmDepthClamp = true;
-        _this._csmLambda = 0.5;
+        _this._csmDepthClamp = false;
+        _this._csmLambda = 0.7;
         _this._csmSplitBlendPercentage = 0.0;
+        _this._csmLightSizeCorrection = false;
+        _this._csmDepthCorrection = false;
+        _this._csmPenumbraDarkness = 1;
+        _this._csmShadowMaxZ = 250;
         _this._shadowMapPlane = null;
         var size = 1;
         _this._shadowMapPlane = babylonjs__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreatePlane(_this.name + "_shadowmap", {
@@ -5073,6 +5128,16 @@ var SplitBase = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SplitBase.prototype, "csmLightSizeCorrection", {
+        get: function () {
+            return this._csmLightSizeCorrection;
+        },
+        set: function (smlsc) {
+            this._csmLightSizeCorrection = smlsc;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(SplitBase.prototype, "lightNearPlane", {
         get: function () {
             return this._lightNearPlane;
@@ -5169,6 +5234,36 @@ var SplitBase = /** @class */ (function (_super) {
         },
         set: function (csbp) {
             this._csmSplitBlendPercentage = csbp;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SplitBase.prototype, "csmDepthCorrection", {
+        get: function () {
+            return this._csmDepthCorrection;
+        },
+        set: function (smdc) {
+            this._csmDepthCorrection = smdc;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SplitBase.prototype, "csmPenumbraDarkness", {
+        get: function () {
+            return this._csmPenumbraDarkness;
+        },
+        set: function (cpd) {
+            this._csmPenumbraDarkness = cpd;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SplitBase.prototype, "csmShadowMaxZ", {
+        get: function () {
+            return this._csmShadowMaxZ;
+        },
+        set: function (csmz) {
+            this._csmShadowMaxZ = csmz;
         },
         enumerable: true,
         configurable: true
@@ -5322,6 +5417,10 @@ var SplitBaseGUI = /** @class */ (function (_super) {
             var _1 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmDepthClamp), 2), csmDepthClamp = _1[0], setCSMDepthClamp = _1[1];
             var _2 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmLambda), 2), csmLambda = _2[0], setCSMLambda = _2[1];
             var _3 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmSplitBlendPercentage), 2), csmSplitBlendPercentage = _3[0], setCSMSplitBlendPercentage = _3[1];
+            var _4 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmLightSizeCorrection), 2), csmLightSizeCorrection = _4[0], setCSMLightSizeCorrection = _4[1];
+            var _5 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmDepthCorrection), 2), csmDepthCorrection = _5[0], setCSMDepthCorrection = _5[1];
+            var _6 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmPenumbraDarkness), 2), csmPenumbraDarkness = _6[0], setCSMPenumbraDarkness = _6[1];
+            var _7 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmShadowMaxZ), 2), csmShadowMaxZ = _7[0], setCSMShadowMaxZ = _7[1];
             var changeCameraNearPlane = function (event, value) {
                 _this._sparent.cameraNearPlane = value;
                 setCameraNearPlane(_this._sparent.cameraNearPlane);
@@ -5440,6 +5539,22 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                 _this._sparent.csmSplitBlendPercentage = value;
                 setCSMSplitBlendPercentage(_this._sparent.csmSplitBlendPercentage);
             };
+            var changeCSMLightSizeCorrection = function (event, checked) {
+                setCSMLightSizeCorrection(checked);
+                _this._sparent.csmLightSizeCorrection = checked;
+            };
+            var changeCSMDepthCorrection = function (event, checked) {
+                setCSMDepthCorrection(checked);
+                _this._sparent.csmDepthCorrection = checked;
+            };
+            var changeCSMPenumbraDarkness = function (event, value) {
+                _this._sparent.csmPenumbraDarkness = value;
+                setCSMPenumbraDarkness(_this._sparent.csmPenumbraDarkness);
+            };
+            var changeCSMShadowMaxZ = function (event, value) {
+                _this._sparent.csmShadowMaxZ = value;
+                setCSMShadowMaxZ(_this._sparent.csmShadowMaxZ);
+            };
             react__WEBPACK_IMPORTED_MODULE_0__["useEffect"](function () {
                 var handler = function (event) {
                     switch (event.detail.type) {
@@ -5530,20 +5645,20 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmVisualizeCascades, onChange: changeCSMVisualizeCascades }))),
                                  false && false,
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Depth Clamp")),
-                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmDepthClamp, onChange: changeCSMDepthClamp }))),
-                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Lambda")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
                                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmLambda, min: 0, max: 1, step: 0.01, onChange: changeCSMLambda }))),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Split Blend")),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Cascade Blend")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmSplitBlendPercentage, min: 0, max: 1, step: 0.01, onChange: changeCSMSplitBlendPercentage }))))))),
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmSplitBlendPercentage, min: 0, max: 1, step: 0.01, onChange: changeCSMSplitBlendPercentage }))),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Shadow MaxZ")),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmShadowMaxZ, min: 0, max: 500, step: 10, onChange: changeCSMShadowMaxZ }))))))),
                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["ExpansionPanel"], { defaultExpanded: true },
                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["ExpansionPanelSummary"], { expandIcon: react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Icon"], null, "expand_more") },
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Typography"], null, _this._showCSM ? "Cascade" : "Shadow Map")),
@@ -5563,6 +5678,12 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { value: 1024 }, "1024x1024"),
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { value: 512 }, "512x512"),
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { value: 256 }, "256x256"))),
+                            _this._showCSM && react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Depth Clamp")),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmDepthClamp, onChange: changeCSMDepthClamp })))),
                             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Bias")),
                             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
@@ -5609,7 +5730,23 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Light Size UV Ratio")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["TextField"], { type: "number", value: shadowMapLightSizeUVRatio, variant: "standard", inputProps: { step: "0.001" }, onChange: changeShadowMapLightSizeUVRatio })))),
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["TextField"], { type: "number", value: shadowMapLightSizeUVRatio, variant: "standard", inputProps: { step: "0.001" }, onChange: changeShadowMapLightSizeUVRatio }))),
+                                _this._showCSM && react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Penumbra Darkness")),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmPenumbraDarkness, min: 0, max: 1, step: 0.01, onChange: changeCSMPenumbraDarkness }))),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Light Size Correction")),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmLightSizeCorrection, onChange: changeCSMLightSizeCorrection }))),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Depth Correction")),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmDepthCorrection, onChange: changeCSMDepthCorrection }))))),
                             !_this._showCSM && (shadowMapFilter === babylonjs__WEBPACK_IMPORTED_MODULE_2__["ShadowGenerator"].FILTER_BLUREXPONENTIALSHADOWMAP || shadowMapFilter === babylonjs__WEBPACK_IMPORTED_MODULE_2__["ShadowGenerator"].FILTER_EXPONENTIALSHADOWMAP) && react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Depth Scale")),
@@ -6280,9 +6417,14 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this._filter = CascadedShadowGenerator.FILTER_PCF;
         this._filteringQuality = CascadedShadowGenerator.QUALITY_HIGH;
         this._contactHardeningLightSizeUVRatio = 0.1;
+        this.lightSizeCorrection = true;
+        this.depthCorrection = true;
+        this.penumbraDarkness = 1.0;
         this._darkness = 0;
         this._transparencyShadow = false;
         this._cascades = CascadedShadowGenerator.DEFAULT_CASCADES_COUNT;
+        this._freezeShadowCastersBoundingInfo = false;
+        this._freezeShadowCastersBoundingInfoObservable = null;
         /**
          * Controls the extent to which the shadows fade out at the edge of the frustum
          * Used only by directionals and spots
@@ -6301,7 +6443,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this._defaultTextureMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Identity();
         this._debug = false;
         this.depthClamp = false;
-        this.splitBlendPercentage = 0.1;
+        this.cascadeBlendPercentage = 0.1;
         this._lambda = 0.5;
         this._scene = light.getScene();
         if (this._scene.getEngine().webGLVersion == 1) {
@@ -6310,7 +6452,9 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this._light = light;
         this._mapSize = mapSize;
         light._shadowGenerator = this;
-        this._frustumLength = (_b = (_a = this._scene.activeCamera) === null || _a === void 0 ? void 0 : _a.maxZ, (_b !== null && _b !== void 0 ? _b : 10000));
+        this._shadowMaxZ = (_b = (_a = this._scene.activeCamera) === null || _a === void 0 ? void 0 : _a.maxZ, (_b !== null && _b !== void 0 ? _b : 10000));
+        this._shadowCastersBoundingInfo = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["BoundingInfo"](new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 0), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 0));
+        this.freezeShadowCastersBoundingInfo = false;
         CascadedShadowGenerator._SceneComponentInitialization(this._scene);
         // Texture type fallback from float to int if not supported.
         var caps = this._scene.getEngine().getCaps();
@@ -6584,6 +6728,52 @@ var CascadedShadowGenerator = /** @class */ (function () {
     CascadedShadowGenerator.prototype.getShadowMap = function () {
         return this._shadowMap;
     };
+    Object.defineProperty(CascadedShadowGenerator.prototype, "freezeShadowCastersBoundingInfo", {
+        get: function () {
+            return this._freezeShadowCastersBoundingInfo;
+        },
+        set: function (freeze) {
+            if (this._freezeShadowCastersBoundingInfoObservable && freeze) {
+                this._scene.onBeforeRenderObservable.remove(this._freezeShadowCastersBoundingInfoObservable);
+                this._freezeShadowCastersBoundingInfoObservable = null;
+            }
+            if (!this._freezeShadowCastersBoundingInfoObservable && !freeze) {
+                this._freezeShadowCastersBoundingInfoObservable = this._scene.onBeforeRenderObservable.add(this._computeShadowCastersBoundingInfo.bind(this));
+            }
+            this._freezeShadowCastersBoundingInfo = freeze;
+            if (freeze) {
+                this._computeShadowCastersBoundingInfo();
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    CascadedShadowGenerator.prototype._computeShadowCastersBoundingInfo = function () {
+        var min = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE), max = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+        if (this._shadowMap && this._shadowMap.renderList) {
+            var renderList = this._shadowMap.renderList;
+            for (var meshIndex = 0; meshIndex < renderList.length; meshIndex++) {
+                var mesh = renderList[meshIndex];
+                if (!mesh) {
+                    continue;
+                }
+                var boundingInfo = mesh.getBoundingInfo(), boundingBox = boundingInfo.boundingBox;
+                min.minimizeInPlace(boundingBox.minimumWorld);
+                max.maximizeInPlace(boundingBox.maximumWorld);
+            }
+        }
+        this._shadowCastersBoundingInfo.reConstruct(min, max);
+    };
+    Object.defineProperty(CascadedShadowGenerator.prototype, "shadowCastersBoundingInfo", {
+        get: function () {
+            return this._shadowCastersBoundingInfo;
+        },
+        set: function (boundingInfo) {
+            this._shadowCastersBoundingInfo = boundingInfo;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * Gets the class name of that object
      * @returns "ShadowGenerator"
@@ -6652,7 +6842,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
     CascadedShadowGenerator.prototype.getLight = function () {
         return this._light;
     };
-    Object.defineProperty(CascadedShadowGenerator.prototype, "frustumLength", {
+    Object.defineProperty(CascadedShadowGenerator.prototype, "shadowMaxZ", {
         /**
          * Gets the csmFrustumLength value: furthest range of the frustum for the CSM mode.
          */
@@ -6660,20 +6850,20 @@ var CascadedShadowGenerator = /** @class */ (function () {
             if (!this._scene || !this._scene.activeCamera) {
                 return 0;
             }
-            return this._frustumLength;
+            return this._shadowMaxZ;
         },
         /**
          * Sets the csmFrustumLength: furthest range of the frustum for the CSM mode.
          */
         set: function (value) {
             if (!this._scene || !this._scene.activeCamera) {
-                this._frustumLength = value;
+                this._shadowMaxZ = value;
                 return;
             }
-            if (this._frustumLength === value || value < this._scene.activeCamera.minZ || value > this._scene.activeCamera.maxZ) {
+            if (this._shadowMaxZ === value || value < this._scene.activeCamera.minZ || value > this._scene.activeCamera.maxZ) {
                 return;
             }
-            this._frustumLength = value;
+            this._shadowMaxZ = value;
             this._initCascades();
         },
         enumerable: true,
@@ -6716,8 +6906,8 @@ var CascadedShadowGenerator = /** @class */ (function () {
         if (!camera) {
             return;
         }
-        if (!this._frustumLength) {
-            this._frustumLength = camera.maxZ;
+        if (!this._shadowMaxZ) {
+            this._shadowMaxZ = camera.maxZ;
         }
         this._currentRenderID = new Array(this._cascades);
         // inits and sets all static params related to CSM
@@ -6730,26 +6920,26 @@ var CascadedShadowGenerator = /** @class */ (function () {
         var farx = 0;
         var fary = 0;
         // get all internal camera cascaded frustum points
-        var breaks = this._frustumSplit(this.cascades, camera.minZ, this._frustumLength, this._lambda);
+        var breaks = this._frustumSplit();
         if (camera.fovMode === 0) {
             nearx = camera.minZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
             neary = camera.minZ * Math.tan(camera.fov / 2);
-            farx = this._frustumLength * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
-            fary = this._frustumLength * Math.tan(camera.fov / 2);
+            farx = this._shadowMaxZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
+            fary = this._shadowMaxZ * Math.tan(camera.fov / 2);
         }
         else if (camera.fovMode === 1) {
             nearx = camera.minZ * Math.tan(camera.fov / 2);
             neary = camera.minZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
-            farx = this._frustumLength * Math.tan(camera.fov / 2);
-            fary = this._frustumLength * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
+            farx = this._shadowMaxZ * Math.tan(camera.fov / 2);
+            fary = this._shadowMaxZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
         }
         // populate the viewSpaceFrustums array
         for (var i = 0; i < this.cascades + 1; i++) {
             this._viewSpaceFrustums[i] = [];
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](nearx, neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](farx, fary, this._frustumLength), breaks[i]));
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](nearx, -neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](farx, -fary, this._frustumLength), breaks[i]));
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-nearx, -neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-farx, -fary, this._frustumLength), breaks[i]));
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-nearx, neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-farx, fary, this._frustumLength), breaks[i]));
+            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](nearx, neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](farx, fary, this._shadowMaxZ), breaks[i]));
+            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](nearx, -neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](farx, -fary, this._shadowMaxZ), breaks[i]));
+            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-nearx, -neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-farx, -fary, this._shadowMaxZ), breaks[i]));
+            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-nearx, neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-farx, fary, this._shadowMaxZ), breaks[i]));
         }
         // populate the viewSpaceBoundingSpheres array
         var minX = Number.MAX_VALUE;
@@ -6779,38 +6969,32 @@ var CascadedShadowGenerator = /** @class */ (function () {
         }
         // initialize the CSM transformMatrices
         this._viewMatrix = [];
+        this._lightMinExtents = [];
+        this._lightMaxExtents = [];
         this._transformMatrices = [];
         for (var index = 0; index < this.cascades; index++) {
             this._viewMatrix[index] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
             this._transformMatrices[index] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
+            this._lightMinExtents[index] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
+            this._lightMaxExtents[index] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
         }
         this._transformMatricesAsArray = new Float32Array(this.cascades * 16);
     };
-    CascadedShadowGenerator.prototype._uniformSplit = function (amount, near, far) {
-        var r = [];
-        for (var i = 1; i < amount; i++) {
-            r.push(i / amount);
+    CascadedShadowGenerator.prototype._frustumSplit = function () {
+        var camera = this._scene.activeCamera;
+        if (!camera) {
+            return [];
         }
-        r.push(1);
-        return r;
-    };
-    CascadedShadowGenerator.prototype._logarithmicSplit = function (amount, near, far) {
+        var near = camera.minZ, far = camera.maxZ, cameraRange = far - near, minDistance = 0, maxDistance = this._shadowMaxZ < far && this._shadowMaxZ >= near ? (this._shadowMaxZ - near) / (far - near) : 1;
+        var minZ = near + minDistance * cameraRange, maxZ = near + maxDistance * cameraRange;
+        var range = maxZ - minZ, ratio = maxZ / minZ;
         var r = [];
-        for (var i = 1; i < amount; i++) {
-            r.push((near * Math.pow((far / near), (i / amount)) - near) / (far - near));
+        r.push(minDistance);
+        for (var cascadeIndex = 0; cascadeIndex < this._cascades; ++cascadeIndex) {
+            var p = (cascadeIndex + 1) / this._cascades, log = minZ * (Math.pow(ratio, p)), uniform = minZ + range * p;
+            var d = this._lambda * (log - uniform) + uniform;
+            r.push((d - near) / cameraRange);
         }
-        r.push(1);
-        return r;
-    };
-    CascadedShadowGenerator.prototype._frustumSplit = function (amount, near, far, lambda) {
-        var log = this._logarithmicSplit(amount, near, far);
-        var uni = this._uniformSplit(amount, near, far);
-        var r = [];
-        r.push(0);
-        for (var i = 1; i < amount; i++) {
-            r.push(lambda * log[i - 1] + (1 - lambda) * uni[i - 1]);
-        }
-        r.push(1);
         return r;
     };
     /**
@@ -6846,7 +7030,29 @@ var CascadedShadowGenerator = /** @class */ (function () {
             var shadowCamPos = bs.centerWorld.subtract(this._lightDirection.scale(bs.radius));
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].LookAtLHToRef(shadowCamPos, bs.centerWorld, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Up(), this._viewMatrix[mapIndex]);
             // get ortho matrix
-            var OrthoMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoLH(2.0 * bs.radius, 2.0 * bs.radius, 0, 2.0 * bs.radius);
+            var minx = -bs.radius, miny = -bs.radius, minz = 0;
+            var maxx = bs.radius, maxy = bs.radius, maxz = 2 * bs.radius;
+            // Try to tighten minZ and maxZ based on the bounding box of the shadow casters
+            var boundingInfo = this._shadowCastersBoundingInfo;
+            boundingInfo.update(this._viewMatrix[mapIndex]);
+            maxz = Math.min(maxz, boundingInfo.boundingBox.maximumWorld.z);
+            if (!this.depthClamp) {
+                // If we don't use depth clamping, we must set minZ so that all shadow casters are in the light frustum
+                minz = Math.min(minz, boundingInfo.boundingBox.minimumWorld.z);
+            }
+            else {
+                // If using depth clamping, we can adjust minZ to reduce the [minZ, maxZ] range (and get some additional precision in the shadow map)
+                minz = Math.max(minz, boundingInfo.boundingBox.minimumWorld.z);
+            }
+            this._lightMinExtents[mapIndex].copyFromFloats(minx, miny, minz);
+            this._lightMaxExtents[mapIndex].copyFromFloats(maxx, maxy, maxz);
+            var OrthoMatrix = void 0;
+            if (this._scene.useRightHandedSystem) {
+                OrthoMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterRH(minx, maxx, miny, maxy, minz, maxz);
+            }
+            else {
+                OrthoMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterLH(minx, maxx, miny, maxy, minz, maxz);
+            }
             // get projection matrix
             this._viewMatrix[mapIndex].multiplyToRef(OrthoMatrix, this._transformMatrices[mapIndex]);
             // rounding the transform matrix to prevent shimmering artifacts from camera movement
@@ -7256,9 +7462,15 @@ var CascadedShadowGenerator = /** @class */ (function () {
             return;
         }
         var width = shadowMap.getSize().width;
+        var lightSizeUVCorrection = [], depthCorrection = [];
+        for (var i = 0; i < this._cascades; ++i) {
+            lightSizeUVCorrection.push(i === 0 || !this.lightSizeCorrection ? 1 : (this._lightMaxExtents[0].x - this._lightMinExtents[0].x) / (this._lightMaxExtents[i].x - this._lightMinExtents[i].x)); // x correction
+            lightSizeUVCorrection.push(i === 0 || !this.lightSizeCorrection ? 1 : (this._lightMaxExtents[0].y - this._lightMinExtents[0].y) / (this._lightMaxExtents[i].y - this._lightMinExtents[i].y)); // y correction
+            depthCorrection.push(i === 0 || !this.depthCorrection ? 1 : (this._lightMaxExtents[i].z - this._lightMinExtents[i].z) / (this._lightMaxExtents[0].z - this._lightMinExtents[0].z));
+        }
         effect.setMatrices("lightMatrix" + lightIndex, this._transformMatricesAsArray);
         effect.setArray("viewFrustumZ" + lightIndex, this._viewSpaceFrustumsZ);
-        effect.setFloat("splitBlendFactor" + lightIndex, this.splitBlendPercentage === 0 ? 10000 : 1 / this.splitBlendPercentage);
+        effect.setFloat("cascadeBlendFactor" + lightIndex, this.cascadeBlendPercentage === 0 ? 10000 : 1 / this.cascadeBlendPercentage);
         // Only PCF uses depth stencil texture.
         if (this._filter === CascadedShadowGenerator.FILTER_PCF) {
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
@@ -7267,6 +7479,9 @@ var CascadedShadowGenerator = /** @class */ (function () {
         else if (this._filter === CascadedShadowGenerator.FILTER_PCSS) {
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
             effect.setTexture("depthSampler" + lightIndex, shadowMap);
+            effect.setArray2("lightSizeUVCorrection" + lightIndex, lightSizeUVCorrection);
+            effect.setArray("depthCorrection" + lightIndex, depthCorrection);
+            effect.setFloat("penumbraDarkness" + lightIndex, this.penumbraDarkness);
             light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), 1 / width, this._contactHardeningLightSizeUVRatio * width, this.frustumEdgeFalloff, lightIndex);
         }
         else {
@@ -7325,6 +7540,10 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this.onBeforeShadowMapRenderObservable.clear();
         this.onAfterShadowMapRenderMeshObservable.clear();
         this.onAfterShadowMapRenderObservable.clear();
+        if (this._freezeShadowCastersBoundingInfoObservable) {
+            this._scene.onBeforeRenderObservable.remove(this._freezeShadowCastersBoundingInfoObservable);
+            this._freezeShadowCastersBoundingInfoObservable = null;
+        }
     };
     /**
      * Serializes the shadow generator setup to a json object.

@@ -37,8 +37,9 @@ export default class CSM extends StandardShadow {
     public set cameraNearPlane(cnp: number) {
         this._cameraNearPlane = cnp;
         this.camera.minZ = cnp;
-        this.getCSMGenerator().frustumLength = this._cameraNearPlane; // make frustumLength change
-        this.getCSMGenerator().frustumLength = this._cameraFarPlane; // so trigger a cascade recomputation
+        const val = this.getCSMGenerator().shadowMaxZ;
+        this.getCSMGenerator().shadowMaxZ = this._cameraNearPlane; // make shadowMaxZ change
+        this.getCSMGenerator().shadowMaxZ = val; // so trigger a cascade recomputation
     }
 
     public get cameraFarPlane(): number {
@@ -48,7 +49,9 @@ export default class CSM extends StandardShadow {
     public set cameraFarPlane(cfp: number) {
         this._cameraFarPlane = cfp;
         this.camera.maxZ = cfp;
-        this.getCSMGenerator().frustumLength = cfp;
+        const val = this.getCSMGenerator().shadowMaxZ;
+        this.getCSMGenerator().shadowMaxZ = this._cameraNearPlane; // make shadowMaxZ change
+        this.getCSMGenerator().shadowMaxZ = val; // so trigger a cascade recomputation
     }
 
     public get csmNumCascades(): number {
@@ -112,7 +115,43 @@ export default class CSM extends StandardShadow {
 
     public set csmSplitBlendPercentage(csbp: number) {
         this._csmSplitBlendPercentage = csbp;
-        this.getCSMGenerator().splitBlendPercentage = csbp;
+        this.getCSMGenerator().cascadeBlendPercentage = csbp;
+    }
+
+    public get csmLightSizeCorrection(): boolean {
+        return this._csmLightSizeCorrection;
+    }
+
+    public set csmLightSizeCorrection(smlsc: boolean) {
+        this._csmLightSizeCorrection = smlsc;
+        this.getCSMGenerator().lightSizeCorrection = smlsc;
+    }
+
+    public get csmDepthCorrection(): boolean {
+        return this._csmDepthCorrection;
+    }
+
+    public set csmDepthCorrection(smdc: boolean) {
+        this._csmDepthCorrection = smdc;
+        this.getCSMGenerator().depthCorrection = smdc;
+    }
+    
+    public get csmPenumbraDarkness(): number {
+        return this._csmPenumbraDarkness;
+    }
+
+    public set csmPenumbraDarkness(cpd: number) {
+        this._csmPenumbraDarkness = cpd;
+        this.getCSMGenerator().penumbraDarkness = cpd;
+    }
+
+    public get csmShadowMaxZ(): number {
+        return this._csmShadowMaxZ;
+    }
+
+    public set csmShadowMaxZ(csmz: number) {
+        this._csmShadowMaxZ = csmz;
+        this.getCSMGenerator().shadowMaxZ = csmz;
     }
 
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
@@ -159,8 +198,12 @@ export default class CSM extends StandardShadow {
         shadowGenerator.depthClamp = this._csmDepthClamp;
         shadowGenerator.lambda = this._csmLambda;
         shadowGenerator.debug = this._csmVisualizeCascades
-        shadowGenerator.splitBlendPercentage = this._csmSplitBlendPercentage;
-        //!shadowGenerator.freezeShadowCastersBoundingInfo = true;
+        shadowGenerator.cascadeBlendPercentage = this._csmSplitBlendPercentage;
+        shadowGenerator.lightSizeCorrection = this._csmLightSizeCorrection;
+        shadowGenerator.depthCorrection = this._csmDepthCorrection;
+        shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
+        shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
+        shadowGenerator.freezeShadowCastersBoundingInfo = true;
 
         this.setShadowMapViewerTexture();
     }
