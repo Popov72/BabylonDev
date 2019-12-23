@@ -75,7 +75,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._showDepthMapObservable = null;
         this._shadowMapSize = 1024;
         this._shadowMapFilter = ShadowGenerator.FILTER_PCF;
-        this._shadowMapBias = 0.003;
+        this._shadowMapBias = 0.007;
         this._shadowMapNormalBias = 0;
         this._shadowMapDarkness = 0;
         this._shadowMapQuality = ShadowGenerator.QUALITY_MEDIUM;
@@ -90,8 +90,8 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmActiveCascade = 0;
         this._csmVisualizeCascades = false;
         this._csmStabilizeCascades = true;
-        this._csmDepthClamp = true;
-        this._csmLambda = 0.5;
+        this._csmDepthClamp = false;
+        this._csmLambda = 0.7;
         this._csmUseRightDirectionAsUpForOrthoProj = false;
 
         this._shadowMapPlane = null as any;

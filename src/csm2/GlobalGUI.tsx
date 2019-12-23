@@ -55,7 +55,7 @@ export default class GlobalGUI extends MainGUI {
                 "backfaceCulling": false,  // Some meshes have incorrect winding orders... use no backface culling for now
                 "camera": {
                     "position": new Vector3(40, 5, 5),
-                    "target": new Vector3(0, 5, 5),
+                    "target": new Vector3(0, 0, 5),
                 },
                 "scaling": 0.5,
                 "sunColor": new Color3(1, 1, 1),
