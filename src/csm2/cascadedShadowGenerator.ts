@@ -857,7 +857,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         let engine = this._scene.getEngine();
 
         const size = { width: this._mapSize, height: this._mapSize, layers: this.cascades };
-        this._shadowMap = new RenderTargetTexture(this._light.name + "_shadowMap", size, this._scene, false, true, this._textureType, false, undefined, false, false);
+        this._shadowMap = new RenderTargetTexture(this._light.name + "_shadowMap", size, this._scene, false, true, this._textureType, false, undefined, false, false, undefined, Constants.TEXTUREFORMAT_RED);
         this._shadowMap.createDepthStencilTexture(Constants.LESS, true);
 
         this._shadowMap.wrapU = Texture.CLAMP_ADDRESSMODE;

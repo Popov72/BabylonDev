@@ -411,7 +411,7 @@ export default class SplitBase extends Split implements ISampleSplit {
 
         let matrix = new Matrix();
 
-        let rotY = Utils.XMScalarModAngle(deltaTime * 0.1);
+        let rotY = Utils.XMScalarModAngle(deltaTime * 0.25);
 
         let rotation = Quaternion.RotationAxis(new Vector3(0.0, 1.0, 0.0), rotY);
 

@@ -446,13 +446,13 @@ export default class SplitBaseGUI extends SplitGUI {
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
                             <Grid container spacing={1}>
-                                { !this._showCSM && <>
+                                { (!this._showCSM || this._showCSM && shadowMapFilter === CascadedShadowGenerator.FILTER_NONE) && <>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Show Depth Map</Paper>
                                     </Grid>
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
-                                            <Switch disabled={this._showCSM} checked={shadowMapShowDepthMap} onChange={changeShadowMapShowDepthMap} />
+                                            <Switch checked={shadowMapShowDepthMap} onChange={changeShadowMapShowDepthMap} />
                                         </Paper>
                                     </Grid>
                                 </> }
