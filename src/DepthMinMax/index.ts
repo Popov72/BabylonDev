@@ -17,6 +17,7 @@ import {
     PostProcessRenderEffect,
     RenderTargetTexture,
     Constants,
+    PostProcessManager,
 } from "babylonjs";
 
 import SampleBasic from "../SampleBasic";
@@ -294,7 +295,7 @@ export default class DepthMinMax extends SampleBasic {
             }
         }
 
-        var imagePass = new (PassPostProcess as any)(
+        /*var imagePass = new (PassPostProcess as any)(
             "imagePass",
             { width: w, height: h },
             null,
@@ -312,17 +313,28 @@ export default class DepthMinMax extends SampleBasic {
         depthReductionPhases.push(imagePass);
 
         imagePass.onApply = (effect: Effect) => {
-            effect.setTextureFromPostProcess('textureSampler', depthReductionPhases[/*depthReductionPhases.length -*/ 1]);
-        };
+            effect.setTextureFromPostProcess('textureSampler', depthReductionPhases[1]);
+        };*/
 
         // the render pipeline
-        var pipeline = new PostProcessRenderPipeline(this._engine, 'pipeline');
+        /*var pipeline = new PostProcessRenderPipeline(this._engine, 'pipeline');
         var renderPasses = new PostProcessRenderEffect(
             this._engine, 'renderPasses', function() { return depthReductionPhases; });
 
         pipeline.addEffect(renderPasses);
         scene.postProcessRenderPipelineManager.addPipeline(pipeline);
-        scene.postProcessRenderPipelineManager.attachCamerasToRenderPipeline('pipeline', camera);
+        scene.postProcessRenderPipelineManager.attachCamerasToRenderPipeline('pipeline', camera);*/
+
+        let postProcessManager = new PostProcessManager(scene);
+
+        scene.onBeforeDrawPhaseObservable.add(() => {
+            //postProcessManager._prepareFrame(depthMap.getInternalTexture(), depthReductionPhases);
+            depthReductionPhases[0].activate(camera, depthMap.getInternalTexture());
+
+            postProcessManager.directRender(depthReductionPhases, depthReductionPhases[0].inputTexture, false);
+
+            this._engine.unBindFramebuffer(depthReductionPhases[0].inputTexture, false);
+        });
 
         var buffer = new Float32Array(4 * depthMap.getSize().width * depthMap.getSize().height);
 
