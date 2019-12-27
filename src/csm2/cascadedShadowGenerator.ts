@@ -53,6 +53,16 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this.recreateShadowMap();
     }
 
+    protected _minDistance: number = 0;
+
+    protected _maxDistance: number = 1;
+
+    public setMinMaxDistance(min: number, max: number): void {
+        this._minDistance = min;
+        this._maxDistance = max;
+        this._initCascades();
+    }
+
     /**
      * Defines the default number of cascades used by the CSM.
      */
@@ -676,8 +686,8 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         const near = camera.minZ,
               far = camera.maxZ,
               cameraRange = far - near,
-              minDistance = 0,
-              maxDistance = this._shadowMaxZ < far && this._shadowMaxZ >= near ? (this._shadowMaxZ - near) / (far - near) : 1;
+              minDistance = this._minDistance,
+              maxDistance = this._shadowMaxZ < far && this._shadowMaxZ >= near ? Math.min((this._shadowMaxZ - near) / (far - near), this._maxDistance) : this._maxDistance;
 
         const minZ = near + minDistance * cameraRange,
               maxZ = near + maxDistance * cameraRange;
