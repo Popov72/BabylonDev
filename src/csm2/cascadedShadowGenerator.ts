@@ -530,6 +530,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     private _viewSpaceBoundingSpheres: Array<BoundingSphere>;
     private _transformMatrices: Array<Matrix>;
     private _transformMatricesAsArray: Float32Array;
+    private _frustumLengths: Array<number>;
 
     private _shadowMaxZ: number;
     /**
@@ -670,11 +671,13 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this._lightMinExtents = [];
         this._lightMaxExtents = [];
         this._transformMatrices = [];
+        this._frustumLengths = [];
         for (let index = 0; index < this.cascades; index++) {
             this._viewMatrix[index] = Matrix.Zero();
             this._transformMatrices[index] = Matrix.Zero();
             this._lightMinExtents[index] = new Vector3();
             this._lightMaxExtents[index] = new Vector3();
+            this._frustumLengths[index] = camera.minZ + (breaks[index + 1] - breaks[index]) * (camera.maxZ - camera.minZ);
         }
         this._transformMatricesAsArray = new Float32Array(this.cascades * 16);
 
@@ -1268,6 +1271,12 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         defines["SHADOWCSMDEBUG" + lightIndex] = this.debug;
         defines["SHADOWCSMNUM_CASCADES" + lightIndex] = this.cascades;
 
+        const camera = scene.activeCamera;
+
+        if (camera && this._shadowMaxZ < camera.maxZ) {
+            defines["SHADOWCSMUSESHADOWMAXZ" + lightIndex] = true;
+        }
+
         if (this.useContactHardeningShadow) {
             defines["SHADOWPCSS" + lightIndex] = true;
             if (this._filteringQuality === CascadedShadowGenerator.QUALITY_LOW) {
@@ -1328,6 +1337,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         effect.setMatrices("lightMatrix" + lightIndex, this._transformMatricesAsArray);
         effect.setArray("viewFrustumZ" + lightIndex, this._viewSpaceFrustumsZ);
         effect.setFloat("cascadeBlendFactor" + lightIndex, this.cascadeBlendPercentage === 0 ? 10000 : 1 / this.cascadeBlendPercentage);
+        effect.setArray("frustumLengths" + lightIndex, this._frustumLengths);
 
         // Only PCF uses depth stencil texture.
         if (this._filter === CascadedShadowGenerator.FILTER_PCF) {
