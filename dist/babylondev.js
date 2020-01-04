@@ -1997,7 +1997,7 @@ var SplitBase = /** @class */ (function (_super) {
     SplitBase.prototype.rotateLight = function () {
         var deltaTime = this.scene.getEngine().getDeltaTime() / 1000;
         var matrix = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"]();
-        var rotY = _Utils__WEBPACK_IMPORTED_MODULE_3__["default"].XMScalarModAngle(deltaTime * 0.1);
+        var rotY = _Utils__WEBPACK_IMPORTED_MODULE_3__["default"].XMScalarModAngle(deltaTime * 0.25);
         var rotation = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Quaternion"].RotationAxis(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0.0, 1.0, 0.0), rotY);
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].FromQuaternionToRef(rotation, matrix);
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
@@ -2762,6 +2762,7 @@ var StandardShadow = /** @class */ (function (_super) {
             this._autoCalcShadowZBounds = acszb;
             this.sun.autoCalcShadowZBounds = acszb;
             if (this._autoCalcShadowZBounds) {
+                // @ts-ignore
                 this.sun.setShadowProjectionMatrix(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Identity(), this.getStandardGenerator().viewMatrix, this.getStandardGenerator().getShadowMaps()[0].renderList);
             }
             else {
@@ -2783,6 +2784,7 @@ var StandardShadow = /** @class */ (function (_super) {
         };
     };
     StandardShadow.prototype.getViewMatrix = function () {
+        // @ts-ignore
         return this.getStandardGenerator().viewMatrix;
     };
     StandardShadow.prototype.buildLightHelper = function () {
@@ -2903,6 +2905,7 @@ var StandardShadow = /** @class */ (function (_super) {
         return new babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"](this.shadowMapSize, this.sun);
     };
     StandardShadow.prototype.setShadowMapViewerTexture = function () {
+        // @ts-ignore
         this._shadowMapPlane.material.diffuseTexture = this._shadowMapFilter !== babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].FILTER_PCF ? this._shadowGenerator.getShadowMaps()[0] : null;
     };
     StandardShadow.prototype.createShadowGenerator = function () {
@@ -2926,6 +2929,7 @@ var StandardShadow = /** @class */ (function (_super) {
         shadowGenerator.contactHardeningLightSizeUVRatio = this._shadowMapLightSizeUVRatio;
         this.setShadowMapViewerTexture();
         window.sg = shadowGenerator;
+        // @ts-ignore
         var renderList = shadowGenerator.renderList;
         var num = 0, lstm = [];
         this.scene.meshes.forEach(function (m) {
@@ -3449,6 +3453,7 @@ var __values = (undefined && undefined.__values) || function(o) {
 };
 
 
+// @ts-ignore
 var CSMShadowGenerator = /** @class */ (function () {
     function CSMShadowGenerator(mapSize, light, numCascades, usefulFloatFirst) {
         if (numCascades === void 0) { numCascades = 4; }
@@ -3740,9 +3745,11 @@ var CSMShadowGenerator = /** @class */ (function () {
     });
     Object.defineProperty(CSMShadowGenerator.prototype, "depthClamp", {
         get: function () {
+            // @ts-ignore
             return this._activeCascade >= 0 && this._activeCascade < this._cascades.length ? this._cascades[this._activeCascade].generator.depthClamp : false;
         },
         set: function (value) {
+            // @ts-ignore
             this._getActiveCascades().forEach(function (cascade) { return cascade.generator.depthClamp = value; });
         },
         enumerable: true,
@@ -3811,6 +3818,7 @@ var CSMShadowGenerator = /** @class */ (function () {
                 splitDistance: 0,
             };
             cascade.generator.cascade = cascade;
+            // @ts-ignore
             cascade.generator.renderList = this._renderList;
             this._cascades.push(cascade);
         }
@@ -3931,6 +3939,7 @@ var CSMShadowGenerator = /** @class */ (function () {
     };
     CSMShadowGenerator.prototype.recreate = function () {
         for (var cascadeIndex = 0; cascadeIndex < this._cascades.length; ++cascadeIndex) {
+            // @ts-ignore
             this._cascades[cascadeIndex].generator.recreate();
         }
     };
@@ -4005,6 +4014,7 @@ var CSMShadowMap = /** @class */ (function (_super) {
     __extends(CSMShadowMap, _super);
     function CSMShadowMap(mapSize, light, usefulFloatFirst, parent) {
         var _this = _super.call(this, mapSize, light, usefulFloatFirst) || this;
+        // @ts-ignore
         _this._light._shadowGenerator = parent;
         _this._parent = parent;
         _this._cascade = null;
@@ -4037,6 +4047,7 @@ var CSMShadowMap = /** @class */ (function (_super) {
     });
     Object.defineProperty(CSMShadowMap.prototype, "viewMatrix", {
         get: function () {
+            // @ts-ignore
             return this._viewMatrix;
         },
         enumerable: true,
@@ -4053,34 +4064,52 @@ var CSMShadowMap = /** @class */ (function (_super) {
         configurable: true
     });
     CSMShadowMap.prototype.getTransformMatrix = function () {
+        // @ts-ignore
         var scene = this._scene;
+        // @ts-ignore
         if (this._currentRenderID === scene.getRenderId() && this._currentFaceIndexCache === this._currentFaceIndex) {
+            // @ts-ignore
             return this._transformMatrix;
         }
+        // @ts-ignore
         this._currentRenderID = scene.getRenderId();
+        // @ts-ignore
         this._currentFaceIndexCache = this._currentFaceIndex;
+        // @ts-ignore
         var lightPosition = this._light.position;
+        // @ts-ignore
         if (this._light.computeTransformedInformation()) {
+            // @ts-ignore
             lightPosition = this._light.transformedPosition;
         }
+        // @ts-ignore
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].NormalizeToRef(this._light.getShadowDirection(this._currentFaceIndex), this._lightDirection);
+        // @ts-ignore
         if (Math.abs(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Dot(this._lightDirection, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Up())) === 1.0) {
+            // @ts-ignore
             this._lightDirection.z = 0.0000000000001; // Required to avoid perfectly perpendicular light
         }
+        // @ts-ignore
         if (this._light.needProjectionMatrixCompute() || !this._cachedPosition || !this._cachedDirection || !lightPosition.equals(this._cachedPosition) || !this._lightDirection.equals(this._cachedDirection)) {
+            // @ts-ignore
             this._cachedPosition.copyFrom(lightPosition);
+            // @ts-ignore
             this._cachedDirection.copyFrom(this._lightDirection);
             this._computeLightMatrices();
         }
+        // @ts-ignore
         return this._transformMatrix;
     };
     // Get the 8 points of the view frustum in world space
     CSMShadowMap.prototype._computeFrustumInWorldSpace = function () {
+        // @ts-ignore
         if (!this._cascade || !this._scene.activeCamera) {
             return;
         }
         var prevSplitDist = this._cascade.prevSplitDistance, splitDist = this._cascade.splitDistance;
+        // @ts-ignore
         this._scene.activeCamera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+        // @ts-ignore
         var invViewProj = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Invert(this._scene.activeCamera.getTransformationMatrix());
         for (var cornerIndex = 0; cornerIndex < CSMShadowMap.frustumCornersNDCSpace.length; ++cornerIndex) {
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(CSMShadowMap.frustumCornersNDCSpace[cornerIndex], invViewProj, this._frustumCornersWorldSpace[cornerIndex]);
@@ -4099,6 +4128,7 @@ var CSMShadowMap = /** @class */ (function (_super) {
         this._minExtents.copyFromFloats(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
         this._maxExtents.copyFromFloats(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
         this._frustumCenter.copyFromFloats(0, 0, 0);
+        // @ts-ignore
         var camera = this._scene.activeCamera;
         if (!camera) {
             return;
@@ -4123,6 +4153,7 @@ var CSMShadowMap = /** @class */ (function (_super) {
             // Create a temporary view matrix for the light
             var upDir = this._parent.useRightDirectionAsUpForOrthoProj ? camera.getDirection(RightDir) : UpDir;
             var lightCameraPos = this._frustumCenter;
+            // @ts-ignore
             this._frustumCenter.addToRef(this._lightDirection, tmpv1); // tmpv1 = look at
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].LookAtLHToRef(lightCameraPos, tmpv1, upDir, matrix); // matrix = lightView
             // Calculate an AABB around the frustum corners
@@ -4135,6 +4166,7 @@ var CSMShadowMap = /** @class */ (function (_super) {
         return;
     };
     CSMShadowMap.prototype._computeLightMatrices = function () {
+        // @ts-ignore
         var camera = this._scene.activeCamera;
         if (!camera) {
             return;
@@ -4143,13 +4175,16 @@ var CSMShadowMap = /** @class */ (function (_super) {
         this._computeLightFrustum();
         this._maxExtents.subtractToRef(this._minExtents, this._cascadeExtents);
         // Get position of the shadow camera
+        // @ts-ignore
         this._frustumCenter.addToRef(this._lightDirection.scale(this._minExtents.z), this._shadowCameraPos);
         // Come up with a new orthographic camera for the shadow caster
         var upDir = this._parent.stabilizeCascades || !this._parent.useRightDirectionAsUpForOrthoProj ? UpDir : camera.getDirection(RightDir);
+        // @ts-ignore
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].LookAtLHToRef(this._shadowCameraPos, this._frustumCenter, upDir, this._viewMatrix);
         var minZ = 0, maxZ = this._cascadeExtents.z;
         // Try to tighten minZ and maxZ based on the bounding box of the shadow casters
         var boundingInfo = this._parent.shadowCastersBoundingInfo;
+        // @ts-ignore
         boundingInfo.update(this._viewMatrix);
         maxZ = Math.min(maxZ, boundingInfo.boundingBox.maximumWorld.z);
         if (!this._parent.depthClamp) {
@@ -4160,24 +4195,33 @@ var CSMShadowMap = /** @class */ (function (_super) {
             // If using depth clamping, we can adjust minZ to reduce the [minZ, maxZ] range (and get some additional precision in the shadow map)
             minZ = Math.max(minZ, boundingInfo.boundingBox.minimumWorld.z);
         }
+        // @ts-ignore
         if (this._scene.useRightHandedSystem) {
+            // @ts-ignore
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterRHToRef(this._minExtents.x, this._maxExtents.x, this._minExtents.y, this._maxExtents.y, minZ, maxZ, this._projectionMatrix);
         }
         else {
+            // @ts-ignore
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterLHToRef(this._minExtents.x, this._maxExtents.x, this._minExtents.y, this._maxExtents.y, minZ, maxZ, this._projectionMatrix);
         }
         this._lightMinExtents.set(this._minExtents.x, this._minExtents.y, minZ);
         this._lightMaxExtents.set(this._maxExtents.x, this._maxExtents.y, maxZ);
+        // @ts-ignore
         this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
         if (this._parent.stabilizeCascades) {
             // Create the rounding matrix, by projecting the world-space origin and determining
             // the fractional offset in texel space
+            // @ts-ignore
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(ZeroVec, this._transformMatrix, tmpv1); // tmpv1 = shadowOrigin
+            // @ts-ignore
             tmpv1.scaleInPlace(this._mapSize / 2);
             tmpv2.copyFromFloats(Math.round(tmpv1.x), Math.round(tmpv1.y), Math.round(tmpv1.z)); // tmpv2 = roundedOrigin
+            // @ts-ignore
             tmpv2.subtractInPlace(tmpv1).scaleInPlace(2 / this._mapSize); // tmpv2 = roundOffset
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].TranslationToRef(tmpv2.x, tmpv2.y, 0.0, matrix);
+            // @ts-ignore
             this._projectionMatrix.multiplyToRef(matrix, this._projectionMatrix);
+            // @ts-ignore
             this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
         }
     };
@@ -4367,9 +4411,11 @@ _Sample__WEBPACK_IMPORTED_MODULE_1__["default"].registerSampleClass("csm", {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
-/* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
-/* harmony import */ var _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./cascadedShadowGenerator */ "./src/CSM2/cascadedShadowGenerator.ts");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
+/* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
+/* harmony import */ var _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./cascadedShadowGenerator */ "./src/CSM2/cascadedShadowGenerator.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4386,16 +4432,142 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
+
 var CSM = /** @class */ (function (_super) {
     __extends(CSM, _super);
     function CSM(scene, camera, parent, name) {
         var _this = _super.call(this, scene, camera, parent, name) || this;
-        _this._shadowMapFilter = _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_2__["CascadedShadowGenerator"].FILTER_PCF;
+        _this._oldMin = -1;
+        _this._oldMax = -1;
+        _this._shadowMapFilter = _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"].FILTER_PCF;
         window.csm = _this;
+        _this.initializeDepthReduction();
         return _this;
-        //this._shadowMapPlane.rotate(new Vector3(0, 0, 1), -Math.PI / 2);
-        //this._shadowMapPlane.bakeCurrentTransformIntoVertices();
     }
+    CSM.prototype.initializeDepthReduction = function () {
+        var _this = this;
+        var depthRenderer = this.scene.enableDepthRenderer(this.camera, false);
+        depthRenderer.getDepthMap().updateSamplingMode(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST /*Texture.NEAREST_SAMPLINGMODE*/);
+        depthRenderer.useOnlyInActiveCamera = true;
+        depthRenderer.getDepthMap().ignoreCameraViewport = false;
+        var depthMap = depthRenderer.getDepthMap();
+        //
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionInitialFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n            uniform sampler2D depthTexture;\n\n            //#define METHOD1\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n            #ifdef METHOD1\n                ivec2 size = textureSize(depthTexture, 0);\n                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));\n                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));\n\n                float f1 = texture(depthTexture, vUV2).r;\n                float f2 = texture(depthTexture, vUV2 + vec2(texelSize.x, 0.0)).r;\n                float f3 = texture(depthTexture, vUV2 + vec2(texelSize.x, texelSize.y)).r;\n                float f4 = texture(depthTexture, vUV2 + vec2(0.0, texelSize.y)).r;\n            #else\n                vec2 size = vec2(textureSize(depthTexture, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                float f1 = texelFetch(depthTexture, coord, 0).r;\n                float f2 = texelFetch(depthTexture, coord + ivec2(1, 0), 0).r;\n                float f3 = texelFetch(depthTexture, coord + ivec2(1, 1), 0).r;\n                float f4 = texelFetch(depthTexture, coord + ivec2(0, 1), 0).r;\n            #endif\n\n                float minz = min(min(min(f1, f2), f3), f4);\n                float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+        //
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            //#define METHOD1\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n            #ifdef METHOD1\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));\n                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));\n\n                vec2 f1 = texture(textureSampler, vUV2).rg;\n                vec2 f2 = texture(textureSampler, vUV2 + vec2(texelSize.x, 0.0)).rg;\n                vec2 f3 = texture(textureSampler, vUV2 + vec2(texelSize.x, texelSize.y)).rg;\n                vec2 f4 = texture(textureSampler, vUV2 + vec2(0.0, texelSize.y)).rg;\n            #else\n                vec2 size = vec2(textureSize(textureSampler, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;\n                vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;\n                vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;\n            #endif\n\n                float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);\n                float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+        //
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionALastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 texcoord = vUV * (vec2(size - 1));\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord % size, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, (coord + ivec2(1, 0)) % size, 0).rg;\n                vec2 f3 = texelFetch(textureSampler, (coord + ivec2(1, 1)) % size, 0).rg;\n                vec2 f4 = texelFetch(textureSampler, (coord + ivec2(0, 1)) % size, 0).rg;\n\n                float minz = min(f1.x, f2.x);\n                float maxz = max(f1.y, f2.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+        //
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionLastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                glFragColor = vec2(0.);\n            }\n        ";
+        var depthReductionPhases = [];
+        // phase 0
+        var depthReductionInitial = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Initial depth reduction phase', 'depthReductionInitial', // shader
+        null, ['depthTexture'], // textures
+        1.0, // options
+        null, // camera
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
+        this.scene.getEngine(), // engine
+        false, // reusable
+        undefined, // defines
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG);
+        depthReductionInitial.autoClear = false;
+        depthReductionInitial.forceFullscreenViewport = false;
+        depthReductionInitial.onApply = function (effect) {
+            effect.setTexture('depthTexture', depthMap);
+        };
+        depthReductionPhases.push(depthReductionInitial);
+        var w = depthMap.getSize().width, h = depthMap.getSize().height;
+        var index = 1;
+        var depthReduction;
+        while (w > 1 || h > 1) {
+            w = Math.max(Math.round(w / 2), 1);
+            h = Math.max(Math.round(h / 2), 1);
+            //console.log(w, h);
+            depthReduction = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Depth reduction phase ' + index, (w == 1 && h == 1) ? 'depthReductionLast' : (w == 1 || h == 1) ? 'depthReductionALast' : 'depthReduction', // shader
+            null, // attributes
+            null, { width: w, height: h }, // options
+            null, // camera
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
+            this.scene.getEngine(), // engine
+            false, // reusable
+            undefined, // defines
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG);
+            depthReduction.autoClear = false;
+            depthReduction.forceFullscreenViewport = false;
+            depthReductionPhases.push(depthReduction);
+            index++;
+            if (w == 1 && h == 1) {
+                var func = function (w, h, depthReduction) {
+                    var first0 = true;
+                    var buffer0 = new Float32Array(4 * w * h);
+                    return function () {
+                        if (first0) {
+                            var texture = depthReduction.inputTexture;
+                            _this._readTexturePixels(_this.scene.getEngine(), texture, w, h, -1, 0, buffer0);
+                            var min = buffer0[0], max = buffer0[1];
+                            if (min >= max || !_this._csmAutoCalcDepthBounds) {
+                                min = 0;
+                                max = 1;
+                            }
+                            if (min != _this._oldMin || max != _this._oldMax) {
+                                _this.getCSMGenerator().setMinMaxDistance(min, max);
+                                _this._oldMin = min;
+                                _this._oldMax = max;
+                                //console.log(min, max);
+                            }
+                        }
+                    };
+                };
+                depthReduction.onAfterRenderObservable.add(func(w, h, depthReduction));
+            }
+        }
+        var postProcessManager = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcessManager"](this.scene);
+        depthMap.onAfterUnbindObservable.add(function () {
+            if (_this._csmAutoCalcDepthBounds) {
+                depthReductionPhases[0].activate(_this.camera, depthMap.getInternalTexture());
+                postProcessManager.directRender(depthReductionPhases, depthReductionPhases[0].inputTexture, false);
+                _this.scene.getEngine().unBindFramebuffer(depthReductionPhases[0].inputTexture, false);
+            }
+        });
+    };
+    CSM.prototype._readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer) {
+        if (faceIndex === void 0) { faceIndex = -1; }
+        if (level === void 0) { level = 0; }
+        if (buffer === void 0) { buffer = null; }
+        var gl = engine._gl;
+        if (!this._dummyFramebuffer) {
+            var dummy = gl.createFramebuffer();
+            if (!dummy) {
+                throw new Error("Unable to create dummy framebuffer");
+            }
+            this._dummyFramebuffer = dummy;
+        }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._dummyFramebuffer);
+        if (faceIndex > -1) {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, texture._webGLTexture, level);
+        }
+        else {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture._webGLTexture, level);
+        }
+        var readType = (texture.type !== undefined) ? engine._getWebGLTextureType(texture.type) : gl.UNSIGNED_BYTE;
+        switch (readType) {
+            case gl.UNSIGNED_BYTE:
+                if (!buffer) {
+                    buffer = new Uint8Array(4 * width * height);
+                }
+                readType = gl.UNSIGNED_BYTE;
+                break;
+            default:
+                if (!buffer) {
+                    buffer = new Float32Array(4 * width * height);
+                }
+                readType = gl.FLOAT;
+                break;
+        }
+        gl.readPixels(0, 0, width, height, gl.RGBA, readType, buffer);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, engine._currentFramebuffer);
+        return buffer;
+    };
     CSM.prototype.getCSMGenerator = function () {
         return this._shadowGenerator;
     };
@@ -4423,6 +4595,9 @@ var CSM = /** @class */ (function (_super) {
             var val = this.getCSMGenerator().shadowMaxZ;
             this.getCSMGenerator().shadowMaxZ = this._cameraNearPlane; // make shadowMaxZ change
             this.getCSMGenerator().shadowMaxZ = val; // so trigger a cascade recomputation
+            this._csmShadowMaxZ = this.getCSMGenerator().shadowMaxZ;
+            var event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowMaxZ' } });
+            window.dispatchEvent(event);
         },
         enumerable: true,
         configurable: true
@@ -4433,7 +4608,7 @@ var CSM = /** @class */ (function (_super) {
         },
         set: function (num) {
             this._csmNumCascades = num;
-            this.getCSMGenerator().cascades = num;
+            this.getCSMGenerator().numCascades = num;
         },
         enumerable: true,
         configurable: true
@@ -4445,6 +4620,7 @@ var CSM = /** @class */ (function (_super) {
         set: function (cac) {
             this._csmActiveCascade = cac;
             this.setShadowMapViewerTexture();
+            this.buildLightHelper();
         },
         enumerable: true,
         configurable: true
@@ -4466,7 +4642,8 @@ var CSM = /** @class */ (function (_super) {
         },
         set: function (ssc) {
             this._csmStabilizeCascades = ssc;
-            //!this.getCSMGenerator().stabilizeCascades = ssc;
+            this.getCSMGenerator().stabilizeCascades = ssc;
+            window.setTimeout(this.buildLightHelper.bind(this), 100);
         },
         enumerable: true,
         configurable: true
@@ -4478,6 +4655,7 @@ var CSM = /** @class */ (function (_super) {
         set: function (cdc) {
             this._csmDepthClamp = cdc;
             this.getCSMGenerator().depthClamp = cdc;
+            window.setTimeout(this.buildLightHelper.bind(this), 100);
         },
         enumerable: true,
         configurable: true
@@ -4504,28 +4682,6 @@ var CSM = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(CSM.prototype, "csmLightSizeCorrection", {
-        get: function () {
-            return this._csmLightSizeCorrection;
-        },
-        set: function (smlsc) {
-            this._csmLightSizeCorrection = smlsc;
-            this.getCSMGenerator().lightSizeCorrection = smlsc;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(CSM.prototype, "csmDepthCorrection", {
-        get: function () {
-            return this._csmDepthCorrection;
-        },
-        set: function (smdc) {
-            this._csmDepthCorrection = smdc;
-            this.getCSMGenerator().depthCorrection = smdc;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(CSM.prototype, "csmPenumbraDarkness", {
         get: function () {
             return this._csmPenumbraDarkness;
@@ -4544,32 +4700,45 @@ var CSM = /** @class */ (function (_super) {
         set: function (csmz) {
             this._csmShadowMaxZ = csmz;
             this.getCSMGenerator().shadowMaxZ = csmz;
+            this._csmShadowMaxZ = this.getCSMGenerator().shadowMaxZ;
+            var event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowMaxZ' } });
+            window.dispatchEvent(event);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CSM.prototype, "csmAutoCalcDepthBounds", {
+        get: function () {
+            return this._csmAutoCalcDepthBounds;
+        },
+        set: function (cacdb) {
+            this._csmAutoCalcDepthBounds = cacdb;
+            if (!cacdb) {
+                this._oldMin = 0;
+                this._oldMax = 1;
+                this.getCSMGenerator().setMinMaxDistance(0, 1);
+            }
         },
         enumerable: true,
         configurable: true
     });
     CSM.prototype.getLightExtents = function () {
-        /*const cascade = this.getCSMGenerator().cascade;
-
-        if (!cascade) {
-            return null;
-        }
-
-        const csmSM = cascade.generator;
-
+        var min = this.getCSMGenerator().getCascadeMinExtents(this._csmActiveCascade), max = this.getCSMGenerator().getCascadeMaxExtents(this._csmActiveCascade);
         return {
-            "min": csmSM.lightMinExtents,
-            "max": csmSM.lightMaxExtents,
-        }*/
-        return null;
+            "min": min,
+            "max": max,
+        };
+    };
+    CSM.prototype.getViewMatrix = function () {
+        return this.getCSMGenerator().getCascadeViewMatrix(this._csmActiveCascade);
     };
     CSM.prototype.createGUI = function () {
-        this.gui = new _CSMGUI__WEBPACK_IMPORTED_MODULE_1__["default"](this.name, this.scene.getEngine(), this._container, this);
+        this.gui = new _CSMGUI__WEBPACK_IMPORTED_MODULE_2__["default"](this.name, this.scene.getEngine(), this._container, this);
         this.gui.createGUI();
     };
     CSM.prototype.createGenerator = function () {
-        var generator = new _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_2__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
-        generator.cascades = this._csmNumCascades;
+        var generator = new _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
+        generator.numCascades = this._csmNumCascades;
         return generator;
     };
     CSM.prototype.setShadowMapViewerTexture = function () {
@@ -4578,13 +4747,11 @@ var CSM = /** @class */ (function (_super) {
     CSM.prototype.createShadowGenerator = function () {
         _super.prototype.createShadowGenerator.call(this);
         var shadowGenerator = this.getCSMGenerator();
-        //!shadowGenerator.stabilizeCascades = this._csmStabilizeCascades;
+        shadowGenerator.stabilizeCascades = this._csmStabilizeCascades;
         shadowGenerator.depthClamp = this._csmDepthClamp;
         shadowGenerator.lambda = this._csmLambda;
         shadowGenerator.debug = this._csmVisualizeCascades;
         shadowGenerator.cascadeBlendPercentage = this._csmSplitBlendPercentage;
-        shadowGenerator.lightSizeCorrection = this._csmLightSizeCorrection;
-        shadowGenerator.depthCorrection = this._csmDepthCorrection;
         shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
         shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
         shadowGenerator.freezeShadowCastersBoundingInfo = true;
@@ -4592,7 +4759,7 @@ var CSM = /** @class */ (function (_super) {
     };
     CSM.className = "CSM";
     return CSM;
-}(_StandardShadow__WEBPACK_IMPORTED_MODULE_0__["default"]));
+}(_StandardShadow__WEBPACK_IMPORTED_MODULE_1__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (CSM);
 
 
@@ -4631,7 +4798,7 @@ var CSMGUI = /** @class */ (function (_super) {
         var _this = _super.call(this, name, engine, container, parent) || this;
         _this._showAutoCalcPlanes = false;
         _this._showCSM = true;
-        _this.dimensions.height = 920;
+        _this.dimensions.height = 950;
         return _this;
     }
     CSMGUI.prototype.createCustomGUIProperties = function () {
@@ -4844,7 +5011,7 @@ var SplitBase = /** @class */ (function (_super) {
         _this._showDepthMapObservable = null;
         _this._shadowMapSize = 1024;
         _this._shadowMapFilter = babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].FILTER_PCF;
-        _this._shadowMapBias = 0.007;
+        _this._shadowMapBias = 0.003;
         _this._shadowMapNormalBias = 0;
         _this._shadowMapDarkness = 0;
         _this._shadowMapQuality = babylonjs__WEBPACK_IMPORTED_MODULE_0__["ShadowGenerator"].QUALITY_MEDIUM;
@@ -4858,13 +5025,12 @@ var SplitBase = /** @class */ (function (_super) {
         _this._csmActiveCascade = 0;
         _this._csmVisualizeCascades = false;
         _this._csmStabilizeCascades = false;
-        _this._csmDepthClamp = false;
+        _this._csmDepthClamp = true;
         _this._csmLambda = 0.7;
-        _this._csmSplitBlendPercentage = 0.0;
-        _this._csmLightSizeCorrection = false;
-        _this._csmDepthCorrection = false;
-        _this._csmPenumbraDarkness = 1;
+        _this._csmSplitBlendPercentage = 0.15;
+        _this._csmPenumbraDarkness = 0.7;
         _this._csmShadowMaxZ = 250;
+        _this._csmAutoCalcDepthBounds = false;
         _this._shadowMapPlane = null;
         var size = 1;
         _this._shadowMapPlane = babylonjs__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreatePlane(_this.name + "_shadowmap", {
@@ -5128,16 +5294,6 @@ var SplitBase = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SplitBase.prototype, "csmLightSizeCorrection", {
-        get: function () {
-            return this._csmLightSizeCorrection;
-        },
-        set: function (smlsc) {
-            this._csmLightSizeCorrection = smlsc;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SplitBase.prototype, "lightNearPlane", {
         get: function () {
             return this._lightNearPlane;
@@ -5238,16 +5394,6 @@ var SplitBase = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SplitBase.prototype, "csmDepthCorrection", {
-        get: function () {
-            return this._csmDepthCorrection;
-        },
-        set: function (smdc) {
-            this._csmDepthCorrection = smdc;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(SplitBase.prototype, "csmPenumbraDarkness", {
         get: function () {
             return this._csmPenumbraDarkness;
@@ -5268,6 +5414,16 @@ var SplitBase = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(SplitBase.prototype, "csmAutoCalcDepthBounds", {
+        get: function () {
+            return this._csmAutoCalcDepthBounds;
+        },
+        set: function (cacdb) {
+            this._csmAutoCalcDepthBounds = cacdb;
+        },
+        enumerable: true,
+        configurable: true
+    });
     SplitBase.prototype.setDirectionFromSibling = function (checkAnimate) {
         if (checkAnimate === void 0) { checkAnimate = true; }
         for (var i = 0; i < this._container.splits.length; ++i) {
@@ -5281,7 +5437,7 @@ var SplitBase = /** @class */ (function (_super) {
     SplitBase.prototype.rotateLight = function () {
         var deltaTime = this.scene.getEngine().getDeltaTime() / 1000;
         var matrix = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"]();
-        var rotY = _Utils__WEBPACK_IMPORTED_MODULE_3__["default"].XMScalarModAngle(deltaTime * 0.1);
+        var rotY = _Utils__WEBPACK_IMPORTED_MODULE_3__["default"].XMScalarModAngle(deltaTime * 0.25);
         var rotation = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Quaternion"].RotationAxis(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0.0, 1.0, 0.0), rotY);
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].FromQuaternionToRef(rotation, matrix);
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(this._sunDir, matrix, this._sunDir);
@@ -5417,10 +5573,9 @@ var SplitBaseGUI = /** @class */ (function (_super) {
             var _1 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmDepthClamp), 2), csmDepthClamp = _1[0], setCSMDepthClamp = _1[1];
             var _2 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmLambda), 2), csmLambda = _2[0], setCSMLambda = _2[1];
             var _3 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmSplitBlendPercentage), 2), csmSplitBlendPercentage = _3[0], setCSMSplitBlendPercentage = _3[1];
-            var _4 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmLightSizeCorrection), 2), csmLightSizeCorrection = _4[0], setCSMLightSizeCorrection = _4[1];
-            var _5 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmDepthCorrection), 2), csmDepthCorrection = _5[0], setCSMDepthCorrection = _5[1];
-            var _6 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmPenumbraDarkness), 2), csmPenumbraDarkness = _6[0], setCSMPenumbraDarkness = _6[1];
-            var _7 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmShadowMaxZ), 2), csmShadowMaxZ = _7[0], setCSMShadowMaxZ = _7[1];
+            var _4 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmPenumbraDarkness), 2), csmPenumbraDarkness = _4[0], setCSMPenumbraDarkness = _4[1];
+            var _5 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmShadowMaxZ), 2), csmShadowMaxZ = _5[0], setCSMShadowMaxZ = _5[1];
+            var _6 = __read(react__WEBPACK_IMPORTED_MODULE_0__["useState"](_this._sparent.csmAutoCalcDepthBounds), 2), csmAutoCalcDepthBounds = _6[0], setCSMAutoCalcDepthBounds = _6[1];
             var changeCameraNearPlane = function (event, value) {
                 _this._sparent.cameraNearPlane = value;
                 setCameraNearPlane(_this._sparent.cameraNearPlane);
@@ -5539,14 +5694,6 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                 _this._sparent.csmSplitBlendPercentage = value;
                 setCSMSplitBlendPercentage(_this._sparent.csmSplitBlendPercentage);
             };
-            var changeCSMLightSizeCorrection = function (event, checked) {
-                setCSMLightSizeCorrection(checked);
-                _this._sparent.csmLightSizeCorrection = checked;
-            };
-            var changeCSMDepthCorrection = function (event, checked) {
-                setCSMDepthCorrection(checked);
-                _this._sparent.csmDepthCorrection = checked;
-            };
             var changeCSMPenumbraDarkness = function (event, value) {
                 _this._sparent.csmPenumbraDarkness = value;
                 setCSMPenumbraDarkness(_this._sparent.csmPenumbraDarkness);
@@ -5555,12 +5702,20 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                 _this._sparent.csmShadowMaxZ = value;
                 setCSMShadowMaxZ(_this._sparent.csmShadowMaxZ);
             };
+            var changeCSMAutoCalcDepthBounds = function (event, checked) {
+                setCSMAutoCalcDepthBounds(checked);
+                _this._sparent.csmAutoCalcDepthBounds = checked;
+            };
             react__WEBPACK_IMPORTED_MODULE_0__["useEffect"](function () {
                 var handler = function (event) {
                     switch (event.detail.type) {
                         case 'setShadowZBounds': {
                             setLightNearPlane(Math.floor(_this._sparent.lightNearPlane));
                             setLightFarPlane(Math.floor(_this._sparent.lightFarPlane));
+                            break;
+                        }
+                        case 'setShadowMaxZ': {
+                            setCSMShadowMaxZ(Math.floor(_this._sparent.csmShadowMaxZ));
                             break;
                         }
                     }
@@ -5637,13 +5792,20 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Num of Cascades")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Select"], { className: classes.propertyValue, value: csmNumCascades, onChange: changeNumCascades }, __spread(Array(4).keys()).map(function (_, i) { return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { key: i + 1, value: i + 1 }, i + 1); }))),
-                                 false && false,
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Active Cascade")),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Select"], { className: classes.propertyValue, value: csmActiveCascade, onChange: changeActiveCascade }, __spread(Array(csmNumCascades).keys()).map(function (_, i) { return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { key: i, value: i }, i + 1); }))),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Visualize Cascades")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
                                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmVisualizeCascades, onChange: changeCSMVisualizeCascades }))),
-                                 false && false,
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Stabilize Cascades")),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmStabilizeCascades, onChange: changeCSMStabilizeCascades }))),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Lambda")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
@@ -5655,6 +5817,11 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
                                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmSplitBlendPercentage, min: 0, max: 1, step: 0.01, onChange: changeCSMSplitBlendPercentage }))),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Auto-Calc Depth")),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmAutoCalcDepthBounds, onChange: changeCSMAutoCalcDepthBounds }))),
+                                react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Shadow MaxZ")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
@@ -5664,12 +5831,12 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Typography"], null, _this._showCSM ? "Cascade" : "Shadow Map")),
                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["ExpansionPanelDetails"], null,
                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { container: true, spacing: 1 },
-                            !_this._showCSM && react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
+                            (!_this._showCSM || _this._showCSM && shadowMapFilter === _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_5__["CascadedShadowGenerator"].FILTER_NONE) && react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Show Depth Map")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { disabled: _this._showCSM, checked: shadowMapShowDepthMap, onChange: changeShadowMapShowDepthMap })))),
+                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: shadowMapShowDepthMap, onChange: changeShadowMapShowDepthMap })))),
                             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Size")),
                             react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
@@ -5736,17 +5903,7 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Penumbra Darkness")),
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
                                         react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmPenumbraDarkness, min: 0, max: 1, step: 0.01, onChange: changeCSMPenumbraDarkness }))),
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Light Size Correction")),
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmLightSizeCorrection, onChange: changeCSMLightSizeCorrection }))),
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Depth Correction")),
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
-                                        react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.propertyValue },
-                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Switch"], { checked: csmDepthCorrection, onChange: changeCSMDepthCorrection }))))),
+                                            react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_GUI__WEBPACK_IMPORTED_MODULE_3__["PrettoSlider"], { valueLabelDisplay: "auto", value: csmPenumbraDarkness, min: 0, max: 1, step: 0.01, onChange: changeCSMPenumbraDarkness }))))),
                             !_this._showCSM && (shadowMapFilter === babylonjs__WEBPACK_IMPORTED_MODULE_2__["ShadowGenerator"].FILTER_BLUREXPONENTIALSHADOWMAP || shadowMapFilter === babylonjs__WEBPACK_IMPORTED_MODULE_2__["ShadowGenerator"].FILTER_EXPONENTIALSHADOWMAP) && react__WEBPACK_IMPORTED_MODULE_0__["createElement"](react__WEBPACK_IMPORTED_MODULE_0__["Fragment"], null,
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Depth Scale")),
@@ -6374,9 +6531,9 @@ var __values = (undefined && undefined.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 
-//import "../../Shaders/shadowMap.fragment";
-//import "../../Shaders/shadowMap.vertex";
-//import "../../Shaders/depthBoxBlur.fragment";
+var UpDir = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Up();
+var ZeroVec = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Zero();
+var tmpv1 = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](), tmpv2 = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](), matrix = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"]();
 /**
  * A CSM implementation allowing casting shadows on large scenes.
  * Documentation : https://doc.babylonjs.com/babylon101/cascadedShadows
@@ -6417,17 +6574,27 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this._filter = CascadedShadowGenerator.FILTER_PCF;
         this._filteringQuality = CascadedShadowGenerator.QUALITY_HIGH;
         this._contactHardeningLightSizeUVRatio = 0.1;
-        this.lightSizeCorrection = true;
-        this.depthCorrection = true;
-        this.penumbraDarkness = 1.0;
         this._darkness = 0;
+        /**
+         * Gets or sets the actual darkness of the soft shadows while using PCSS filtering (value between 0. and 1.)
+         */
+        this.penumbraDarkness = 1.0;
         this._transparencyShadow = false;
-        this._cascades = CascadedShadowGenerator.DEFAULT_CASCADES_COUNT;
+        this._numCascades = CascadedShadowGenerator.DEFAULT_CASCADES_COUNT;
+        /**
+         * Sets this to true if you want that the edges of the shadows don't "swimm" / "shimmer" when rotating the camera.
+         * The trade off is that you loose some precision in the shadow rendering when enabling this setting.
+         */
+        this.stabilizeCascades = false;
         this._freezeShadowCastersBoundingInfo = false;
         this._freezeShadowCastersBoundingInfoObservable = null;
+        this._scbiMin = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 0);
+        this._scbiMax = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 0, 0);
+        this._breaksAreDirty = true;
+        this._minDistance = 0;
+        this._maxDistance = 1;
         /**
          * Controls the extent to which the shadows fade out at the edge of the frustum
-         * Used only by directionals and spots
          */
         this.frustumEdgeFalloff = 0;
         /**
@@ -6442,7 +6609,11 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this._currentLayer = 0;
         this._defaultTextureMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Identity();
         this._debug = false;
-        this.depthClamp = false;
+        this._depthClamp = true;
+        /**
+         * Gets or sets the percentage of blending between two cascades (value between 0. and 1.).
+         * It defaults to 0.1 (10% blending).
+         */
         this.cascadeBlendPercentage = 0.1;
         this._lambda = 0.5;
         this._scene = light.getScene();
@@ -6703,19 +6874,19 @@ var CascadedShadowGenerator = /** @class */ (function () {
         this._transparencyShadow = transparent;
         return this;
     };
-    Object.defineProperty(CascadedShadowGenerator.prototype, "cascades", {
+    Object.defineProperty(CascadedShadowGenerator.prototype, "numCascades", {
         /**
          * Gets or set the number of cascades used by the CSM.
          */
         get: function () {
-            return this._cascades;
+            return this._numCascades;
         },
         set: function (value) {
             value = Math.min(Math.max(value, CascadedShadowGenerator.MIN_CASCADES_COUNT), CascadedShadowGenerator.MAX_CASCADES_COUNT);
-            if (value === this._cascades) {
+            if (value === this._numCascades) {
                 return;
             }
-            this._cascades = value;
+            this._numCascades = value;
             this.recreateShadowMap();
         },
         enumerable: true,
@@ -6729,6 +6900,11 @@ var CascadedShadowGenerator = /** @class */ (function () {
         return this._shadowMap;
     };
     Object.defineProperty(CascadedShadowGenerator.prototype, "freezeShadowCastersBoundingInfo", {
+        /**
+         * Enables or disables the shadow casters bounding info computation.
+         * If your shadow casters don't move, you can disable this feature.
+         * If it is enabled, the bounding box computation is done every frame.
+         */
         get: function () {
             return this._freezeShadowCastersBoundingInfo;
         },
@@ -6749,7 +6925,8 @@ var CascadedShadowGenerator = /** @class */ (function () {
         configurable: true
     });
     CascadedShadowGenerator.prototype._computeShadowCastersBoundingInfo = function () {
-        var min = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE), max = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+        this._scbiMin.copyFromFloats(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+        this._scbiMax.copyFromFloats(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
         if (this._shadowMap && this._shadowMap.renderList) {
             var renderList = this._shadowMap.renderList;
             for (var meshIndex = 0; meshIndex < renderList.length; meshIndex++) {
@@ -6758,13 +6935,18 @@ var CascadedShadowGenerator = /** @class */ (function () {
                     continue;
                 }
                 var boundingInfo = mesh.getBoundingInfo(), boundingBox = boundingInfo.boundingBox;
-                min.minimizeInPlace(boundingBox.minimumWorld);
-                max.maximizeInPlace(boundingBox.maximumWorld);
+                this._scbiMin.minimizeInPlace(boundingBox.minimumWorld);
+                this._scbiMax.maximizeInPlace(boundingBox.maximumWorld);
             }
         }
-        this._shadowCastersBoundingInfo.reConstruct(min, max);
+        this._shadowCastersBoundingInfo.reConstruct(this._scbiMin, this._scbiMax);
     };
     Object.defineProperty(CascadedShadowGenerator.prototype, "shadowCastersBoundingInfo", {
+        /**
+         * Gets or sets the shadow casters bounding info.
+         * If you provide your own shadow casters bounding info, first enable freezeShadowCastersBoundingInfo
+         * so that the system won't overwrite the bounds you provide
+         */
         get: function () {
             return this._shadowCastersBoundingInfo;
         },
@@ -6774,6 +6956,32 @@ var CascadedShadowGenerator = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**
+     * Sets the minimal and maximal distances to use when computing the cascade breaks.
+     *
+     * The values of min / max are typically the zmin and zmax values of your scene, for a given frame.
+     * If you don't know these values, simply leave them to their defaults and don't call this function.
+     * @param min minimal distance for the breaks (default to 0.)
+     * @param max maximal distance for the breaks (default to 1.)
+     */
+    CascadedShadowGenerator.prototype.setMinMaxDistance = function (min, max) {
+        if (this._minDistance === min && this._maxDistance === max) {
+            return;
+        }
+        if (min > max) {
+            min = 0;
+            max = 1;
+        }
+        if (min < 0) {
+            min = 0;
+        }
+        if (max > 1) {
+            max = 1;
+        }
+        this._minDistance = min;
+        this._maxDistance = max;
+        this._breaksAreDirty = true;
+    };
     /**
      * Gets the class name of that object
      * @returns "ShadowGenerator"
@@ -6842,9 +7050,24 @@ var CascadedShadowGenerator = /** @class */ (function () {
     CascadedShadowGenerator.prototype.getLight = function () {
         return this._light;
     };
+    /**
+     * Gets a cascade minimum extents
+     * @param cascadeIndex index of the cascade
+     */
+    CascadedShadowGenerator.prototype.getCascadeMinExtents = function (cascadeIndex) {
+        return cascadeIndex >= 0 && cascadeIndex < this._numCascades ? this._cascadeMinExtents[cascadeIndex] : null;
+    };
+    /**
+     * Gets a cascade maximum extents
+     * @param cascadeIndex index of the cascade
+     */
+    CascadedShadowGenerator.prototype.getCascadeMaxExtents = function (cascadeIndex) {
+        return cascadeIndex >= 0 && cascadeIndex < this._numCascades ? this._cascadeMaxExtents[cascadeIndex] : null;
+    };
     Object.defineProperty(CascadedShadowGenerator.prototype, "shadowMaxZ", {
         /**
-         * Gets the csmFrustumLength value: furthest range of the frustum for the CSM mode.
+         * Gets the shadow max z distance. It's the limit beyond which shadows are not displayed.
+         * It defaults to camera.maxZ
          */
         get: function () {
             if (!this._scene || !this._scene.activeCamera) {
@@ -6853,7 +7076,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
             return this._shadowMaxZ;
         },
         /**
-         * Sets the csmFrustumLength: furthest range of the frustum for the CSM mode.
+         * Sets the shadow max z distance.
          */
         set: function (value) {
             if (!this._scene || !this._scene.activeCamera) {
@@ -6864,12 +7087,16 @@ var CascadedShadowGenerator = /** @class */ (function () {
                 return;
             }
             this._shadowMaxZ = value;
-            this._initCascades();
+            this._breaksAreDirty = true;
         },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(CascadedShadowGenerator.prototype, "debug", {
+        /**
+         * Gets or sets the debug flag.
+         * When enabled, the cascades are materialized by different colors on the screen.
+         */
         get: function () {
             return this._debug;
         },
@@ -6880,139 +7107,94 @@ var CascadedShadowGenerator = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(CascadedShadowGenerator.prototype, "depthClamp", {
+        /**
+         * Gets or sets the depth clamping value.
+         *
+         * When enabled, it improves the shadow quality because the near z plane of the light frustum don't need to be adjusted
+         * to account for the shadow casters far away.
+         *
+         * Note that this property is incompatible with PCSS filtering, so it won't be used in that case.
+         */
+        get: function () {
+            return this._depthClamp;
+        },
+        set: function (value) {
+            this._depthClamp = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(CascadedShadowGenerator.prototype, "lambda", {
         /**
-         * Gets csmLambda: parameter used for calculating the frustum in CSM.
+         * Gets or set the lambda parameter.
+         * This parameter is used to split the camera frustum and create the cascades.
+         * It's a value between 0. and 1.: If 0, the split is a uniform split of the frustum, if 1 it is a logarithmic split.
+         * For all values in-between, it's a linear combination of the uniform and logarithm split algorithm.
          */
         get: function () {
             return this._lambda;
         },
-        /**
-         * Sets csmLambda: parameter used for calculating the frustum in CSM.
-         */
         set: function (value) {
             var lambda = Math.min(Math.max(value, 0), 1);
             if (this._lambda == lambda) {
                 return;
             }
             this._lambda = lambda;
-            this._initCascades();
+            this._breaksAreDirty = true;
         },
         enumerable: true,
         configurable: true
     });
-    CascadedShadowGenerator.prototype._initCascades = function () {
+    /**
+     * Gets the view matrix corresponding to a given cascade
+     * @param cascadeNum cascade to retrieve the view matrix from
+     */
+    CascadedShadowGenerator.prototype.getCascadeViewMatrix = function (cascadeNum) {
+        return cascadeNum >= 0 && cascadeNum < this._numCascades ? this._viewMatrices[cascadeNum] : null;
+    };
+    /**
+     * Create the cascade breaks according to the lambda, shadowMaxZ and min/max distance properties, as well as the camera near and far planes.
+     * This function is automatically called when updating lambda, shadowMaxZ and min/max distances, however you should call it yourself if
+     * you change the camera near/far planes!
+     */
+    CascadedShadowGenerator.prototype.splitFrustum = function () {
+        this._breaksAreDirty = true;
+    };
+    CascadedShadowGenerator.prototype._splitFrustum = function () {
         var camera = this._scene.activeCamera;
         if (!camera) {
             return;
         }
-        if (!this._shadowMaxZ) {
-            this._shadowMaxZ = camera.maxZ;
-        }
-        this._currentRenderID = new Array(this._cascades);
-        // inits and sets all static params related to CSM
-        var engine = this._scene.getEngine();
-        this._viewSpaceFrustums = [];
-        this._viewSpaceFrustumsZ = [];
-        this._viewSpaceBoundingSpheres = [];
-        var nearx = 0;
-        var neary = 0;
-        var farx = 0;
-        var fary = 0;
-        // get all internal camera cascaded frustum points
-        var breaks = this._frustumSplit();
-        if (camera.fovMode === 0) {
-            nearx = camera.minZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
-            neary = camera.minZ * Math.tan(camera.fov / 2);
-            farx = this._shadowMaxZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
-            fary = this._shadowMaxZ * Math.tan(camera.fov / 2);
-        }
-        else if (camera.fovMode === 1) {
-            nearx = camera.minZ * Math.tan(camera.fov / 2);
-            neary = camera.minZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
-            farx = this._shadowMaxZ * Math.tan(camera.fov / 2);
-            fary = this._shadowMaxZ * Math.tan(camera.fov / 2) * engine.getAspectRatio(camera);
-        }
-        // populate the viewSpaceFrustums array
-        for (var i = 0; i < this.cascades + 1; i++) {
-            this._viewSpaceFrustums[i] = [];
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](nearx, neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](farx, fary, this._shadowMaxZ), breaks[i]));
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](nearx, -neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](farx, -fary, this._shadowMaxZ), breaks[i]));
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-nearx, -neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-farx, -fary, this._shadowMaxZ), breaks[i]));
-            this._viewSpaceFrustums[i].push(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Lerp(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-nearx, neary, camera.minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-farx, fary, this._shadowMaxZ), breaks[i]));
-        }
-        // populate the viewSpaceBoundingSpheres array
-        var minX = Number.MAX_VALUE;
-        var minY = Number.MAX_VALUE;
-        var minZ = Number.MAX_VALUE;
-        var maxX = Number.MIN_VALUE;
-        var maxY = Number.MIN_VALUE;
-        var maxZ = Number.MIN_VALUE;
-        for (var i = 0; i < this.cascades; i++) {
-            for (var j = 0; j < this._viewSpaceFrustums[i].length; j++) {
-                minX = Math.min(minX, this._viewSpaceFrustums[i][j].x);
-                minY = Math.min(minY, this._viewSpaceFrustums[i][j].y);
-                minZ = Math.min(minZ, this._viewSpaceFrustums[i][j].z);
-                maxX = Math.max(maxX, this._viewSpaceFrustums[i][j].x);
-                maxY = Math.max(maxY, this._viewSpaceFrustums[i][j].y);
-                maxZ = Math.max(maxZ, this._viewSpaceFrustums[i][j].z);
-                minX = Math.min(minX, this._viewSpaceFrustums[i + 1][j].x);
-                minY = Math.min(minY, this._viewSpaceFrustums[i + 1][j].y);
-                minZ = Math.min(minZ, this._viewSpaceFrustums[i + 1][j].z);
-                maxX = Math.max(maxX, this._viewSpaceFrustums[i + 1][j].x);
-                maxY = Math.max(maxY, this._viewSpaceFrustums[i + 1][j].y);
-                maxZ = Math.max(maxZ, this._viewSpaceFrustums[i + 1][j].z);
-            }
-            var bs = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["BoundingSphere"](new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](minX, minY, minZ), new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](maxX, maxY, maxZ));
-            this._viewSpaceBoundingSpheres.push(bs);
-            this._viewSpaceFrustumsZ[i] = this._viewSpaceFrustums[i + 1][0].z;
-        }
-        // initialize the CSM transformMatrices
-        this._viewMatrix = [];
-        this._lightMinExtents = [];
-        this._lightMaxExtents = [];
-        this._transformMatrices = [];
-        for (var index = 0; index < this.cascades; index++) {
-            this._viewMatrix[index] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
-            this._transformMatrices[index] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
-            this._lightMinExtents[index] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
-            this._lightMaxExtents[index] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
-        }
-        this._transformMatricesAsArray = new Float32Array(this.cascades * 16);
-    };
-    CascadedShadowGenerator.prototype._frustumSplit = function () {
-        var camera = this._scene.activeCamera;
-        if (!camera) {
-            return [];
-        }
-        var near = camera.minZ, far = camera.maxZ, cameraRange = far - near, minDistance = 0, maxDistance = this._shadowMaxZ < far && this._shadowMaxZ >= near ? (this._shadowMaxZ - near) / (far - near) : 1;
+        var near = camera.minZ, far = camera.maxZ, cameraRange = far - near, minDistance = this._minDistance, maxDistance = this._shadowMaxZ < far && this._shadowMaxZ >= near ? Math.min((this._shadowMaxZ - near) / (far - near), this._maxDistance) : this._maxDistance;
         var minZ = near + minDistance * cameraRange, maxZ = near + maxDistance * cameraRange;
         var range = maxZ - minZ, ratio = maxZ / minZ;
-        var r = [];
-        r.push(minDistance);
-        for (var cascadeIndex = 0; cascadeIndex < this._cascades; ++cascadeIndex) {
-            var p = (cascadeIndex + 1) / this._cascades, log = minZ * (Math.pow(ratio, p)), uniform = minZ + range * p;
+        for (var cascadeIndex = 0; cascadeIndex < this._cascades.length; ++cascadeIndex) {
+            var p = (cascadeIndex + 1) / this._numCascades, log = minZ * (Math.pow(ratio, p)), uniform = minZ + range * p;
             var d = this._lambda * (log - uniform) + uniform;
-            r.push((d - near) / cameraRange);
+            this._cascades[cascadeIndex].prevBreakDistance = cascadeIndex === 0 ? minDistance : this._cascades[cascadeIndex - 1].breakDistance;
+            this._cascades[cascadeIndex].breakDistance = (d - near) / cameraRange;
+            this._viewSpaceFrustumsZ[cascadeIndex] = near + this._cascades[cascadeIndex].breakDistance * cameraRange;
+            this._frustumLengths[cascadeIndex] = (this._cascades[cascadeIndex].breakDistance - this._cascades[cascadeIndex].prevBreakDistance) * cameraRange;
         }
-        return r;
+        this._breaksAreDirty = false;
     };
     /**
      * Gets the CSM transformation matrix used to project the meshes into the map from the light point of view.
-     * (eq to shadow prjection matrix * light transform matrix)
-     * @param mapIndex index number of the cascaded shadow map
+     * (eq to view projection * shadow projection matrices)
+     * @param cascadeIndex index number of the cascaded shadow map
      * @returns The transform matrix used to create the CSM shadow map
      */
-    CascadedShadowGenerator.prototype.getCSMTransformMatrix = function (mapIndex) {
+    CascadedShadowGenerator.prototype.getCSMTransformMatrix = function (cascadeIndex) {
         var scene = this._scene;
-        if (this._currentRenderID[mapIndex] === scene.getRenderId()) {
-            return this._transformMatrices[mapIndex];
+        if (this._currentRenderID[cascadeIndex] === scene.getRenderId()) {
+            return this._transformMatrices[cascadeIndex];
         }
         var camera = scene.activeCamera;
         if (!camera) {
-            return this._transformMatrices[mapIndex];
+            return this._transformMatrices[cascadeIndex];
         }
-        this._currentRenderID[mapIndex] = scene.getRenderId();
+        this._currentRenderID[cascadeIndex] = scene.getRenderId();
         var lightPosition = this._light.position;
         if (this._light.computeTransformedInformation()) {
             lightPosition = this._light.transformedPosition;
@@ -7024,48 +7206,106 @@ var CascadedShadowGenerator = /** @class */ (function () {
         if (this._light.needProjectionMatrixCompute() || !this._cachedPosition || !this._cachedDirection || !lightPosition.equals(this._cachedPosition) || !this._lightDirection.equals(this._cachedDirection)) {
             this._cachedPosition.copyFrom(lightPosition);
             this._cachedDirection.copyFrom(this._lightDirection);
-            // get bounding sphere of current cascade
-            var bs = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["BoundingSphere"](this._viewSpaceBoundingSpheres[mapIndex].minimum, this._viewSpaceBoundingSpheres[mapIndex].maximum, camera.getWorldMatrix());
-            // get view matrix
-            var shadowCamPos = bs.centerWorld.subtract(this._lightDirection.scale(bs.radius));
-            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].LookAtLHToRef(shadowCamPos, bs.centerWorld, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Up(), this._viewMatrix[mapIndex]);
-            // get ortho matrix
-            var minx = -bs.radius, miny = -bs.radius, minz = 0;
-            var maxx = bs.radius, maxy = bs.radius, maxz = 2 * bs.radius;
+            this._computeFrustumInWorldSpace(cascadeIndex);
+            this._computeCascadeFrustum(cascadeIndex);
+            this._cascadeMaxExtents[cascadeIndex].subtractToRef(this._cascadeMinExtents[cascadeIndex], tmpv1); // tmpv1 = cascadeExtents
+            // Get position of the shadow camera
+            this._frustumCenter[cascadeIndex].addToRef(this._lightDirection.scale(this._cascadeMinExtents[cascadeIndex].z), this._shadowCameraPos[cascadeIndex]);
+            // Come up with a new orthographic camera for the shadow caster
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].LookAtLHToRef(this._shadowCameraPos[cascadeIndex], this._frustumCenter[cascadeIndex], UpDir, this._viewMatrices[cascadeIndex]);
+            var minZ = 0, maxZ = tmpv1.z;
             // Try to tighten minZ and maxZ based on the bounding box of the shadow casters
             var boundingInfo = this._shadowCastersBoundingInfo;
-            boundingInfo.update(this._viewMatrix[mapIndex]);
-            maxz = Math.min(maxz, boundingInfo.boundingBox.maximumWorld.z);
-            if (!this.depthClamp) {
+            boundingInfo.update(this._viewMatrices[cascadeIndex]);
+            maxZ = Math.min(maxZ, boundingInfo.boundingBox.maximumWorld.z);
+            if (!this._depthClamp || this.filter === CascadedShadowGenerator.FILTER_PCSS) {
                 // If we don't use depth clamping, we must set minZ so that all shadow casters are in the light frustum
-                minz = Math.min(minz, boundingInfo.boundingBox.minimumWorld.z);
+                minZ = Math.min(minZ, boundingInfo.boundingBox.minimumWorld.z);
             }
             else {
                 // If using depth clamping, we can adjust minZ to reduce the [minZ, maxZ] range (and get some additional precision in the shadow map)
-                minz = Math.max(minz, boundingInfo.boundingBox.minimumWorld.z);
+                minZ = Math.max(minZ, boundingInfo.boundingBox.minimumWorld.z);
             }
-            this._lightMinExtents[mapIndex].copyFromFloats(minx, miny, minz);
-            this._lightMaxExtents[mapIndex].copyFromFloats(maxx, maxy, maxz);
-            var OrthoMatrix = void 0;
             if (this._scene.useRightHandedSystem) {
-                OrthoMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterRH(minx, maxx, miny, maxy, minz, maxz);
+                babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterRHToRef(this._cascadeMinExtents[cascadeIndex].x, this._cascadeMaxExtents[cascadeIndex].x, this._cascadeMinExtents[cascadeIndex].y, this._cascadeMaxExtents[cascadeIndex].y, minZ, maxZ, this._projectionMatrices[cascadeIndex]);
             }
             else {
-                OrthoMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterLH(minx, maxx, miny, maxy, minz, maxz);
+                babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].OrthoOffCenterLHToRef(this._cascadeMinExtents[cascadeIndex].x, this._cascadeMaxExtents[cascadeIndex].x, this._cascadeMinExtents[cascadeIndex].y, this._cascadeMaxExtents[cascadeIndex].y, minZ, maxZ, this._projectionMatrices[cascadeIndex]);
             }
-            // get projection matrix
-            this._viewMatrix[mapIndex].multiplyToRef(OrthoMatrix, this._transformMatrices[mapIndex]);
-            // rounding the transform matrix to prevent shimmering artifacts from camera movement
-            var shadowOrigin = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinates(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Zero(), this._transformMatrices[mapIndex]);
-            shadowOrigin = shadowOrigin.scale(this._mapSize / 2.0);
-            var roundedOrigin = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](Math.ceil(shadowOrigin.x), Math.ceil(shadowOrigin.y), Math.ceil(shadowOrigin.z));
-            var roundOffset = roundedOrigin.subtract(shadowOrigin);
-            roundOffset = roundOffset.scale(2.0 / this._mapSize);
-            var roundMatrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Translation(roundOffset.x, roundOffset.y, 0.0);
-            this._transformMatrices[mapIndex].multiplyToRef(roundMatrix, this._transformMatrices[mapIndex]);
+            this._cascadeMinExtents[cascadeIndex].z = minZ;
+            this._cascadeMaxExtents[cascadeIndex].z = maxZ;
+            this._viewMatrices[cascadeIndex].multiplyToRef(this._projectionMatrices[cascadeIndex], this._transformMatrices[cascadeIndex]);
+            // Create the rounding matrix, by projecting the world-space origin and determining
+            // the fractional offset in texel space
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(ZeroVec, this._transformMatrices[cascadeIndex], tmpv1); // tmpv1 = shadowOrigin
+            tmpv1.scaleInPlace(this._mapSize / 2);
+            tmpv2.copyFromFloats(Math.round(tmpv1.x), Math.round(tmpv1.y), Math.round(tmpv1.z)); // tmpv2 = roundedOrigin
+            tmpv2.subtractInPlace(tmpv1).scaleInPlace(2 / this._mapSize); // tmpv2 = roundOffset
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].TranslationToRef(tmpv2.x, tmpv2.y, 0.0, matrix);
+            this._projectionMatrices[cascadeIndex].multiplyToRef(matrix, this._projectionMatrices[cascadeIndex]);
+            this._viewMatrices[cascadeIndex].multiplyToRef(this._projectionMatrices[cascadeIndex], this._transformMatrices[cascadeIndex]);
         }
-        this._transformMatrices[mapIndex].copyToArray(this._transformMatricesAsArray, mapIndex * 16);
-        return this._transformMatrices[mapIndex];
+        this._transformMatrices[cascadeIndex].copyToArray(this._transformMatricesAsArray, cascadeIndex * 16);
+        return this._transformMatrices[cascadeIndex];
+    };
+    // Get the 8 points of the view frustum in world space
+    CascadedShadowGenerator.prototype._computeFrustumInWorldSpace = function (cascadeIndex) {
+        if (!this._scene.activeCamera) {
+            return;
+        }
+        var prevSplitDist = this._cascades[cascadeIndex].prevBreakDistance, splitDist = this._cascades[cascadeIndex].breakDistance;
+        this._scene.activeCamera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
+        var invViewProj = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Invert(this._scene.activeCamera.getTransformationMatrix());
+        for (var cornerIndex = 0; cornerIndex < CascadedShadowGenerator.frustumCornersNDCSpace.length; ++cornerIndex) {
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(CascadedShadowGenerator.frustumCornersNDCSpace[cornerIndex], invViewProj, this._frustumCornersWorldSpace[cascadeIndex][cornerIndex]);
+        }
+        // Get the corners of the current cascade slice of the view frustum
+        for (var cornerIndex = 0; cornerIndex < CascadedShadowGenerator.frustumCornersNDCSpace.length / 2; ++cornerIndex) {
+            tmpv1.copyFrom(this._frustumCornersWorldSpace[cascadeIndex][cornerIndex + 4]).subtractInPlace(this._frustumCornersWorldSpace[cascadeIndex][cornerIndex]);
+            tmpv2.copyFrom(tmpv1).scaleInPlace(prevSplitDist); // near corner ray
+            tmpv1.scaleInPlace(splitDist); // far corner ray
+            tmpv1.addInPlace(this._frustumCornersWorldSpace[cascadeIndex][cornerIndex]);
+            this._frustumCornersWorldSpace[cascadeIndex][cornerIndex + 4].copyFrom(tmpv1);
+            this._frustumCornersWorldSpace[cascadeIndex][cornerIndex].addInPlace(tmpv2);
+        }
+    };
+    CascadedShadowGenerator.prototype._computeCascadeFrustum = function (cascadeIndex) {
+        this._cascadeMinExtents[cascadeIndex].copyFromFloats(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+        this._cascadeMaxExtents[cascadeIndex].copyFromFloats(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+        this._frustumCenter[cascadeIndex].copyFromFloats(0, 0, 0);
+        var camera = this._scene.activeCamera;
+        if (!camera) {
+            return;
+        }
+        // Calculate the centroid of the view frustum slice
+        for (var cornerIndex = 0; cornerIndex < this._frustumCornersWorldSpace[cascadeIndex].length; ++cornerIndex) {
+            this._frustumCenter[cascadeIndex].addInPlace(this._frustumCornersWorldSpace[cascadeIndex][cornerIndex]);
+        }
+        this._frustumCenter[cascadeIndex].scaleInPlace(1 / this._frustumCornersWorldSpace[cascadeIndex].length);
+        if (this.stabilizeCascades) {
+            // Calculate the radius of a bounding sphere surrounding the frustum corners
+            var sphereRadius = 0;
+            for (var cornerIndex = 0; cornerIndex < this._frustumCornersWorldSpace[cascadeIndex].length; ++cornerIndex) {
+                var dist = this._frustumCornersWorldSpace[cascadeIndex][cornerIndex].subtract(this._frustumCenter[cascadeIndex]).length();
+                sphereRadius = Math.max(sphereRadius, dist);
+            }
+            sphereRadius = Math.ceil(sphereRadius * 16) / 16;
+            this._cascadeMaxExtents[cascadeIndex].copyFromFloats(sphereRadius, sphereRadius, sphereRadius);
+            this._cascadeMinExtents[cascadeIndex].copyFromFloats(-sphereRadius, -sphereRadius, -sphereRadius);
+        }
+        else {
+            // Create a temporary view matrix for the light
+            var lightCameraPos = this._frustumCenter[cascadeIndex];
+            this._frustumCenter[cascadeIndex].addToRef(this._lightDirection, tmpv1); // tmpv1 = look at
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].LookAtLHToRef(lightCameraPos, tmpv1, UpDir, matrix); // matrix = lightView
+            // Calculate an AABB around the frustum corners
+            for (var cornerIndex = 0; cornerIndex < this._frustumCornersWorldSpace[cascadeIndex].length; ++cornerIndex) {
+                babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].TransformCoordinatesToRef(this._frustumCornersWorldSpace[cascadeIndex][cornerIndex], matrix, tmpv1);
+                this._cascadeMinExtents[cascadeIndex].minimizeInPlace(tmpv1);
+                this._cascadeMaxExtents[cascadeIndex].maximizeInPlace(tmpv1);
+            }
+        }
+        return;
     };
     /** @hidden */
     CascadedShadowGenerator._SceneComponentInitialization = function (scene) {
@@ -7081,10 +7321,43 @@ var CascadedShadowGenerator = /** @class */ (function () {
     };
     CascadedShadowGenerator.prototype._initializeShadowMap = function () {
         var _this = this;
+        // CSM
+        this._transformMatricesAsArray = new Float32Array(this._numCascades * 16);
+        this._viewSpaceFrustumsZ = new Array(this._numCascades);
+        this._frustumLengths = new Array(this._numCascades);
+        this._currentRenderID = new Array(this._numCascades);
+        this._lightSizeUVCorrection = new Array(this._numCascades * 2);
+        this._depthCorrection = new Array(this._numCascades);
+        this._cascades = [];
+        this._viewMatrices = [];
+        this._projectionMatrices = [];
+        this._transformMatrices = [];
+        this._cascadeMinExtents = [];
+        this._cascadeMaxExtents = [];
+        this._frustumCenter = [];
+        this._shadowCameraPos = [];
+        this._frustumCornersWorldSpace = [];
+        for (var cascadeIndex = 0; cascadeIndex < this._numCascades; ++cascadeIndex) {
+            this._cascades[cascadeIndex] = {
+                prevBreakDistance: 0,
+                breakDistance: 0,
+            };
+            this._viewMatrices[cascadeIndex] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
+            this._projectionMatrices[cascadeIndex] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
+            this._transformMatrices[cascadeIndex] = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Zero();
+            this._cascadeMinExtents[cascadeIndex] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
+            this._cascadeMaxExtents[cascadeIndex] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
+            this._frustumCenter[cascadeIndex] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
+            this._shadowCameraPos[cascadeIndex] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
+            this._frustumCornersWorldSpace[cascadeIndex] = new Array(CascadedShadowGenerator.frustumCornersNDCSpace.length);
+            for (var i = 0; i < CascadedShadowGenerator.frustumCornersNDCSpace.length; ++i) {
+                this._frustumCornersWorldSpace[cascadeIndex][i] = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"]();
+            }
+        }
         // Render target
         var engine = this._scene.getEngine();
-        var size = { width: this._mapSize, height: this._mapSize, layers: this.cascades };
-        this._shadowMap = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["RenderTargetTexture"](this._light.name + "_shadowMap", size, this._scene, false, true, this._textureType, false, undefined, false, false);
+        var size = { width: this._mapSize, height: this._mapSize, layers: this.numCascades };
+        this._shadowMap = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["RenderTargetTexture"](this._light.name + "_shadowMap", size, this._scene, false, true, this._textureType, false, undefined, false, false, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTUREFORMAT_RED);
         this._shadowMap.createDepthStencilTexture(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].LESS, true);
         this._shadowMap.wrapU = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Texture"].CLAMP_ADDRESSMODE;
         this._shadowMap.wrapV = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Texture"].CLAMP_ADDRESSMODE;
@@ -7095,6 +7368,11 @@ var CascadedShadowGenerator = /** @class */ (function () {
         if (this._storedUniqueId) {
             this._shadowMap.uniqueId = this._storedUniqueId;
         }
+        this._shadowMap.onBeforeBindObservable.add(function () {
+            if (_this._breaksAreDirty) {
+                _this._splitFrustum();
+            }
+        });
         // Record Face Index before render.
         this._shadowMap.onBeforeRenderObservable.add(function (layer) {
             _this._currentLayer = layer;
@@ -7126,7 +7404,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
             _this._light._markMeshesAsLightDirty();
             _this.recreateShadowMap();
         });
-        this._initCascades();
+        this._splitFrustum();
     };
     CascadedShadowGenerator.prototype._renderForShadowMap = function (opaqueSubMeshes, alphaTestSubMeshes, transparentSubMeshes, depthOnlySubMeshes) {
         var index;
@@ -7322,7 +7600,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
             defines.push("#define FLOAT");
         }
         defines.push("#define DEPTHTEXTURE");
-        if (this.depthClamp) {
+        if (this._depthClamp && this._filter !== CascadedShadowGenerator.FILTER_PCSS) {
             defines.push("#define DEPTHCLAMP");
         }
         var attribs = [babylonjs__WEBPACK_IMPORTED_MODULE_0__["VertexBuffer"].PositionKind];
@@ -7419,7 +7697,11 @@ var CascadedShadowGenerator = /** @class */ (function () {
         defines["SHADOW" + lightIndex] = true;
         defines["SHADOWCSM" + lightIndex] = true;
         defines["SHADOWCSMDEBUG" + lightIndex] = this.debug;
-        defines["SHADOWCSMNUM_CASCADES" + lightIndex] = this.cascades;
+        defines["SHADOWCSMNUM_CASCADES" + lightIndex] = this.numCascades;
+        var camera = scene.activeCamera;
+        if (camera && this._shadowMaxZ < camera.maxZ) {
+            defines["SHADOWCSMUSESHADOWMAXZ" + lightIndex] = true;
+        }
         if (this.useContactHardeningShadow) {
             defines["SHADOWPCSS" + lightIndex] = true;
             if (this._filteringQuality === CascadedShadowGenerator.QUALITY_LOW) {
@@ -7462,15 +7744,15 @@ var CascadedShadowGenerator = /** @class */ (function () {
             return;
         }
         var width = shadowMap.getSize().width;
-        var lightSizeUVCorrection = [], depthCorrection = [];
-        for (var i = 0; i < this._cascades; ++i) {
-            lightSizeUVCorrection.push(i === 0 || !this.lightSizeCorrection ? 1 : (this._lightMaxExtents[0].x - this._lightMinExtents[0].x) / (this._lightMaxExtents[i].x - this._lightMinExtents[i].x)); // x correction
-            lightSizeUVCorrection.push(i === 0 || !this.lightSizeCorrection ? 1 : (this._lightMaxExtents[0].y - this._lightMinExtents[0].y) / (this._lightMaxExtents[i].y - this._lightMinExtents[i].y)); // y correction
-            depthCorrection.push(i === 0 || !this.depthCorrection ? 1 : (this._lightMaxExtents[i].z - this._lightMinExtents[i].z) / (this._lightMaxExtents[0].z - this._lightMinExtents[0].z));
+        for (var cascadeIndex = 0; cascadeIndex < this._numCascades; ++cascadeIndex) {
+            this._lightSizeUVCorrection[cascadeIndex * 2 + 0] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].x - this._cascadeMinExtents[0].x) / (this._cascadeMaxExtents[cascadeIndex].x - this._cascadeMinExtents[cascadeIndex].x); // x correction
+            this._lightSizeUVCorrection[cascadeIndex * 2 + 1] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].y - this._cascadeMinExtents[0].y) / (this._cascadeMaxExtents[cascadeIndex].y - this._cascadeMinExtents[cascadeIndex].y); // y correction
+            this._depthCorrection[cascadeIndex] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[cascadeIndex].z - this._cascadeMinExtents[cascadeIndex].z) / (this._cascadeMaxExtents[0].z - this._cascadeMinExtents[0].z);
         }
         effect.setMatrices("lightMatrix" + lightIndex, this._transformMatricesAsArray);
         effect.setArray("viewFrustumZ" + lightIndex, this._viewSpaceFrustumsZ);
         effect.setFloat("cascadeBlendFactor" + lightIndex, this.cascadeBlendPercentage === 0 ? 10000 : 1 / this.cascadeBlendPercentage);
+        effect.setArray("frustumLengths" + lightIndex, this._frustumLengths);
         // Only PCF uses depth stencil texture.
         if (this._filter === CascadedShadowGenerator.FILTER_PCF) {
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
@@ -7479,8 +7761,8 @@ var CascadedShadowGenerator = /** @class */ (function () {
         else if (this._filter === CascadedShadowGenerator.FILTER_PCSS) {
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
             effect.setTexture("depthSampler" + lightIndex, shadowMap);
-            effect.setArray2("lightSizeUVCorrection" + lightIndex, lightSizeUVCorrection);
-            effect.setArray("depthCorrection" + lightIndex, depthCorrection);
+            effect.setArray2("lightSizeUVCorrection" + lightIndex, this._lightSizeUVCorrection);
+            effect.setArray("depthCorrection" + lightIndex, this._depthCorrection);
             effect.setFloat("penumbraDarkness" + lightIndex, this.penumbraDarkness);
             light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), 1 / width, this._contactHardeningLightSizeUVRatio * width, this.frustumEdgeFalloff, lightIndex);
         }
@@ -7491,8 +7773,8 @@ var CascadedShadowGenerator = /** @class */ (function () {
         light._uniformBuffer.updateFloat2("depthValues", this.getLight().getDepthMinZ(camera), this.getLight().getDepthMinZ(camera) + this.getLight().getDepthMaxZ(camera), lightIndex);
     };
     /**
-     * Gets the transformation matrix used to project the meshes into the map from the light point of view.
-     * (eq to shadow prjection matrix * light transform matrix)
+     * Gets the transformation matrix of the first cascade used to project the meshes into the map from the light point of view.
+     * (eq to view projection * shadow projection matrices)
      * @returns The transform matrix used to create the shadow map
      */
     CascadedShadowGenerator.prototype.getTransformMatrix = function () {
@@ -7561,12 +7843,20 @@ var CascadedShadowGenerator = /** @class */ (function () {
         serializationObject.darkness = this.getDarkness();
         serializationObject.transparencyShadow = this._transparencyShadow;
         serializationObject.frustumEdgeFalloff = this.frustumEdgeFalloff;
+        serializationObject.numCascades = this._numCascades;
+        serializationObject.stabilizeCascades = this.stabilizeCascades;
+        serializationObject.depthClamp = this._depthClamp;
+        serializationObject.lambda = this._lambda;
+        serializationObject.freezeShadowCastersBoundingInfo = this._freezeShadowCastersBoundingInfo;
+        serializationObject.shadowMaxZ = this._shadowMaxZ;
+        serializationObject.cascadeBlendPercentage = this.cascadeBlendPercentage;
         serializationObject.bias = this.bias;
         serializationObject.normalBias = this.normalBias;
         serializationObject.usePercentageCloserFiltering = this.usePercentageCloserFiltering;
         serializationObject.useContactHardeningShadow = this.useContactHardeningShadow;
         serializationObject.filteringQuality = this.filteringQuality;
         serializationObject.contactHardeningLightSizeUVRatio = this.contactHardeningLightSizeUVRatio;
+        serializationObject.penumbraDarkness = this.penumbraDarkness;
         serializationObject.renderList = [];
         if (shadowMap.renderList) {
             for (var meshIndex = 0; meshIndex < shadowMap.renderList.length; meshIndex++) {
@@ -7604,10 +7894,10 @@ var CascadedShadowGenerator = /** @class */ (function () {
         else if (parsedShadowGenerator.useContactHardeningShadow) {
             shadowGenerator.useContactHardeningShadow = true;
         }
-        if (parsedShadowGenerator.filteringQuality) {
+        if (parsedShadowGenerator.filteringQuality !== undefined) {
             shadowGenerator.filteringQuality = parsedShadowGenerator.filteringQuality;
         }
-        if (parsedShadowGenerator.contactHardeningLightSizeUVRatio) {
+        if (parsedShadowGenerator.contactHardeningLightSizeUVRatio !== undefined) {
             shadowGenerator.contactHardeningLightSizeUVRatio = parsedShadowGenerator.contactHardeningLightSizeUVRatio;
         }
         if (parsedShadowGenerator.bias !== undefined) {
@@ -7619,15 +7909,49 @@ var CascadedShadowGenerator = /** @class */ (function () {
         if (parsedShadowGenerator.frustumEdgeFalloff !== undefined) {
             shadowGenerator.frustumEdgeFalloff = parsedShadowGenerator.frustumEdgeFalloff;
         }
-        if (parsedShadowGenerator.darkness) {
+        if (parsedShadowGenerator.darkness !== undefined) {
             shadowGenerator.setDarkness(parsedShadowGenerator.darkness);
         }
         if (parsedShadowGenerator.transparencyShadow) {
             shadowGenerator.setTransparencyShadow(true);
         }
-        shadowGenerator.forceBackFacesOnly = parsedShadowGenerator.forceBackFacesOnly;
+        shadowGenerator.forceBackFacesOnly = !!parsedShadowGenerator.forceBackFacesOnly;
+        if (parsedShadowGenerator.stabilizeCascades !== undefined) {
+            shadowGenerator.stabilizeCascades = parsedShadowGenerator.stabilizeCascades;
+        }
+        if (parsedShadowGenerator.depthClamp !== undefined) {
+            shadowGenerator.depthClamp = parsedShadowGenerator.depthClamp;
+        }
+        if (parsedShadowGenerator.lambda !== undefined) {
+            shadowGenerator.lambda = parsedShadowGenerator.lambda;
+        }
+        if (parsedShadowGenerator.freezeShadowCastersBoundingInfo !== undefined) {
+            shadowGenerator.freezeShadowCastersBoundingInfo = parsedShadowGenerator.freezeShadowCastersBoundingInfo;
+        }
+        if (parsedShadowGenerator.shadowMaxZ !== undefined) {
+            shadowGenerator.shadowMaxZ = parsedShadowGenerator.shadowMaxZ;
+        }
+        if (parsedShadowGenerator.cascadeBlendPercentage !== undefined) {
+            shadowGenerator.cascadeBlendPercentage = parsedShadowGenerator.cascadeBlendPercentage;
+        }
+        if (parsedShadowGenerator.penumbraDarkness !== undefined) {
+            shadowGenerator.penumbraDarkness = parsedShadowGenerator.penumbraDarkness;
+        }
+        if (parsedShadowGenerator.numCascades !== undefined) {
+            shadowGenerator.numCascades = parsedShadowGenerator.numCascades;
+        }
         return shadowGenerator;
     };
+    CascadedShadowGenerator.frustumCornersNDCSpace = [
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1.0, +1.0, -1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](+1.0, +1.0, -1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](+1.0, -1.0, -1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1.0, -1.0, -1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1.0, +1.0, +1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](+1.0, +1.0, +1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](+1.0, -1.0, +1.0),
+        new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](-1.0, -1.0, +1.0),
+    ];
     /**
      * Defines the default number of cascades used by the CSM.
      */
@@ -7816,7 +8140,12 @@ var CSMSample = /** @class */ (function (_super) {
                 split.group = this._gui.selectedScene;
                 split.isLoading = true;
                 camera.position = gscene.camera.position.clone();
-                camera.setTarget(gscene.camera.target.clone());
+                if (gscene.camera.rotation) {
+                    camera.rotation.copyFrom(gscene.camera.rotation);
+                }
+                else {
+                    camera.setTarget(gscene.camera.target.clone());
+                }
                 return [2 /*return*/, split.initialize(gscene, this._ambientColor, this._sunDir.clone()).then(function () {
                         split.isLoading = false;
                         split.createGUI();
@@ -7923,27 +8252,185 @@ var DepthMinMax = /** @class */ (function (_super) {
     }
     DepthMinMax.prototype.populateScene = function (scene, camera) {
         return __awaiter(this, void 0, void 0, function () {
-            var sunDir, sun, hemil;
+            var scaling, sunDir, sun, hemil, depthRenderer, depthMap, depthReductionPhases, depthReductionInitial, w, h, index, depthReduction, func, postProcessManager, buffer, first;
+            var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        camera.position.x = 100;
+                        camera.position.x = 40;
                         camera.position.y = 5;
                         camera.position.z = 5;
-                        camera.setTarget(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Zero());
+                        camera.fov = Math.PI / 4 * 0.75;
+                        camera.minZ = 0.25;
+                        camera.maxZ = 250;
+                        camera.setTarget(new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](39, 5, 5));
+                        //this._skyBox = Utils.addSkybox("Clouds.dds", scene, 100);
                         return [4 /*yield*/, _Utils__WEBPACK_IMPORTED_MODULE_2__["default"].loadObj(scene, "./resources/3d/powerplant/", "powerplant.obj")];
                     case 1:
+                        //this._skyBox = Utils.addSkybox("Clouds.dds", scene, 100);
                         _a.sent();
-                        _Utils__WEBPACK_IMPORTED_MODULE_2__["default"].addSkybox("Clouds.dds", scene);
+                        scaling = 0.5;
+                        scene.meshes.forEach(function (m) {
+                            if (m.name == 'skyBox') {
+                                return;
+                            }
+                            if (!m.material) {
+                                return;
+                            }
+                            var matrix = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"].Identity();
+                            matrix.scaleToRef(scaling, matrix);
+                            matrix.setRowFromFloats(3, 0, 0, 0, 1);
+                            m.bakeTransformIntoVertices(matrix);
+                            m.refreshBoundingInfo();
+                        });
                         sunDir = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](32, -30, 22);
                         sun = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["DirectionalLight"]("sun", sunDir, scene);
                         sun.intensity = 1;
                         hemil = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["HemisphericLight"]("hemil", new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0), scene);
                         hemil.intensity = 1;
+                        depthRenderer = scene.enableDepthRenderer(camera, false);
+                        depthRenderer.getDepthMap().updateSamplingMode(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST /*Texture.NEAREST_SAMPLINGMODE*/);
+                        depthRenderer.useOnlyInActiveCamera = true;
+                        depthRenderer.getDepthMap().ignoreCameraViewport = false;
+                        depthMap = depthRenderer.getDepthMap();
+                        //
+                        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionInitialFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n            uniform sampler2D depthTexture;\n\n            //#define METHOD1\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n            #ifdef METHOD1\n                ivec2 size = textureSize(depthTexture, 0);\n                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));\n\n                float f1 = texture(depthTexture, vUV).r;\n                float f2 = texture(depthTexture, vUV + vec2(texelSize.x, 0.0)).r;\n                float f3 = texture(depthTexture, vUV + vec2(texelSize.x, texelSize.y)).r;\n                float f4 = texture(depthTexture, vUV + vec2(0.0, texelSize.y)).r;\n            #else\n                vec2 size = vec2(textureSize(depthTexture, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                float f1 = texelFetch(depthTexture, coord, 0).r;\n                float f2 = texelFetch(depthTexture, coord + ivec2(1, 0), 0).r;\n                float f3 = texelFetch(depthTexture, coord + ivec2(1, 1), 0).r;\n                float f4 = texelFetch(depthTexture, coord + ivec2(0, 1), 0).r;\n            #endif\n\n                float minz = min(min(min(f1, f2), f3), f4);\n                float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+                        //
+                        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            //#define METHOD1\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n            #ifdef METHOD1\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));\n\n                vec2 f1 = texture(textureSampler, vUV).rg;\n                vec2 f2 = texture(textureSampler, vUV + vec2(texelSize.x, 0.0)).rg;\n                vec2 f3 = texture(textureSampler, vUV + vec2(texelSize.x, texelSize.y)).rg;\n                vec2 f4 = texture(textureSampler, vUV + vec2(0.0, texelSize.y)).rg;\n            #else\n                vec2 size = vec2(textureSize(textureSampler, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;\n                vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;\n                vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;\n            #endif\n\n                float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);\n                float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+                        //
+                        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionALastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 texcoord = vUV * (vec2(size - 1));\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord % size, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, (coord + ivec2(1, 0)) % size, 0).rg;\n                vec2 f3 = texelFetch(textureSampler, (coord + ivec2(1, 1)) % size, 0).rg;\n                vec2 f4 = texelFetch(textureSampler, (coord + ivec2(0, 1)) % size, 0).rg;\n\n                float minz = min(f1.x, f2.x);\n                float maxz = max(f1.y, f2.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+                        //
+                        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionLastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                vec2 f1 = texelFetch(textureSampler, ivec2(0), 0).rg;\n\n                glFragColor = f1;\n            }\n        ";
+                        depthReductionPhases = [];
+                        depthReductionInitial = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Initial depth reduction phase', 'depthReductionInitial', // shader
+                        null, ['depthTexture'], // textures
+                        1.0, // options
+                        null, // camera
+                        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
+                        this._engine, // engine
+                        false, // reusable
+                        undefined, // defines
+                        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTUREFORMAT_RG);
+                        depthReductionInitial.autoClear = false;
+                        depthReductionInitial.forceFullscreenViewport = false;
+                        depthReductionInitial.onApply = function (effect) {
+                            effect.setTexture('depthTexture', depthMap);
+                        };
+                        depthReductionPhases.push(depthReductionInitial);
+                        w = depthMap.getSize().width, h = depthMap.getSize().height;
+                        index = 1;
+                        while (w > 1 || h > 1) {
+                            w = Math.max(Math.round(w / 2), 1);
+                            h = Math.max(Math.round(h / 2), 1);
+                            console.log(w, h);
+                            depthReduction = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Depth reduction phase ' + index, (w == 1 && h == 1) ? 'depthReductionLast' : (w == 1 || h == 1) ? 'depthReductionALast' : 'depthReduction', // shader
+                            null, // attributes
+                            null, { width: w, height: h }, // options
+                            null, // camera
+                            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
+                            this._engine, // engine
+                            false, // reusable
+                            undefined, // defines
+                            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTUREFORMAT_RG);
+                            depthReduction.autoClear = false;
+                            depthReduction.forceFullscreenViewport = false;
+                            depthReductionPhases.push(depthReduction);
+                            index++;
+                            if ((w == 1 && h == 1) || (w == 2 && h == 1) /* || (w == 6 && h == 3)*/) {
+                                func = function (w, h, depthReduction) {
+                                    var first0 = true;
+                                    var buffer0 = new Float32Array(4 * w * h);
+                                    return function () {
+                                        if (first0) {
+                                            var texture = depthReduction.inputTexture;
+                                            _this._readTexturePixels(scene.getEngine(), texture, w, h, -1, 0, buffer0);
+                                            if ((buffer0[0] != 0 && buffer0[0] != 1) || buffer0[1] != 0) {
+                                                first0 = false;
+                                                console.log('w = ' + w + ', h = ' + h, buffer0);
+                                            }
+                                        }
+                                    };
+                                };
+                                depthReduction.onAfterRenderObservable.add(func(w, h, depthReduction));
+                            }
+                        }
+                        postProcessManager = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcessManager"](scene);
+                        scene.onBeforeDrawPhaseObservable.add(function () {
+                            //postProcessManager._prepareFrame(depthMap.getInternalTexture(), depthReductionPhases);
+                            depthReductionPhases[0].activate(camera, depthMap.getInternalTexture());
+                            postProcessManager.directRender(depthReductionPhases, depthReductionPhases[0].inputTexture, false);
+                            _this._engine.unBindFramebuffer(depthReductionPhases[0].inputTexture, false);
+                        });
+                        buffer = new Float32Array(4 * depthMap.getSize().width * depthMap.getSize().height);
+                        first = true;
+                        scene.onBeforeRenderObservable.add(function () {
+                            if (_this._skyBox) {
+                                _this._skyBox.position.copyFrom(camera.position);
+                            }
+                        });
+                        scene.onAfterRenderObservable.add(function () {
+                            if (first) {
+                                _this._readTexturePixels(scene.getEngine(), depthMap._texture, depthMap.getSize().width, depthMap.getSize().height, -1, 0, buffer);
+                                first = false;
+                                console.log('calc min max', _this.calcMinMax(buffer));
+                                console.log(buffer);
+                            }
+                        });
                         return [2 /*return*/, Promise.resolve(0)];
                 }
             });
         });
+    };
+    DepthMinMax.prototype._readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer) {
+        if (faceIndex === void 0) { faceIndex = -1; }
+        if (level === void 0) { level = 0; }
+        if (buffer === void 0) { buffer = null; }
+        var gl = engine._gl;
+        if (!this._dummyFramebuffer) {
+            var dummy = gl.createFramebuffer();
+            if (!dummy) {
+                throw new Error("Unable to create dummy framebuffer");
+            }
+            this._dummyFramebuffer = dummy;
+        }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._dummyFramebuffer);
+        if (faceIndex > -1) {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, texture._webGLTexture, level);
+        }
+        else {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture._webGLTexture, level);
+        }
+        var readType = (texture.type !== undefined) ? engine._getWebGLTextureType(texture.type) : gl.UNSIGNED_BYTE;
+        switch (readType) {
+            case gl.UNSIGNED_BYTE:
+                if (!buffer) {
+                    buffer = new Uint8Array(4 * width * height);
+                }
+                readType = gl.UNSIGNED_BYTE;
+                break;
+            default:
+                if (!buffer) {
+                    buffer = new Float32Array(4 * width * height);
+                }
+                readType = gl.FLOAT;
+                break;
+        }
+        gl.readPixels(0, 0, width, height, gl.RGBA, readType, buffer);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, engine._currentFramebuffer);
+        return buffer;
+    };
+    DepthMinMax.prototype.calcMinMax = function (buffer) {
+        var min = 1, max = 0;
+        for (var i = 0; i < buffer.length; i += 4) {
+            var f = buffer[i];
+            if (f < min) {
+                min = f;
+            }
+            if (f > max && f < 1.0) {
+                max = f;
+            }
+        }
+        return [min, max];
     };
     return DepthMinMax;
 }(_SampleBasic__WEBPACK_IMPORTED_MODULE_1__["default"]));
