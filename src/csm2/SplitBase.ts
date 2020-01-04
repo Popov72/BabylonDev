@@ -58,8 +58,6 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _csmDepthClamp: boolean;
     protected _csmLambda: number;
     protected _csmSplitBlendPercentage: number;
-    protected _csmLightSizeCorrection: boolean;
-    protected _csmDepthCorrection: boolean;
     protected _csmPenumbraDarkness: number;
     protected _csmShadowMaxZ: number;
     protected _csmAutoCalcDepthBounds: boolean;
@@ -82,7 +80,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._showDepthMapObservable = null;
         this._shadowMapSize = 1024;
         this._shadowMapFilter = ShadowGenerator.FILTER_PCF;
-        this._shadowMapBias = 0.007;
+        this._shadowMapBias = 0.003;
         this._shadowMapNormalBias = 0;
         this._shadowMapDarkness = 0;
         this._shadowMapQuality = ShadowGenerator.QUALITY_MEDIUM;
@@ -97,12 +95,10 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmActiveCascade = 0;
         this._csmVisualizeCascades = false;
         this._csmStabilizeCascades = false;
-        this._csmDepthClamp = false;
+        this._csmDepthClamp = true;
         this._csmLambda = 0.7;
-        this._csmSplitBlendPercentage = 0.0;
-        this._csmLightSizeCorrection = false;
-        this._csmDepthCorrection = false;
-        this._csmPenumbraDarkness = 1;
+        this._csmSplitBlendPercentage = 0.15;
+        this._csmPenumbraDarkness = 0.7;
         this._csmShadowMaxZ = 250;
         this._csmAutoCalcDepthBounds = false;
 
@@ -371,14 +367,6 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._shadowMapLightSizeUVRatio = smlsuvr;
     }
 
-    public get csmLightSizeCorrection(): boolean {
-        return this._csmLightSizeCorrection;
-    }
-
-    public set csmLightSizeCorrection(smlsc: boolean) {
-        this._csmLightSizeCorrection = smlsc;
-    }
-
     public get lightNearPlane(): number {
         return this._lightNearPlane;
     }
@@ -457,14 +445,6 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set csmSplitBlendPercentage(csbp: number) {
         this._csmSplitBlendPercentage = csbp;
-    }
-
-    public get csmDepthCorrection(): boolean {
-        return this._csmDepthCorrection;
-    }
-
-    public set csmDepthCorrection(smdc: boolean) {
-        this._csmDepthCorrection = smdc;
     }
 
     public get csmPenumbraDarkness(): number {

@@ -1,21 +1,6 @@
 import * as React from "react";
 
 import {
-    Button,
-    Checkbox,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
-    Grid,
-    Icon,
-    MenuItem,
-    Paper,
-    Select,
-    Switch,
-    Typography,
-} from '@material-ui/core';
-
-import {
     Engine,
 } from 'babylonjs';
 
@@ -30,7 +15,7 @@ export default class CSMGUI extends SplitBaseGUI {
 
         this._showAutoCalcPlanes = false;
         this._showCSM = true;
-        this.dimensions.height = 920;
+        this.dimensions.height = 950;
     }
 
     protected createCustomGUIProperties(): React.ReactElement {

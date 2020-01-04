@@ -47,8 +47,6 @@ export default interface ISampleSplit extends Split {
     csmDepthClamp: boolean;
     csmLambda: number;
     csmSplitBlendPercentage: number;
-    csmLightSizeCorrection: boolean;
-    csmDepthCorrection: boolean;
     csmPenumbraDarkness: number;
     csmShadowMaxZ: number;
     csmAutoCalcDepthBounds: boolean;

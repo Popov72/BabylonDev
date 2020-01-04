@@ -12,6 +12,7 @@ import {
     Engine,
     InternalTexture,
     Nullable,
+    Matrix,
 } from "babylonjs";
 
 import Sample from "../Sample";
@@ -33,8 +34,6 @@ export default class CSM extends StandardShadow {
         this._shadowMapFilter = CascadedShadowGenerator.FILTER_PCF;
 
         (window as any).csm = this;
-        //this._shadowMapPlane.rotate(new Vector3(0, 0, 1), -Math.PI / 2);
-        //this._shadowMapPlane.bakeCurrentTransformIntoVertices();
 
         this.initializeDepthReduction();
     }
@@ -186,7 +185,7 @@ export default class CSM extends StandardShadow {
         var depthReductionPhases: PostProcess[] = [];
 
         // phase 0
-        var depthReductionInitial = new (PostProcess as any)(
+        var depthReductionInitial = new PostProcess(
             'Initial depth reduction phase',
             'depthReductionInitial',  // shader
             null,
@@ -223,7 +222,7 @@ export default class CSM extends StandardShadow {
 
             //console.log(w, h);
 
-            depthReduction = new (PostProcess as any)(
+            depthReduction = new PostProcess(
                 'Depth reduction phase ' + index,
                 (w == 1 && h == 1) ? 'depthReductionLast' : (w == 1 || h == 1) ? 'depthReductionALast' : 'depthReduction',  // shader
                 null, // attributes
@@ -368,7 +367,7 @@ export default class CSM extends StandardShadow {
 
     public set csmNumCascades(num: number) {
         this._csmNumCascades = num;
-        this.getCSMGenerator().cascades = num;
+        this.getCSMGenerator().numCascades = num;
     }
 
     public get csmActiveCascade(): number {
@@ -379,6 +378,7 @@ export default class CSM extends StandardShadow {
         this._csmActiveCascade = cac;
 
         this.setShadowMapViewerTexture();
+        this.buildLightHelper();
     }
 
     public get csmVisualizeCascades(): boolean {
@@ -396,7 +396,8 @@ export default class CSM extends StandardShadow {
 
     public set csmStabilizeCascades(ssc: boolean) {
         this._csmStabilizeCascades = ssc;
-        //!this.getCSMGenerator().stabilizeCascades = ssc;
+        this.getCSMGenerator().stabilizeCascades = ssc;
+        window.setTimeout(this.buildLightHelper.bind(this), 100);
     }
 
     public get csmDepthClamp(): boolean {
@@ -406,6 +407,7 @@ export default class CSM extends StandardShadow {
     public set csmDepthClamp(cdc: boolean) {
         this._csmDepthClamp = cdc;
         this.getCSMGenerator().depthClamp = cdc;
+        window.setTimeout(this.buildLightHelper.bind(this), 100);
     }
 
     public get csmLambda(): number {
@@ -426,24 +428,6 @@ export default class CSM extends StandardShadow {
         this.getCSMGenerator().cascadeBlendPercentage = csbp;
     }
 
-    public get csmLightSizeCorrection(): boolean {
-        return this._csmLightSizeCorrection;
-    }
-
-    public set csmLightSizeCorrection(smlsc: boolean) {
-        this._csmLightSizeCorrection = smlsc;
-        this.getCSMGenerator().lightSizeCorrection = smlsc;
-    }
-
-    public get csmDepthCorrection(): boolean {
-        return this._csmDepthCorrection;
-    }
-
-    public set csmDepthCorrection(smdc: boolean) {
-        this._csmDepthCorrection = smdc;
-        this.getCSMGenerator().depthCorrection = smdc;
-    }
-    
     public get csmPenumbraDarkness(): number {
         return this._csmPenumbraDarkness;
     }
@@ -480,20 +464,17 @@ export default class CSM extends StandardShadow {
     }
 
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
-        /*const cascade = this.getCSMGenerator().cascade;
-
-        if (!cascade) {
-            return null;
-        }
-
-        const csmSM = cascade.generator;
+        const min = this.getCSMGenerator().getCascadeMinExtents(this._csmActiveCascade),
+              max = this.getCSMGenerator().getCascadeMaxExtents(this._csmActiveCascade);
 
         return {
-            "min": csmSM.lightMinExtents,
-            "max": csmSM.lightMaxExtents,
-        }*/
+            "min": min!,
+            "max": max!,
+        }
+    }
 
-        return null;
+    protected getViewMatrix(): Matrix | null {
+        return this.getCSMGenerator().getCascadeViewMatrix(this._csmActiveCascade);
     }
 
     public createGUI(): void {
@@ -505,7 +486,7 @@ export default class CSM extends StandardShadow {
     protected createGenerator(): ShadowGenerator {
         const generator = new CascadedShadowGenerator(this.shadowMapSize, this.sun);
 
-        generator.cascades = this._csmNumCascades;
+        generator.numCascades = this._csmNumCascades;
 
         return generator as unknown as ShadowGenerator;
     }
@@ -519,13 +500,11 @@ export default class CSM extends StandardShadow {
 
         const shadowGenerator = this.getCSMGenerator();
 
-        //!shadowGenerator.stabilizeCascades = this._csmStabilizeCascades;
+        shadowGenerator.stabilizeCascades = this._csmStabilizeCascades;
         shadowGenerator.depthClamp = this._csmDepthClamp;
         shadowGenerator.lambda = this._csmLambda;
         shadowGenerator.debug = this._csmVisualizeCascades
         shadowGenerator.cascadeBlendPercentage = this._csmSplitBlendPercentage;
-        shadowGenerator.lightSizeCorrection = this._csmLightSizeCorrection;
-        shadowGenerator.depthCorrection = this._csmDepthCorrection;
         shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
         shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
         shadowGenerator.freezeShadowCastersBoundingInfo = true;

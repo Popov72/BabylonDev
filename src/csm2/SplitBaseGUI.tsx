@@ -78,8 +78,6 @@ export default class SplitBaseGUI extends SplitGUI {
             const [csmDepthClamp, setCSMDepthClamp] = React.useState(this._sparent.csmDepthClamp);
             const [csmLambda, setCSMLambda] = React.useState(this._sparent.csmLambda);
             const [csmSplitBlendPercentage, setCSMSplitBlendPercentage] = React.useState(this._sparent.csmSplitBlendPercentage);
-            const [csmLightSizeCorrection, setCSMLightSizeCorrection] = React.useState(this._sparent.csmLightSizeCorrection);
-            const [csmDepthCorrection, setCSMDepthCorrection] = React.useState(this._sparent.csmDepthCorrection);
             const [csmPenumbraDarkness, setCSMPenumbraDarkness] = React.useState(this._sparent.csmPenumbraDarkness);
             const [csmShadowMaxZ, setCSMShadowMaxZ] = React.useState(this._sparent.csmShadowMaxZ);
             const [csmAutoCalcDepthBounds, setCSMAutoCalcDepthBounds] = React.useState(this._sparent.csmAutoCalcDepthBounds);
@@ -228,16 +226,6 @@ export default class SplitBaseGUI extends SplitGUI {
             const changeCSMSplitBlendPercentage = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.csmSplitBlendPercentage = value as number;
                 setCSMSplitBlendPercentage(this._sparent.csmSplitBlendPercentage);
-            };
-
-            const changeCSMLightSizeCorrection = (event: React.ChangeEvent, checked: boolean) => {
-                setCSMLightSizeCorrection(checked);
-                this._sparent.csmLightSizeCorrection = checked;
-            };
-
-            const changeCSMDepthCorrection = (event: React.ChangeEvent<{}>, checked: boolean) => {
-                setCSMDepthCorrection(checked);
-                this._sparent.csmDepthCorrection = checked;
             };
 
             const changeCSMPenumbraDarkness = (event: React.ChangeEvent<{}>, value: number | number[]) => {
@@ -392,20 +380,18 @@ export default class SplitBaseGUI extends SplitGUI {
                                             { [...Array(4).keys()].map((_, i) => <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>) }
                                         </Select>
                                     </Grid>
-                                    { false && <>
-                                        <Grid item xs={6}>
-                                            <Paper className={classes.subPropertyTitle}>Active Cascade</Paper>
-                                        </Grid>
-                                        <Grid item xs={6} className={classes.propertyValue}>
-                                            <Select
-                                                className={classes.propertyValue}
-                                                value={csmActiveCascade}
-                                                onChange={changeActiveCascade}
-                                            >
-                                                { [...Array(csmNumCascades).keys()].map((_, i) => <MenuItem key={i} value={i}>{i + 1}</MenuItem>) }
-                                            </Select>
-                                        </Grid>
-                                    </> }
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Active Cascade</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Select
+                                            className={classes.propertyValue}
+                                            value={csmActiveCascade}
+                                            onChange={changeActiveCascade}
+                                        >
+                                            { [...Array(csmNumCascades).keys()].map((_, i) => <MenuItem key={i} value={i}>{i + 1}</MenuItem>) }
+                                        </Select>
+                                    </Grid>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Visualize Cascades</Paper>
                                     </Grid>
@@ -414,16 +400,14 @@ export default class SplitBaseGUI extends SplitGUI {
                                             <Switch checked={csmVisualizeCascades} onChange={changeCSMVisualizeCascades} />
                                         </Paper>
                                     </Grid>
-                                    { false && <>
-                                        <Grid item xs={6}>
-                                            <Paper className={classes.subPropertyTitle}>Stabilize Cascades</Paper>
-                                        </Grid>
-                                        <Grid item xs={6} className={classes.propertyValue}>
-                                            <Paper className={classes.propertyValue}>
-                                                <Switch checked={csmStabilizeCascades} onChange={changeCSMStabilizeCascades} />
-                                            </Paper>
-                                        </Grid>
-                                    </> }
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Stabilize Cascades</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={csmStabilizeCascades} onChange={changeCSMStabilizeCascades} />
+                                        </Paper>
+                                    </Grid>
                                     <Grid item xs={6}>
                                         <Paper className={classes.subPropertyTitle}>Lambda</Paper>
                                     </Grid>
@@ -589,22 +573,6 @@ export default class SplitBaseGUI extends SplitGUI {
                                         <Grid item xs={6} className={classes.propertyValue}>
                                             <Paper className={classes.propertyValue}>
                                                 <PrettoSlider valueLabelDisplay="auto" value={csmPenumbraDarkness} min={0} max={1} step={0.01} onChange={changeCSMPenumbraDarkness} />
-                                            </Paper>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Paper className={classes.subPropertyTitle}>Light Size Correction</Paper>
-                                        </Grid>
-                                        <Grid item xs={6} className={classes.propertyValue}>
-                                            <Paper className={classes.propertyValue}>
-                                                <Switch checked={csmLightSizeCorrection} onChange={changeCSMLightSizeCorrection} />
-                                            </Paper>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <Paper className={classes.subPropertyTitle}>Depth Correction</Paper>
-                                        </Grid>
-                                        <Grid item xs={6} className={classes.propertyValue}>
-                                            <Paper className={classes.propertyValue}>
-                                                <Switch checked={csmDepthCorrection} onChange={changeCSMDepthCorrection} />
                                             </Paper>
                                         </Grid>
                                     </> }
