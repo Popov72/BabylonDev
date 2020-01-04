@@ -356,6 +356,10 @@ export default class CSM extends StandardShadow {
         const val = this.getCSMGenerator().shadowMaxZ;
         this.getCSMGenerator().shadowMaxZ = this._cameraNearPlane; // make shadowMaxZ change
         this.getCSMGenerator().shadowMaxZ = val; // so trigger a cascade recomputation
+        this._csmShadowMaxZ = this.getCSMGenerator().shadowMaxZ;
+
+        const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowMaxZ' } });
+        window.dispatchEvent(event);
     }
 
     public get csmNumCascades(): number {
@@ -456,6 +460,10 @@ export default class CSM extends StandardShadow {
     public set csmShadowMaxZ(csmz: number) {
         this._csmShadowMaxZ = csmz;
         this.getCSMGenerator().shadowMaxZ = csmz;
+        this._csmShadowMaxZ = this.getCSMGenerator().shadowMaxZ;
+
+        const event = new CustomEvent('gui_set_value', { detail: { type: 'setShadowMaxZ' } });
+        window.dispatchEvent(event);
     }
 
     public get csmAutoCalcDepthBounds(): boolean {

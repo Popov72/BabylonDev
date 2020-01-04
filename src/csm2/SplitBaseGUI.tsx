@@ -264,6 +264,11 @@ export default class SplitBaseGUI extends SplitGUI {
                             setLightFarPlane(Math.floor(this._sparent.lightFarPlane));
                             break;
                         }
+
+                        case 'setShadowMaxZ': {
+                            setCSMShadowMaxZ(Math.floor(this._sparent.csmShadowMaxZ));
+                            break;
+                        }
                     }
                 };
 
