@@ -66,7 +66,11 @@ export default class CSMSample extends Sample {
         split.isLoading = true;
 
         camera.position = gscene.camera.position.clone();
-        camera.setTarget(gscene.camera.target.clone());
+        if (gscene.camera.rotation) {
+            camera.rotation.copyFrom(gscene.camera.rotation);
+        } else {
+            camera.setTarget(gscene.camera.target.clone());
+        }
 
         return split.initialize(gscene, this._ambientColor, this._sunDir.clone()).then(() => {
             split.isLoading = false;

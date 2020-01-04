@@ -62,6 +62,7 @@ export default class SplitBase extends Split implements ISampleSplit {
     protected _csmDepthCorrection: boolean;
     protected _csmPenumbraDarkness: number;
     protected _csmShadowMaxZ: number;
+    protected _csmAutoCalcDepthBounds: boolean;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -103,6 +104,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmDepthCorrection = false;
         this._csmPenumbraDarkness = 1;
         this._csmShadowMaxZ = 250;
+        this._csmAutoCalcDepthBounds = false;
 
         this._shadowMapPlane = null as any;
 
@@ -479,6 +481,14 @@ export default class SplitBase extends Split implements ISampleSplit {
 
     public set csmShadowMaxZ(csmz: number) {
         this._csmShadowMaxZ = csmz;
+    }
+
+    public get csmAutoCalcDepthBounds(): boolean {
+        return this._csmAutoCalcDepthBounds;
+    }
+
+    public set csmAutoCalcDepthBounds(cacdb: boolean) {
+        this._csmAutoCalcDepthBounds = cacdb;
     }
 
     protected setDirectionFromSibling(checkAnimate: boolean = true): void {

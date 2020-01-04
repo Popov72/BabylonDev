@@ -24,6 +24,7 @@ export interface ISceneDescription {
     camera: {
         position: Vector3,
         target: Vector3,
+        rotation?: Vector3,
     };
     scaling: number;
     sunColor: Color3;
@@ -56,6 +57,8 @@ export default class GlobalGUI extends MainGUI {
                 "camera": {
                     "position": new Vector3(40, 5, 5),
                     "target": new Vector3(0, 0, 5),
+                    /*"position": new Vector3(32.731938060727565, 7.37629446025349, 16.19731427368431),
+                    "rotation": new Vector3(0.18435499454676146, -1.5708213267948914, 0),*/
                 },
                 "scaling": 0.5,
                 "sunColor": new Color3(1, 1, 1),

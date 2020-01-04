@@ -24,7 +24,6 @@ export default class CSM extends StandardShadow {
     public static className: string = "CSM";
 
     private _dummyFramebuffer: WebGLFramebuffer;
-    private _enableDepthRedux: boolean = false;
     private _oldMin: number = -1;
     private _oldMax: number = -1;
 
@@ -68,12 +67,13 @@ export default class CSM extends StandardShadow {
             {
             #ifdef METHOD1
                 ivec2 size = textureSize(depthTexture, 0);
+                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));
                 vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));
 
-                float f1 = texture(depthTexture, vUV).r;
-                float f2 = texture(depthTexture, vUV + vec2(texelSize.x, 0.0)).r;
-                float f3 = texture(depthTexture, vUV + vec2(texelSize.x, texelSize.y)).r;
-                float f4 = texture(depthTexture, vUV + vec2(0.0, texelSize.y)).r;
+                float f1 = texture(depthTexture, vUV2).r;
+                float f2 = texture(depthTexture, vUV2 + vec2(texelSize.x, 0.0)).r;
+                float f3 = texture(depthTexture, vUV2 + vec2(texelSize.x, texelSize.y)).r;
+                float f4 = texture(depthTexture, vUV2 + vec2(0.0, texelSize.y)).r;
             #else
                 vec2 size = vec2(textureSize(depthTexture, 0) - 1);
                 vec2 texcoord = vUV * size;
@@ -110,12 +110,13 @@ export default class CSM extends StandardShadow {
             {
             #ifdef METHOD1
                 ivec2 size = textureSize(textureSampler, 0);
+                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));
                 vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));
 
-                vec2 f1 = texture(textureSampler, vUV).rg;
-                vec2 f2 = texture(textureSampler, vUV + vec2(texelSize.x, 0.0)).rg;
-                vec2 f3 = texture(textureSampler, vUV + vec2(texelSize.x, texelSize.y)).rg;
-                vec2 f4 = texture(textureSampler, vUV + vec2(0.0, texelSize.y)).rg;
+                vec2 f1 = texture(textureSampler, vUV2).rg;
+                vec2 f2 = texture(textureSampler, vUV2 + vec2(texelSize.x, 0.0)).rg;
+                vec2 f3 = texture(textureSampler, vUV2 + vec2(texelSize.x, texelSize.y)).rg;
+                vec2 f4 = texture(textureSampler, vUV2 + vec2(0.0, texelSize.y)).rg;
             #else
                 vec2 size = vec2(textureSize(textureSampler, 0) - 1);
                 vec2 texcoord = vUV * size;
@@ -178,9 +179,7 @@ export default class CSM extends StandardShadow {
 
             void main(void)
             {
-                vec2 f1 = texelFetch(textureSampler, ivec2(0), 0).rg;
-
-                glFragColor = f1;
+                glFragColor = vec2(0.);
             }
         `;
 
@@ -198,11 +197,11 @@ export default class CSM extends StandardShadow {
             this.scene.getEngine(), // engine
             false, // reusable
             undefined, // defines
-            Constants.TEXTURETYPE_HALF_FLOAT,
+            Constants./*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT,
             undefined,
             undefined,
             undefined,
-            Constants.TEXTUREFORMAT_RG,
+            Constants./*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG,
         );
 
         depthReductionInitial.autoClear = false;
@@ -222,7 +221,7 @@ export default class CSM extends StandardShadow {
             w = Math.max(Math.round(w / 2), 1);
             h = Math.max(Math.round(h / 2), 1);
 
-            console.log(w, h);
+            //console.log(w, h);
 
             depthReduction = new (PostProcess as any)(
                 'Depth reduction phase ' + index,
@@ -235,11 +234,11 @@ export default class CSM extends StandardShadow {
                 this.scene.getEngine(), // engine
                 false, // reusable
                 undefined, // defines
-                Constants.TEXTURETYPE_HALF_FLOAT,
+                Constants./*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT,
                 undefined,
                 undefined,
                 undefined,
-                Constants.TEXTUREFORMAT_RG,
+                Constants./*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG,
             );
 
             depthReduction.autoClear = false;
@@ -258,7 +257,7 @@ export default class CSM extends StandardShadow {
                             let texture = depthReduction.inputTexture;
                             this._readTexturePixels(this.scene.getEngine(), texture, w, h, -1, 0, buffer0);
                             let min = buffer0[0], max = buffer0[1];
-                            if (min > max || !this._enableDepthRedux) {
+                            if (min >= max || !this._csmAutoCalcDepthBounds) {
                                 min = 0;
                                 max = 1;
                             }
@@ -278,12 +277,14 @@ export default class CSM extends StandardShadow {
 
         let postProcessManager = new PostProcessManager(this.scene);
 
-        this.scene.onBeforeDrawPhaseObservable.add(() => {
-            depthReductionPhases[0].activate(this.camera, depthMap.getInternalTexture());
+        depthMap.onAfterUnbindObservable.add(() => {
+            if (this._csmAutoCalcDepthBounds) {
+                depthReductionPhases[0].activate(this.camera, depthMap.getInternalTexture());
 
-            postProcessManager.directRender(depthReductionPhases, depthReductionPhases[0].inputTexture, false);
+                postProcessManager.directRender(depthReductionPhases, depthReductionPhases[0].inputTexture, false);
 
-            this.scene.getEngine().unBindFramebuffer(depthReductionPhases[0].inputTexture, false);
+                this.scene.getEngine().unBindFramebuffer(depthReductionPhases[0].inputTexture, false);
+            }
         });
     }
 
@@ -382,8 +383,7 @@ export default class CSM extends StandardShadow {
 
     public set csmVisualizeCascades(cvc: boolean) {
         this._csmVisualizeCascades = cvc;
-        this._enableDepthRedux = cvc;
-        //this.getCSMGenerator().debug = cvc;
+        this.getCSMGenerator().debug = cvc;
     }
 
     public get csmStabilizeCascades(): boolean {
@@ -456,6 +456,19 @@ export default class CSM extends StandardShadow {
     public set csmShadowMaxZ(csmz: number) {
         this._csmShadowMaxZ = csmz;
         this.getCSMGenerator().shadowMaxZ = csmz;
+    }
+
+    public get csmAutoCalcDepthBounds(): boolean {
+        return this._csmAutoCalcDepthBounds;
+    }
+
+    public set csmAutoCalcDepthBounds(cacdb: boolean) {
+        this._csmAutoCalcDepthBounds = cacdb;
+        if (!cacdb) {
+            this._oldMin = 0;
+            this._oldMax = 1;
+            this.getCSMGenerator().setMinMaxDistance(0, 1);
+        }
     }
 
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {

@@ -53,6 +53,8 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this.recreateShadowMap();
     }
 
+    protected _breaksAreDirty: boolean = true;
+
     protected _minDistance: number = 0;
 
     protected _maxDistance: number = 1;
@@ -60,7 +62,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     public setMinMaxDistance(min: number, max: number): void {
         this._minDistance = min;
         this._maxDistance = max;
-        this._initCascades();
+        this._breaksAreDirty = true;
     }
 
     /**
@@ -551,7 +553,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             return;
         }
         this._shadowMaxZ = value;
-        this._initCascades();
+        this._breaksAreDirty = true;
     }
 
     protected _debug = false;
@@ -586,7 +588,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             return;
         }
         this._lambda = lambda;
-        this._initCascades();
+        this._breaksAreDirty = true;
     }
 
     private _initCascades(): void {
@@ -675,6 +677,8 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             this._lightMaxExtents[index] = new Vector3();
         }
         this._transformMatricesAsArray = new Float32Array(this.cascades * 16);
+
+        this._breaksAreDirty = false;
     }
 
     private _frustumSplit(): Array<number> {
@@ -879,6 +883,12 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         if (this._storedUniqueId) {
             this._shadowMap.uniqueId = this._storedUniqueId;
         }
+
+        this._shadowMap.onBeforeBindObservable.add(() => {
+            if (this._breaksAreDirty) {
+                this._initCascades();
+            }
+        });
 
         // Record Face Index before render.
         this._shadowMap.onBeforeRenderObservable.add((layer: number) => {

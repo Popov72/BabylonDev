@@ -82,6 +82,7 @@ export default class SplitBaseGUI extends SplitGUI {
             const [csmDepthCorrection, setCSMDepthCorrection] = React.useState(this._sparent.csmDepthCorrection);
             const [csmPenumbraDarkness, setCSMPenumbraDarkness] = React.useState(this._sparent.csmPenumbraDarkness);
             const [csmShadowMaxZ, setCSMShadowMaxZ] = React.useState(this._sparent.csmShadowMaxZ);
+            const [csmAutoCalcDepthBounds, setCSMAutoCalcDepthBounds] = React.useState(this._sparent.csmAutoCalcDepthBounds);
 
             const changeCameraNearPlane = (event: React.ChangeEvent<{}>, value: number | number[]) => {
                 this._sparent.cameraNearPlane = value as number;
@@ -248,6 +249,12 @@ export default class SplitBaseGUI extends SplitGUI {
                 this._sparent.csmShadowMaxZ = value as number;
                 setCSMShadowMaxZ(this._sparent.csmShadowMaxZ);
             };
+
+            const changeCSMAutoCalcDepthBounds = (event: React.ChangeEvent, checked: boolean) => {
+                setCSMAutoCalcDepthBounds(checked);
+                this._sparent.csmAutoCalcDepthBounds = checked;
+            };
+
 
             React.useEffect(() => {
                 const handler = (event: Event) => {
@@ -426,6 +433,14 @@ export default class SplitBaseGUI extends SplitGUI {
                                     <Grid item xs={6} className={classes.propertyValue}>
                                         <Paper className={classes.propertyValue}>
                                             <PrettoSlider valueLabelDisplay="auto" value={csmSplitBlendPercentage} min={0} max={1} step={0.01} onChange={changeCSMSplitBlendPercentage} />
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <Paper className={classes.subPropertyTitle}>Auto-Calc Depth</Paper>
+                                    </Grid>
+                                    <Grid item xs={6} className={classes.propertyValue}>
+                                        <Paper className={classes.propertyValue}>
+                                            <Switch checked={csmAutoCalcDepthBounds} onChange={changeCSMAutoCalcDepthBounds} />
                                         </Paper>
                                     </Grid>
                                     <Grid item xs={6}>
