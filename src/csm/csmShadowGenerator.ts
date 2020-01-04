@@ -28,6 +28,7 @@ export interface ICascade {
 
 }
 
+// @ts-ignore
 export class CSMShadowGenerator implements IShadowGenerator {
 
     public static readonly CASCADE_ALL = -1;
@@ -272,10 +273,12 @@ export class CSMShadowGenerator implements IShadowGenerator {
     }
 
     public get depthClamp(): boolean {
+        // @ts-ignore
         return this._activeCascade >= 0 && this._activeCascade < this._cascades.length ? this._cascades[this._activeCascade].generator.depthClamp : false;
     }
 
     public set depthClamp(value: boolean) {
+        // @ts-ignore
         this._getActiveCascades().forEach((cascade) => cascade.generator.depthClamp = value);
     }
 
@@ -381,6 +384,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
             };
 
             cascade.generator.cascade = cascade;
+            // @ts-ignore
             cascade.generator.renderList = this._renderList;
 
             this._cascades.push(cascade);
@@ -547,6 +551,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
 
     recreate(): void {
         for (let cascadeIndex = 0; cascadeIndex < this._cascades.length; ++cascadeIndex) {
+            // @ts-ignore
             this._cascades[cascadeIndex].generator.recreate();
         }
     }

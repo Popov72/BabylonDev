@@ -254,6 +254,7 @@ export default class StandardShadow extends SplitBase {
         this._autoCalcShadowZBounds = acszb;
         this.sun.autoCalcShadowZBounds = acszb;
         if (this._autoCalcShadowZBounds) {
+            // @ts-ignore
             this.sun.setShadowProjectionMatrix(Matrix.Identity(), this.getStandardGenerator().viewMatrix, this.getStandardGenerator().getShadowMaps()[0].renderList!);
         } else {
             this._lightNearPlane = this.sun.shadowMinZ;
@@ -276,6 +277,7 @@ export default class StandardShadow extends SplitBase {
     }
 
     protected getViewMatrix(): Matrix | null {
+        // @ts-ignore
         return this.getStandardGenerator().viewMatrix;
     }
 
@@ -423,6 +425,7 @@ export default class StandardShadow extends SplitBase {
     }
 
     protected setShadowMapViewerTexture(): void {
+        // @ts-ignore
         (this._shadowMapPlane.material as StandardMaterial).diffuseTexture = this._shadowMapFilter !== ShadowGenerator.FILTER_PCF ? this._shadowGenerator.getShadowMaps()[0] : null;
     }
 
@@ -452,6 +455,7 @@ export default class StandardShadow extends SplitBase {
 
         (window as any).sg = shadowGenerator;
 
+        // @ts-ignore
         const renderList = shadowGenerator.renderList!;
 
         let num = 0, lstm: Array<AbstractMesh> = [];

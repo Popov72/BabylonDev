@@ -54,6 +54,7 @@ export class CSMShadowMap extends ShadowGenerator {
     constructor(mapSize: number, light: IShadowLight, usefulFloatFirst: boolean, parent: ShadowCSMGenerator) {
         super(mapSize, light, usefulFloatFirst);
 
+        // @ts-ignore
         this._light._shadowGenerator = parent;
         this._parent = parent;
         this._cascade = null;
@@ -74,6 +75,7 @@ export class CSMShadowMap extends ShadowGenerator {
     }
 
     public get viewMatrix(): Matrix {
+        // @ts-ignore
         return this._viewMatrix;
     }
 
@@ -86,37 +88,52 @@ export class CSMShadowMap extends ShadowGenerator {
     }
 
     public getTransformMatrix(): Matrix {
+        // @ts-ignore
         var scene = this._scene;
+        // @ts-ignore
         if (this._currentRenderID === scene.getRenderId() && this._currentFaceIndexCache === this._currentFaceIndex) {
+            // @ts-ignore
             return this._transformMatrix;
         }
 
+        // @ts-ignore
         this._currentRenderID = scene.getRenderId();
+        // @ts-ignore
         this._currentFaceIndexCache = this._currentFaceIndex;
 
+        // @ts-ignore
         var lightPosition = this._light.position;
+        // @ts-ignore
         if (this._light.computeTransformedInformation()) {
+            // @ts-ignore
             lightPosition = this._light.transformedPosition;
         }
 
+        // @ts-ignore
         Vector3.NormalizeToRef(this._light.getShadowDirection(this._currentFaceIndex), this._lightDirection);
+        // @ts-ignore
         if (Math.abs(Vector3.Dot(this._lightDirection, Vector3.Up())) === 1.0) {
+            // @ts-ignore
             this._lightDirection.z = 0.0000000000001; // Required to avoid perfectly perpendicular light
         }
 
+        // @ts-ignore
         if (this._light.needProjectionMatrixCompute() || !this._cachedPosition || !this._cachedDirection || !lightPosition.equals(this._cachedPosition) || !this._lightDirection.equals(this._cachedDirection)) {
-
+            // @ts-ignore
             this._cachedPosition.copyFrom(lightPosition);
+            // @ts-ignore
             this._cachedDirection.copyFrom(this._lightDirection);
 
             this._computeLightMatrices();
         }
 
+        // @ts-ignore
         return this._transformMatrix;
     }
 
     // Get the 8 points of the view frustum in world space
     protected _computeFrustumInWorldSpace(): void {
+        // @ts-ignore
         if (!this._cascade || !this._scene.activeCamera) {
             return;
         }
@@ -124,8 +141,10 @@ export class CSMShadowMap extends ShadowGenerator {
         const prevSplitDist = this._cascade.prevSplitDistance,
               splitDist = this._cascade.splitDistance;
 
+        // @ts-ignore
         this._scene.activeCamera.getViewMatrix(); // make sure the transformation matrix we get when calling 'getTransformationMatrix()' is calculated with an up to date view matrix
 
+        // @ts-ignore
         const invViewProj = Matrix.Invert(this._scene.activeCamera.getTransformationMatrix());
         for (let cornerIndex = 0; cornerIndex < CSMShadowMap.frustumCornersNDCSpace.length; ++cornerIndex) {
             Vector3.TransformCoordinatesToRef(CSMShadowMap.frustumCornersNDCSpace[cornerIndex], invViewProj, this._frustumCornersWorldSpace[cornerIndex]);
@@ -149,6 +168,7 @@ export class CSMShadowMap extends ShadowGenerator {
         this._maxExtents.copyFromFloats(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
         this._frustumCenter.copyFromFloats(0, 0, 0);
 
+        // @ts-ignore
         const camera = this._scene.activeCamera;
 
         if (!camera) {
@@ -180,6 +200,7 @@ export class CSMShadowMap extends ShadowGenerator {
 
             const lightCameraPos = this._frustumCenter;
 
+            // @ts-ignore
             this._frustumCenter.addToRef(this._lightDirection, tmpv1); // tmpv1 = look at
 
             Matrix.LookAtLHToRef(lightCameraPos, tmpv1, upDir, matrix); // matrix = lightView
@@ -197,6 +218,7 @@ export class CSMShadowMap extends ShadowGenerator {
     }
 
     protected _computeLightMatrices(): void {
+        // @ts-ignore
         const camera = this._scene.activeCamera;
 
         if (!camera) {
@@ -210,11 +232,13 @@ export class CSMShadowMap extends ShadowGenerator {
         this._maxExtents.subtractToRef(this._minExtents, this._cascadeExtents);
 
         // Get position of the shadow camera
+        // @ts-ignore
         this._frustumCenter.addToRef(this._lightDirection.scale(this._minExtents.z), this._shadowCameraPos);
 
         // Come up with a new orthographic camera for the shadow caster
         const upDir = this._parent.stabilizeCascades || !this._parent.useRightDirectionAsUpForOrthoProj ? UpDir : camera.getDirection(RightDir);
 
+        // @ts-ignore
         Matrix.LookAtLHToRef(this._shadowCameraPos, this._frustumCenter, upDir, this._viewMatrix);
 
         let minZ = 0, maxZ = this._cascadeExtents.z;
@@ -222,6 +246,7 @@ export class CSMShadowMap extends ShadowGenerator {
         // Try to tighten minZ and maxZ based on the bounding box of the shadow casters
         const boundingInfo = this._parent.shadowCastersBoundingInfo;
 
+        // @ts-ignore
         boundingInfo.update(this._viewMatrix);
 
         maxZ = Math.min(maxZ, boundingInfo.boundingBox.maximumWorld.z);
@@ -234,29 +259,38 @@ export class CSMShadowMap extends ShadowGenerator {
             minZ = Math.max(minZ, boundingInfo.boundingBox.minimumWorld.z);
         }
 
+        // @ts-ignore
         if (this._scene.useRightHandedSystem) {
+            // @ts-ignore
             Matrix.OrthoOffCenterRHToRef(this._minExtents.x, this._maxExtents.x, this._minExtents.y, this._maxExtents.y, minZ, maxZ, this._projectionMatrix);
         } else {
+            // @ts-ignore
             Matrix.OrthoOffCenterLHToRef(this._minExtents.x, this._maxExtents.x, this._minExtents.y, this._maxExtents.y, minZ, maxZ, this._projectionMatrix);
         }
 
         this._lightMinExtents.set(this._minExtents.x, this._minExtents.y, minZ);
         this._lightMaxExtents.set(this._maxExtents.x, this._maxExtents.y, maxZ);
 
+        // @ts-ignore
         this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
 
         if (this._parent.stabilizeCascades) {
             // Create the rounding matrix, by projecting the world-space origin and determining
             // the fractional offset in texel space
+            // @ts-ignore
             Vector3.TransformCoordinatesToRef(ZeroVec, this._transformMatrix, tmpv1); // tmpv1 = shadowOrigin
+            // @ts-ignore
             tmpv1.scaleInPlace(this._mapSize / 2);
 
             tmpv2.copyFromFloats(Math.round(tmpv1.x), Math.round(tmpv1.y), Math.round(tmpv1.z)); // tmpv2 = roundedOrigin
+            // @ts-ignore
             tmpv2.subtractInPlace(tmpv1).scaleInPlace(2 / this._mapSize); // tmpv2 = roundOffset
 
             Matrix.TranslationToRef(tmpv2.x, tmpv2.y, 0.0, matrix);
 
+            // @ts-ignore
             this._projectionMatrix.multiplyToRef(matrix, this._projectionMatrix);
+            // @ts-ignore
             this._viewMatrix.multiplyToRef(this._projectionMatrix, this._transformMatrix);
         }
     }
