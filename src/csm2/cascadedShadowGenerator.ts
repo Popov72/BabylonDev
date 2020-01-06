@@ -897,7 +897,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             // Calculate the radius of a bounding sphere surrounding the frustum corners
             let sphereRadius = 0;
             for (let cornerIndex = 0; cornerIndex < this._frustumCornersWorldSpace[cascadeIndex].length; ++cornerIndex) {
-                const dist = this._frustumCornersWorldSpace[cascadeIndex][cornerIndex].subtract(this._frustumCenter[cascadeIndex]).length();
+                const dist = this._frustumCornersWorldSpace[cascadeIndex][cornerIndex].subtractToRef(this._frustumCenter[cascadeIndex], tmpv1).length();
                 sphereRadius = Math.max(sphereRadius, dist);
             }
 
@@ -1486,12 +1486,6 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
         const width = shadowMap.getSize().width;
 
-        for (let cascadeIndex = 0; cascadeIndex < this._numCascades; ++cascadeIndex) {
-            this._lightSizeUVCorrection[cascadeIndex * 2 + 0] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].x - this._cascadeMinExtents[0].x) / (this._cascadeMaxExtents[cascadeIndex].x - this._cascadeMinExtents[cascadeIndex].x); // x correction
-            this._lightSizeUVCorrection[cascadeIndex * 2 + 1] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].y - this._cascadeMinExtents[0].y) / (this._cascadeMaxExtents[cascadeIndex].y - this._cascadeMinExtents[cascadeIndex].y); // y correction
-            this._depthCorrection[cascadeIndex] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[cascadeIndex].z - this._cascadeMinExtents[cascadeIndex].z) / (this._cascadeMaxExtents[0].z - this._cascadeMinExtents[0].z);
-        }
-
         effect.setMatrices("lightMatrix" + lightIndex, this._transformMatricesAsArray);
         effect.setArray("viewFrustumZ" + lightIndex, this._viewSpaceFrustumsZ);
         effect.setFloat("cascadeBlendFactor" + lightIndex, this.cascadeBlendPercentage === 0 ? 10000 : 1 / this.cascadeBlendPercentage);
@@ -1502,6 +1496,11 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
             light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), width, 1 / width, this.frustumEdgeFalloff, lightIndex);
         } else if (this._filter === CascadedShadowGenerator.FILTER_PCSS) {
+            for (let cascadeIndex = 0; cascadeIndex < this._numCascades; ++cascadeIndex) {
+                this._lightSizeUVCorrection[cascadeIndex * 2 + 0] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].x - this._cascadeMinExtents[0].x) / (this._cascadeMaxExtents[cascadeIndex].x - this._cascadeMinExtents[cascadeIndex].x); // x correction
+                this._lightSizeUVCorrection[cascadeIndex * 2 + 1] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].y - this._cascadeMinExtents[0].y) / (this._cascadeMaxExtents[cascadeIndex].y - this._cascadeMinExtents[cascadeIndex].y); // y correction
+                this._depthCorrection[cascadeIndex] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[cascadeIndex].z - this._cascadeMinExtents[cascadeIndex].z) / (this._cascadeMaxExtents[0].z - this._cascadeMinExtents[0].z);
+            }
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
             effect.setTexture("depthSampler" + lightIndex, shadowMap);
             effect.setArray2("lightSizeUVCorrection" + lightIndex, this._lightSizeUVCorrection);

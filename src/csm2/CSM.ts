@@ -1,5 +1,5 @@
 import {
-    //CascadedShadowGenerator,
+    CascadedShadowGenerator,
     Scene,
     ShadowGenerator,
     StandardMaterial,
@@ -18,7 +18,7 @@ import {
 import Sample from "../Sample";
 import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
-import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
+//import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
 
 export default class CSM extends StandardShadow {
 
@@ -42,8 +42,9 @@ export default class CSM extends StandardShadow {
         var depthRenderer = this.scene.enableDepthRenderer(this.camera, false);
 
         depthRenderer.getDepthMap().updateSamplingMode(Constants.TEXTURE_NEAREST_NEAREST/*Texture.NEAREST_SAMPLINGMODE*/);
-        depthRenderer.useOnlyInActiveCamera = true;
-        depthRenderer.getDepthMap().ignoreCameraViewport = false;
+        //depthRenderer.useOnlyInActiveCamera = true;
+        //depthRenderer.getDepthMap().useCameraPostProcesses = false;
+        //depthRenderer.getDepthMap().ignoreCameraViewport = true;
 
         var depthMap = depthRenderer.getDepthMap();
 
@@ -58,22 +59,10 @@ export default class CSM extends StandardShadow {
             uniform sampler2D textureSampler;
             uniform sampler2D depthTexture;
 
-            //#define METHOD1
-
             out vec2 glFragColor;
 
             void main(void)
             {
-            #ifdef METHOD1
-                ivec2 size = textureSize(depthTexture, 0);
-                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));
-                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));
-
-                float f1 = texture(depthTexture, vUV2).r;
-                float f2 = texture(depthTexture, vUV2 + vec2(texelSize.x, 0.0)).r;
-                float f3 = texture(depthTexture, vUV2 + vec2(texelSize.x, texelSize.y)).r;
-                float f4 = texture(depthTexture, vUV2 + vec2(0.0, texelSize.y)).r;
-            #else
                 vec2 size = vec2(textureSize(depthTexture, 0) - 1);
                 vec2 texcoord = vUV * size;
                 ivec2 coord = ivec2(texcoord);
@@ -82,7 +71,6 @@ export default class CSM extends StandardShadow {
                 float f2 = texelFetch(depthTexture, coord + ivec2(1, 0), 0).r;
                 float f3 = texelFetch(depthTexture, coord + ivec2(1, 1), 0).r;
                 float f4 = texelFetch(depthTexture, coord + ivec2(0, 1), 0).r;
-            #endif
 
                 float minz = min(min(min(f1, f2), f3), f4);
                 float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);
@@ -101,22 +89,10 @@ export default class CSM extends StandardShadow {
 
             uniform sampler2D textureSampler;
 
-            //#define METHOD1
-
             out vec2 glFragColor;
 
             void main(void)
             {
-            #ifdef METHOD1
-                ivec2 size = textureSize(textureSampler, 0);
-                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));
-                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));
-
-                vec2 f1 = texture(textureSampler, vUV2).rg;
-                vec2 f2 = texture(textureSampler, vUV2 + vec2(texelSize.x, 0.0)).rg;
-                vec2 f3 = texture(textureSampler, vUV2 + vec2(texelSize.x, texelSize.y)).rg;
-                vec2 f4 = texture(textureSampler, vUV2 + vec2(0.0, texelSize.y)).rg;
-            #else
                 vec2 size = vec2(textureSize(textureSampler, 0) - 1);
                 vec2 texcoord = vUV * size;
                 ivec2 coord = ivec2(texcoord);
@@ -125,7 +101,6 @@ export default class CSM extends StandardShadow {
                 vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;
                 vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;
                 vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;
-            #endif
 
                 float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);
                 float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);
@@ -178,6 +153,7 @@ export default class CSM extends StandardShadow {
 
             void main(void)
             {
+                discard;
                 glFragColor = vec2(0.);
             }
         `;
@@ -204,7 +180,7 @@ export default class CSM extends StandardShadow {
         );
 
         depthReductionInitial.autoClear = false;
-        depthReductionInitial.forceFullscreenViewport = false;
+        //depthReductionInitial.forceFullscreenViewport = true;
 
         depthReductionInitial.onApply = (effect: Effect) => {
             effect.setTexture('depthTexture', depthMap);
@@ -241,7 +217,7 @@ export default class CSM extends StandardShadow {
             );
 
             depthReduction.autoClear = false;
-            depthReduction.forceFullscreenViewport = false;
+            //depthReduction.forceFullscreenViewport = true;
 
             depthReductionPhases.push(depthReduction);
 

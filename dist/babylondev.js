@@ -4415,7 +4415,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
 /* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
-/* harmony import */ var _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./cascadedShadowGenerator */ "./src/CSM2/cascadedShadowGenerator.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4432,14 +4431,14 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
-
+//import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
 var CSM = /** @class */ (function (_super) {
     __extends(CSM, _super);
     function CSM(scene, camera, parent, name) {
         var _this = _super.call(this, scene, camera, parent, name) || this;
         _this._oldMin = -1;
         _this._oldMax = -1;
-        _this._shadowMapFilter = _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"].FILTER_PCF;
+        _this._shadowMapFilter = babylonjs__WEBPACK_IMPORTED_MODULE_0__["CascadedShadowGenerator"].FILTER_PCF;
         window.csm = _this;
         _this.initializeDepthReduction();
         return _this;
@@ -4448,17 +4447,18 @@ var CSM = /** @class */ (function (_super) {
         var _this = this;
         var depthRenderer = this.scene.enableDepthRenderer(this.camera, false);
         depthRenderer.getDepthMap().updateSamplingMode(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST /*Texture.NEAREST_SAMPLINGMODE*/);
-        depthRenderer.useOnlyInActiveCamera = true;
-        depthRenderer.getDepthMap().ignoreCameraViewport = false;
+        //depthRenderer.useOnlyInActiveCamera = true;
+        //depthRenderer.getDepthMap().useCameraPostProcesses = false;
+        //depthRenderer.getDepthMap().ignoreCameraViewport = true;
         var depthMap = depthRenderer.getDepthMap();
         //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionInitialFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n            uniform sampler2D depthTexture;\n\n            //#define METHOD1\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n            #ifdef METHOD1\n                ivec2 size = textureSize(depthTexture, 0);\n                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));\n                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));\n\n                float f1 = texture(depthTexture, vUV2).r;\n                float f2 = texture(depthTexture, vUV2 + vec2(texelSize.x, 0.0)).r;\n                float f3 = texture(depthTexture, vUV2 + vec2(texelSize.x, texelSize.y)).r;\n                float f4 = texture(depthTexture, vUV2 + vec2(0.0, texelSize.y)).r;\n            #else\n                vec2 size = vec2(textureSize(depthTexture, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                float f1 = texelFetch(depthTexture, coord, 0).r;\n                float f2 = texelFetch(depthTexture, coord + ivec2(1, 0), 0).r;\n                float f3 = texelFetch(depthTexture, coord + ivec2(1, 1), 0).r;\n                float f4 = texelFetch(depthTexture, coord + ivec2(0, 1), 0).r;\n            #endif\n\n                float minz = min(min(min(f1, f2), f3), f4);\n                float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionInitialFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n            uniform sampler2D depthTexture;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                vec2 size = vec2(textureSize(depthTexture, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                float f1 = texelFetch(depthTexture, coord, 0).r;\n                float f2 = texelFetch(depthTexture, coord + ivec2(1, 0), 0).r;\n                float f3 = texelFetch(depthTexture, coord + ivec2(1, 1), 0).r;\n                float f4 = texelFetch(depthTexture, coord + ivec2(0, 1), 0).r;\n\n                float minz = min(min(min(f1, f2), f3), f4);\n                float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
         //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            //#define METHOD1\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n            #ifdef METHOD1\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 vUV2 = vUV + vec2(0.5 / float(size.x), 0.5 / float(size.y));\n                vec2 texelSize = vec2(1.0 / float(size.x), 1.0 / float(size.y));\n\n                vec2 f1 = texture(textureSampler, vUV2).rg;\n                vec2 f2 = texture(textureSampler, vUV2 + vec2(texelSize.x, 0.0)).rg;\n                vec2 f3 = texture(textureSampler, vUV2 + vec2(texelSize.x, texelSize.y)).rg;\n                vec2 f4 = texture(textureSampler, vUV2 + vec2(0.0, texelSize.y)).rg;\n            #else\n                vec2 size = vec2(textureSize(textureSampler, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;\n                vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;\n                vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;\n            #endif\n\n                float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);\n                float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                vec2 size = vec2(textureSize(textureSampler, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;\n                vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;\n                vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;\n\n                float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);\n                float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
         //
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionALastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 texcoord = vUV * (vec2(size - 1));\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord % size, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, (coord + ivec2(1, 0)) % size, 0).rg;\n                vec2 f3 = texelFetch(textureSampler, (coord + ivec2(1, 1)) % size, 0).rg;\n                vec2 f4 = texelFetch(textureSampler, (coord + ivec2(0, 1)) % size, 0).rg;\n\n                float minz = min(f1.x, f2.x);\n                float maxz = max(f1.y, f2.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
         //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionLastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                glFragColor = vec2(0.);\n            }\n        ";
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionLastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                discard;\n                glFragColor = vec2(0.);\n            }\n        ";
         var depthReductionPhases = [];
         // phase 0
         var depthReductionInitial = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Initial depth reduction phase', 'depthReductionInitial', // shader
@@ -4471,7 +4471,7 @@ var CSM = /** @class */ (function (_super) {
         undefined, // defines
         babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG);
         depthReductionInitial.autoClear = false;
-        depthReductionInitial.forceFullscreenViewport = false;
+        //depthReductionInitial.forceFullscreenViewport = true;
         depthReductionInitial.onApply = function (effect) {
             effect.setTexture('depthTexture', depthMap);
         };
@@ -4493,7 +4493,7 @@ var CSM = /** @class */ (function (_super) {
             undefined, // defines
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG);
             depthReduction.autoClear = false;
-            depthReduction.forceFullscreenViewport = false;
+            //depthReduction.forceFullscreenViewport = true;
             depthReductionPhases.push(depthReduction);
             index++;
             if (w == 1 && h == 1) {
@@ -4737,7 +4737,7 @@ var CSM = /** @class */ (function (_super) {
         this.gui.createGUI();
     };
     CSM.prototype.createGenerator = function () {
-        var generator = new _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
+        var generator = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
         generator.numCascades = this._csmNumCascades;
         return generator;
     };
@@ -7286,7 +7286,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
             // Calculate the radius of a bounding sphere surrounding the frustum corners
             var sphereRadius = 0;
             for (var cornerIndex = 0; cornerIndex < this._frustumCornersWorldSpace[cascadeIndex].length; ++cornerIndex) {
-                var dist = this._frustumCornersWorldSpace[cascadeIndex][cornerIndex].subtract(this._frustumCenter[cascadeIndex]).length();
+                var dist = this._frustumCornersWorldSpace[cascadeIndex][cornerIndex].subtractToRef(this._frustumCenter[cascadeIndex], tmpv1).length();
                 sphereRadius = Math.max(sphereRadius, dist);
             }
             sphereRadius = Math.ceil(sphereRadius * 16) / 16;
@@ -7744,11 +7744,6 @@ var CascadedShadowGenerator = /** @class */ (function () {
             return;
         }
         var width = shadowMap.getSize().width;
-        for (var cascadeIndex = 0; cascadeIndex < this._numCascades; ++cascadeIndex) {
-            this._lightSizeUVCorrection[cascadeIndex * 2 + 0] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].x - this._cascadeMinExtents[0].x) / (this._cascadeMaxExtents[cascadeIndex].x - this._cascadeMinExtents[cascadeIndex].x); // x correction
-            this._lightSizeUVCorrection[cascadeIndex * 2 + 1] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].y - this._cascadeMinExtents[0].y) / (this._cascadeMaxExtents[cascadeIndex].y - this._cascadeMinExtents[cascadeIndex].y); // y correction
-            this._depthCorrection[cascadeIndex] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[cascadeIndex].z - this._cascadeMinExtents[cascadeIndex].z) / (this._cascadeMaxExtents[0].z - this._cascadeMinExtents[0].z);
-        }
         effect.setMatrices("lightMatrix" + lightIndex, this._transformMatricesAsArray);
         effect.setArray("viewFrustumZ" + lightIndex, this._viewSpaceFrustumsZ);
         effect.setFloat("cascadeBlendFactor" + lightIndex, this.cascadeBlendPercentage === 0 ? 10000 : 1 / this.cascadeBlendPercentage);
@@ -7759,6 +7754,11 @@ var CascadedShadowGenerator = /** @class */ (function () {
             light._uniformBuffer.updateFloat4("shadowsInfo", this.getDarkness(), width, 1 / width, this.frustumEdgeFalloff, lightIndex);
         }
         else if (this._filter === CascadedShadowGenerator.FILTER_PCSS) {
+            for (var cascadeIndex = 0; cascadeIndex < this._numCascades; ++cascadeIndex) {
+                this._lightSizeUVCorrection[cascadeIndex * 2 + 0] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].x - this._cascadeMinExtents[0].x) / (this._cascadeMaxExtents[cascadeIndex].x - this._cascadeMinExtents[cascadeIndex].x); // x correction
+                this._lightSizeUVCorrection[cascadeIndex * 2 + 1] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[0].y - this._cascadeMinExtents[0].y) / (this._cascadeMaxExtents[cascadeIndex].y - this._cascadeMinExtents[cascadeIndex].y); // y correction
+                this._depthCorrection[cascadeIndex] = cascadeIndex === 0 ? 1 : (this._cascadeMaxExtents[cascadeIndex].z - this._cascadeMinExtents[cascadeIndex].z) / (this._cascadeMaxExtents[0].z - this._cascadeMinExtents[0].z);
+            }
             effect.setDepthStencilTexture("shadowSampler" + lightIndex, shadowMap);
             effect.setTexture("depthSampler" + lightIndex, shadowMap);
             effect.setArray2("lightSizeUVCorrection" + lightIndex, this._lightSizeUVCorrection);
