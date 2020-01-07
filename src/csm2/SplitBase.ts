@@ -97,7 +97,7 @@ export default class SplitBase extends Split implements ISampleSplit {
         this._csmStabilizeCascades = false;
         this._csmDepthClamp = true;
         this._csmLambda = 0.7;
-        this._csmSplitBlendPercentage = 0.15;
+        this._csmSplitBlendPercentage = 0.05;
         this._csmPenumbraDarkness = 0.7;
         this._csmShadowMaxZ = 250;
         this._csmAutoCalcDepthBounds = false;

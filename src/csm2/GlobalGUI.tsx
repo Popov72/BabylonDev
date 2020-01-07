@@ -57,8 +57,10 @@ export default class GlobalGUI extends MainGUI {
                 "camera": {
                     "position": new Vector3(40, 5, 5),
                     "target": new Vector3(0, 0, 5),
-                    /*"position": new Vector3(32.731938060727565, 7.37629446025349, 16.19731427368431),
-                    "rotation": new Vector3(0.18435499454676146, -1.5708213267948914, 0),*/
+                    /*"position": new Vector3(40.26686072438635, 4.554735288570352, -17.89867939154),
+                    "rotation": new Vector3(0.16435499454676133, -4.264821326794872, 0),*/
+                    /*"position": new Vector3(39.748889110647276, 6.671463042219519, -15.973865130460444),
+                    "rotation": new Vector3(0.15435499454676105, -3.9848213267948602, 0),*/
                 },
                 "scaling": 0.5,
                 "sunColor": new Color3(1, 1, 1),

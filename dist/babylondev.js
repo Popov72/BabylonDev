@@ -4411,10 +4411,10 @@ _Sample__WEBPACK_IMPORTED_MODULE_1__["default"].registerSampleClass("csm", {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
-/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
-/* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
+/* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
+/* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
+/* harmony import */ var _DepthReducer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DepthReducer */ "./src/CSM2/DepthReducer.ts");
+/* harmony import */ var _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./cascadedShadowGenerator */ "./src/CSM2/cascadedShadowGenerator.ts");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4431,143 +4431,32 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
-//import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
+
 var CSM = /** @class */ (function (_super) {
     __extends(CSM, _super);
     function CSM(scene, camera, parent, name) {
         var _this = _super.call(this, scene, camera, parent, name) || this;
         _this._oldMin = -1;
         _this._oldMax = -1;
-        _this._shadowMapFilter = babylonjs__WEBPACK_IMPORTED_MODULE_0__["CascadedShadowGenerator"].FILTER_PCF;
+        _this._shadowMapFilter = _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"].FILTER_PCF;
         window.csm = _this;
-        _this.initializeDepthReduction();
-        return _this;
-    }
-    CSM.prototype.initializeDepthReduction = function () {
-        var _this = this;
-        var depthRenderer = this.scene.enableDepthRenderer(this.camera, false);
-        depthRenderer.getDepthMap().updateSamplingMode(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST /*Texture.NEAREST_SAMPLINGMODE*/);
-        //depthRenderer.useOnlyInActiveCamera = true;
-        //depthRenderer.getDepthMap().useCameraPostProcesses = false;
-        //depthRenderer.getDepthMap().ignoreCameraViewport = true;
-        var depthMap = depthRenderer.getDepthMap();
-        //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionInitialFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n            uniform sampler2D depthTexture;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                vec2 size = vec2(textureSize(depthTexture, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                float f1 = texelFetch(depthTexture, coord, 0).r;\n                float f2 = texelFetch(depthTexture, coord + ivec2(1, 0), 0).r;\n                float f3 = texelFetch(depthTexture, coord + ivec2(1, 1), 0).r;\n                float f4 = texelFetch(depthTexture, coord + ivec2(0, 1), 0).r;\n\n                float minz = min(min(min(f1, f2), f3), f4);\n                float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
-        //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                vec2 size = vec2(textureSize(textureSampler, 0) - 1);\n                vec2 texcoord = vUV * size;\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;\n                vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;\n                vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;\n\n                float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);\n                float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
-        //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionALastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                ivec2 size = textureSize(textureSampler, 0);\n                vec2 texcoord = vUV * (vec2(size - 1));\n                ivec2 coord = ivec2(texcoord);\n\n                vec2 f1 = texelFetch(textureSampler, coord % size, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, (coord + ivec2(1, 0)) % size, 0).rg;\n                vec2 f3 = texelFetch(textureSampler, (coord + ivec2(1, 1)) % size, 0).rg;\n                vec2 f4 = texelFetch(textureSampler, (coord + ivec2(0, 1)) % size, 0).rg;\n\n                float minz = min(f1.x, f2.x);\n                float maxz = max(f1.y, f2.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n        ";
-        //
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.depthReductionLastFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n            void main(void)\n            {\n                discard;\n                glFragColor = vec2(0.);\n            }\n        ";
-        var depthReductionPhases = [];
-        // phase 0
-        var depthReductionInitial = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Initial depth reduction phase', 'depthReductionInitial', // shader
-        null, ['depthTexture'], // textures
-        1.0, // options
-        null, // camera
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
-        this.scene.getEngine(), // engine
-        false, // reusable
-        undefined, // defines
-        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG);
-        depthReductionInitial.autoClear = false;
-        //depthReductionInitial.forceFullscreenViewport = true;
-        depthReductionInitial.onApply = function (effect) {
-            effect.setTexture('depthTexture', depthMap);
-        };
-        depthReductionPhases.push(depthReductionInitial);
-        var w = depthMap.getSize().width, h = depthMap.getSize().height;
-        var index = 1;
-        var depthReduction;
-        while (w > 1 || h > 1) {
-            w = Math.max(Math.round(w / 2), 1);
-            h = Math.max(Math.round(h / 2), 1);
-            //console.log(w, h);
-            depthReduction = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Depth reduction phase ' + index, (w == 1 && h == 1) ? 'depthReductionLast' : (w == 1 || h == 1) ? 'depthReductionALast' : 'depthReduction', // shader
-            null, // attributes
-            null, { width: w, height: h }, // options
-            null, // camera
-            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
-            this.scene.getEngine(), // engine
-            false, // reusable
-            undefined, // defines
-            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTURETYPE_UNSIGNED_SHORT*/TEXTURETYPE_HALF_FLOAT, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"]. /*TEXTUREFORMAT_RG_INTEGER*/TEXTUREFORMAT_RG);
-            depthReduction.autoClear = false;
-            //depthReduction.forceFullscreenViewport = true;
-            depthReductionPhases.push(depthReduction);
-            index++;
-            if (w == 1 && h == 1) {
-                var func = function (w, h, depthReduction) {
-                    var first0 = true;
-                    var buffer0 = new Float32Array(4 * w * h);
-                    return function () {
-                        if (first0) {
-                            var texture = depthReduction.inputTexture;
-                            _this._readTexturePixels(_this.scene.getEngine(), texture, w, h, -1, 0, buffer0);
-                            var min = buffer0[0], max = buffer0[1];
-                            if (min >= max || !_this._csmAutoCalcDepthBounds) {
-                                min = 0;
-                                max = 1;
-                            }
-                            if (min != _this._oldMin || max != _this._oldMax) {
-                                _this.getCSMGenerator().setMinMaxDistance(min, max);
-                                _this._oldMin = min;
-                                _this._oldMax = max;
-                                //console.log(min, max);
-                            }
-                        }
-                    };
-                };
-                depthReduction.onAfterRenderObservable.add(func(w, h, depthReduction));
+        _this._depthReducer = new _DepthReducer__WEBPACK_IMPORTED_MODULE_2__["DepthReducer"](_this.camera);
+        _this._depthReducer.onAfterReductionPerformed.add(function (minmax) {
+            var min = minmax.min, max = minmax.max;
+            if (min >= max) {
+                min = 0;
+                max = 1;
             }
-        }
-        var postProcessManager = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcessManager"](this.scene);
-        depthMap.onAfterUnbindObservable.add(function () {
-            if (_this._csmAutoCalcDepthBounds) {
-                depthReductionPhases[0].activate(_this.camera, depthMap.getInternalTexture());
-                postProcessManager.directRender(depthReductionPhases, depthReductionPhases[0].inputTexture, false);
-                _this.scene.getEngine().unBindFramebuffer(depthReductionPhases[0].inputTexture, false);
+            if (min != _this._oldMin || max != _this._oldMax) {
+                _this.getCSMGenerator().setMinMaxDistance(min, max);
+                _this._oldMin = min;
+                _this._oldMax = max;
+                //console.log(min, max);
             }
         });
-    };
-    CSM.prototype._readTexturePixels = function (engine, texture, width, height, faceIndex, level, buffer) {
-        if (faceIndex === void 0) { faceIndex = -1; }
-        if (level === void 0) { level = 0; }
-        if (buffer === void 0) { buffer = null; }
-        var gl = engine._gl;
-        if (!this._dummyFramebuffer) {
-            var dummy = gl.createFramebuffer();
-            if (!dummy) {
-                throw new Error("Unable to create dummy framebuffer");
-            }
-            this._dummyFramebuffer = dummy;
-        }
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this._dummyFramebuffer);
-        if (faceIndex > -1) {
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + faceIndex, texture._webGLTexture, level);
-        }
-        else {
-            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture._webGLTexture, level);
-        }
-        var readType = (texture.type !== undefined) ? engine._getWebGLTextureType(texture.type) : gl.UNSIGNED_BYTE;
-        switch (readType) {
-            case gl.UNSIGNED_BYTE:
-                if (!buffer) {
-                    buffer = new Uint8Array(4 * width * height);
-                }
-                readType = gl.UNSIGNED_BYTE;
-                break;
-            default:
-                if (!buffer) {
-                    buffer = new Float32Array(4 * width * height);
-                }
-                readType = gl.FLOAT;
-                break;
-        }
-        gl.readPixels(0, 0, width, height, gl.RGBA, readType, buffer);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, engine._currentFramebuffer);
-        return buffer;
-    };
+        _this._depthReducer.setDepthRenderer();
+        return _this;
+    }
     CSM.prototype.getCSMGenerator = function () {
         return this._shadowGenerator;
     };
@@ -4712,11 +4601,18 @@ var CSM = /** @class */ (function (_super) {
             return this._csmAutoCalcDepthBounds;
         },
         set: function (cacdb) {
+            if (this._csmAutoCalcDepthBounds === cacdb) {
+                return;
+            }
             this._csmAutoCalcDepthBounds = cacdb;
-            if (!cacdb) {
+            if (!this._csmAutoCalcDepthBounds) {
                 this._oldMin = 0;
                 this._oldMax = 1;
+                this._depthReducer.deactivate();
                 this.getCSMGenerator().setMinMaxDistance(0, 1);
+            }
+            else {
+                this._depthReducer.activate();
             }
         },
         enumerable: true,
@@ -4733,11 +4629,11 @@ var CSM = /** @class */ (function (_super) {
         return this.getCSMGenerator().getCascadeViewMatrix(this._csmActiveCascade);
     };
     CSM.prototype.createGUI = function () {
-        this.gui = new _CSMGUI__WEBPACK_IMPORTED_MODULE_2__["default"](this.name, this.scene.getEngine(), this._container, this);
+        this.gui = new _CSMGUI__WEBPACK_IMPORTED_MODULE_1__["default"](this.name, this.scene.getEngine(), this._container, this);
         this.gui.createGUI();
     };
     CSM.prototype.createGenerator = function () {
-        var generator = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
+        var generator = new _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
         generator.numCascades = this._csmNumCascades;
         return generator;
     };
@@ -4759,7 +4655,7 @@ var CSM = /** @class */ (function (_super) {
     };
     CSM.className = "CSM";
     return CSM;
-}(_StandardShadow__WEBPACK_IMPORTED_MODULE_1__["default"]));
+}(_StandardShadow__WEBPACK_IMPORTED_MODULE_0__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (CSM);
 
 
@@ -4810,6 +4706,90 @@ var CSMGUI = /** @class */ (function (_super) {
     return CSMGUI;
 }(_SplitBaseGUI__WEBPACK_IMPORTED_MODULE_1__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (CSMGUI);
+
+
+/***/ }),
+
+/***/ "./src/CSM2/DepthReducer.ts":
+/*!**********************************!*\
+  !*** ./src/CSM2/DepthReducer.ts ***!
+  \**********************************/
+/*! exports provided: DepthReducer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DepthReducer", function() { return DepthReducer; });
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _MinMaxReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MinMaxReducer */ "./src/CSM2/MinMaxReducer.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var DepthReducer = /** @class */ (function (_super) {
+    __extends(DepthReducer, _super);
+    function DepthReducer(camera) {
+        return _super.call(this, camera) || this;
+    }
+    DepthReducer.prototype.setDepthRenderer = function (depthRenderer, type, forceFullscreenViewport) {
+        if (depthRenderer === void 0) { depthRenderer = null; }
+        if (type === void 0) { type = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT; }
+        if (forceFullscreenViewport === void 0) { forceFullscreenViewport = true; }
+        var scene = this._camera.getScene();
+        if (this._depthRenderer) {
+            delete scene._depthRenderer[this._depthRendererId];
+            this._depthRenderer.dispose();
+            this._depthRenderer = null;
+        }
+        if (depthRenderer === null) {
+            if (!scene._depthRenderer) {
+                scene._depthRenderer = {};
+            }
+            depthRenderer = this._depthRenderer = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["DepthRenderer"](scene, type, this._camera, false);
+            depthRenderer.getDepthMap().updateSamplingMode(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST);
+            depthRenderer.enabled = false;
+            this._depthRendererId = "minmax" + this._camera.id;
+            scene._depthRenderer[this._depthRendererId] = depthRenderer;
+        }
+        _super.prototype.setSourceTexture.call(this, depthRenderer.getDepthMap(), true, type, forceFullscreenViewport);
+    };
+    DepthReducer.prototype.activate = function () {
+        if (this._depthRenderer) {
+            this._depthRenderer.enabled = true;
+        }
+        _super.prototype.activate.call(this);
+    };
+    DepthReducer.prototype.deactivate = function () {
+        _super.prototype.deactivate.call(this);
+        if (this._depthRenderer) {
+            this._depthRenderer.enabled = false;
+        }
+    };
+    DepthReducer.prototype.dispose = function (disposeAll) {
+        if (disposeAll === void 0) { disposeAll = true; }
+        var _a;
+        _super.prototype.dispose.call(this, disposeAll);
+        if (this._depthRenderer && disposeAll) {
+            delete ((_a = this._depthRenderer.getDepthMap().getScene()) === null || _a === void 0 ? void 0 : _a._depthRenderer[this._depthRendererId]);
+            this._depthRenderer.dispose();
+            this._depthRenderer = null;
+        }
+    };
+    return DepthReducer;
+}(_MinMaxReducer__WEBPACK_IMPORTED_MODULE_1__["MinMaxReducer"]));
+
 
 
 /***/ }),
@@ -4961,6 +4941,154 @@ var GlobalGUI = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./src/CSM2/MinMaxReducer.ts":
+/*!***********************************!*\
+  !*** ./src/CSM2/MinMaxReducer.ts ***!
+  \***********************************/
+/*! exports provided: MinMaxReducer */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MinMaxReducer", function() { return MinMaxReducer; });
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+
+var MinMaxReducer = /** @class */ (function () {
+    function MinMaxReducer(camera) {
+        /**
+         * Observable triggered when the computation has been performed
+         */
+        this.onAfterReductionPerformed = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Observable"]();
+        this._forceFullscreenViewport = true;
+        MinMaxReducer.registerShader();
+        this._camera = camera;
+        this._postProcessManager = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcessManager"](camera.getScene());
+    }
+    Object.defineProperty(MinMaxReducer.prototype, "sourceTexture", {
+        get: function () {
+            return this._sourceTexture;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    MinMaxReducer.prototype.setSourceTexture = function (sourceTexture, depthRedux, type, forceFullscreenViewport) {
+        var _this = this;
+        if (type === void 0) { type = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT; }
+        if (forceFullscreenViewport === void 0) { forceFullscreenViewport = true; }
+        if (sourceTexture === this._sourceTexture) {
+            return;
+        }
+        this.dispose(false);
+        this._sourceTexture = sourceTexture;
+        this._reductionSteps = [];
+        this._forceFullscreenViewport = forceFullscreenViewport;
+        var scene = this._camera.getScene();
+        // create the first step
+        var reductionInitial = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Initial reduction phase', 'minmaxReducer', // shader
+        ['texSize'], ['sourceTexture'], // textures
+        1.0, // options
+        null, // camera
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
+        scene.getEngine(), // engine
+        false, // reusable
+        "#define INITIAL" + (depthRedux ? "\n#define DEPTH_REDUX" : ""), // defines
+        type, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTUREFORMAT_RG);
+        reductionInitial.autoClear = false;
+        reductionInitial.forceFullscreenViewport = forceFullscreenViewport;
+        var w = this._sourceTexture.getRenderWidth(), h = this._sourceTexture.getRenderHeight();
+        reductionInitial.onApply = (function (w, h) {
+            return function (effect) {
+                effect.setTexture('sourceTexture', _this._sourceTexture);
+                effect.setFloatArray2('texSize', new Float32Array([w, h]));
+            };
+        })(w, h);
+        this._reductionSteps.push(reductionInitial);
+        var index = 1;
+        // create the additional steps
+        while (w > 1 || h > 1) {
+            w = Math.max(Math.round(w / 2), 1);
+            h = Math.max(Math.round(h / 2), 1);
+            var reduction = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcess"]('Reduction phase ' + index, 'minmaxReducer', // shader
+            ['texSize'], null, { width: w, height: h }, // options
+            null, // camera
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST, // sampling
+            scene.getEngine(), // engine
+            false, // reusable
+            "#define " + ((w == 1 && h == 1) ? 'LAST' : (w == 1 || h == 1) ? 'ONEBEFORELAST' : 'MAIN'), // defines
+            type, undefined, undefined, undefined, babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTUREFORMAT_RG);
+            reduction.autoClear = false;
+            reduction.forceFullscreenViewport = forceFullscreenViewport;
+            reduction.onApply = (function (w, h) {
+                return function (effect) {
+                    if (w == 1 || h == 1) {
+                        effect.setIntArray2('texSize', new Int32Array([w, h]));
+                    }
+                    else {
+                        effect.setFloatArray2('texSize', new Float32Array([w, h]));
+                    }
+                };
+            })(w, h);
+            this._reductionSteps.push(reduction);
+            index++;
+            if (w == 1 && h == 1) {
+                var func = function (w, h, reduction) {
+                    var buffer0 = new Float32Array(4 * w * h);
+                    return function () {
+                        scene.getEngine()._readTexturePixels(reduction.inputTexture, w, h, -1, 0, buffer0);
+                        var min = buffer0[0], max = buffer0[1];
+                        _this.onAfterReductionPerformed.notifyObservers({ min: min, max: max });
+                    };
+                };
+                reduction.onAfterRenderObservable.add(func(w, h, reduction));
+            }
+        }
+    };
+    MinMaxReducer.prototype.activate = function () {
+        var _this = this;
+        if (this._onAfterUnbindObserver || !this._sourceTexture) {
+            return;
+        }
+        this._onAfterUnbindObserver = this._sourceTexture.onAfterUnbindObservable.add(function () {
+            _this._reductionSteps[0].activate(_this._camera);
+            _this._postProcessManager.directRender(_this._reductionSteps, _this._reductionSteps[0].inputTexture, _this._forceFullscreenViewport);
+            _this._camera.getScene().getEngine().unBindFramebuffer(_this._reductionSteps[0].inputTexture, false);
+        });
+    };
+    MinMaxReducer.prototype.deactivate = function () {
+        if (!this._onAfterUnbindObserver || !this._sourceTexture) {
+            return;
+        }
+        this._sourceTexture.onAfterUnbindObservable.remove(this._onAfterUnbindObserver);
+        this._onAfterUnbindObserver = null;
+    };
+    MinMaxReducer.prototype.dispose = function (disposeAll) {
+        if (disposeAll === void 0) { disposeAll = true; }
+        if (disposeAll) {
+            this.onAfterReductionPerformed.clear();
+        }
+        this.deactivate();
+        if (this._reductionSteps) {
+            for (var i = 0; i < this._reductionSteps.length; ++i) {
+                this._reductionSteps[i].dispose();
+            }
+            this._reductionSteps = null;
+        }
+        if (this._postProcessManager && disposeAll) {
+            this._postProcessManager.dispose();
+        }
+        this._sourceTexture = null;
+    };
+    MinMaxReducer.registerShader = function () {
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["Effect"].ShadersStore.minmaxReducerFragmentShader = "\n            #version 300 es\n            precision highp float;\n            precision highp int;\n\n            in vec2 vUV;\n\n            uniform sampler2D textureSampler;\n\n            out vec2 glFragColor;\n\n        #ifdef INITIAL\n            uniform sampler2D sourceTexture;\n            uniform vec2 texSize;\n\n            void main(void)\n            {\n                ivec2 coord = ivec2(vUV * (texSize - 1.0));\n\n                float f1 = texelFetch(sourceTexture, coord, 0).r;\n                float f2 = texelFetch(sourceTexture, coord + ivec2(1, 0), 0).r;\n                float f3 = texelFetch(sourceTexture, coord + ivec2(1, 1), 0).r;\n                float f4 = texelFetch(sourceTexture, coord + ivec2(0, 1), 0).r;\n\n                float minz = min(min(min(f1, f2), f3), f4);\n                #ifdef DEPTH_REDUX\n                    float maxz = max(max(max(sign(1.0 - f1) * f1, sign(1.0 - f2) * f2), sign(1.0 - f3) * f3), sign(1.0 - f4) * f4);\n                #else\n                    float maxz = max(max(max(f1, f2), f3), f4);\n                #endif\n\n                glFragColor = vec2(minz, maxz);\n            }\n\n        #elif defined(MAIN)\n            uniform vec2 texSize;\n\n            void main(void)\n            {\n                ivec2 coord = ivec2(vUV * (texSize - 1.0));\n\n                vec2 f1 = texelFetch(textureSampler, coord, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, coord + ivec2(1, 0), 0).rg;\n                vec2 f3 = texelFetch(textureSampler, coord + ivec2(1, 1), 0).rg;\n                vec2 f4 = texelFetch(textureSampler, coord + ivec2(0, 1), 0).rg;\n\n                float minz = min(min(min(f1.x, f2.x), f3.x), f4.x);\n                float maxz = max(max(max(f1.y, f2.y), f3.y), f4.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n\n        #elif defined(ONEBEFORELAST)\n            uniform ivec2 texSize;\n\n            void main(void)\n            {\n                ivec2 coord = ivec2(vUV * vec2(texSize - 1));\n\n                vec2 f1 = texelFetch(textureSampler, coord % texSize, 0).rg;\n                vec2 f2 = texelFetch(textureSampler, (coord + ivec2(1, 0)) % texSize, 0).rg;\n                vec2 f3 = texelFetch(textureSampler, (coord + ivec2(1, 1)) % texSize, 0).rg;\n                vec2 f4 = texelFetch(textureSampler, (coord + ivec2(0, 1)) % texSize, 0).rg;\n\n                float minz = min(f1.x, f2.x);\n                float maxz = max(f1.y, f2.y);\n\n                glFragColor = vec2(minz, maxz);\n            }\n\n        #elif defined(LAST)\n            void main(void)\n            {\n                discard;\n                glFragColor = vec2(0.);\n            }\n        #endif\n        ";
+    };
+    return MinMaxReducer;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/CSM2/SplitBase.ts":
 /*!*******************************!*\
   !*** ./src/CSM2/SplitBase.ts ***!
@@ -5027,7 +5155,7 @@ var SplitBase = /** @class */ (function (_super) {
         _this._csmStabilizeCascades = false;
         _this._csmDepthClamp = true;
         _this._csmLambda = 0.7;
-        _this._csmSplitBlendPercentage = 0.15;
+        _this._csmSplitBlendPercentage = 0.05;
         _this._csmPenumbraDarkness = 0.7;
         _this._csmShadowMaxZ = 250;
         _this._csmAutoCalcDepthBounds = false;
@@ -5791,7 +5919,7 @@ var SplitBaseGUI = /** @class */ (function (_super) {
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Num of Cascades")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },
-                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Select"], { className: classes.propertyValue, value: csmNumCascades, onChange: changeNumCascades }, __spread(Array(4).keys()).map(function (_, i) { return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { key: i + 1, value: i + 1 }, i + 1); }))),
+                                    react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Select"], { className: classes.propertyValue, value: csmNumCascades, onChange: changeNumCascades }, __spread(Array(3).keys()).map(function (_, i) { return react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["MenuItem"], { key: i + 2, value: i + 2 }, i + 2); }))),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6 },
                                     react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Paper"], { className: classes.subPropertyTitle }, "Active Cascade")),
                                 react__WEBPACK_IMPORTED_MODULE_0__["createElement"](_material_ui_core__WEBPACK_IMPORTED_MODULE_1__["Grid"], { item: true, xs: 6, className: classes.propertyValue },

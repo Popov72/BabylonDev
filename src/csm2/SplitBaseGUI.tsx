@@ -377,7 +377,7 @@ export default class SplitBaseGUI extends SplitGUI {
                                             value={csmNumCascades}
                                             onChange={changeNumCascades}
                                         >
-                                            { [...Array(4).keys()].map((_, i) => <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>) }
+                                            { [...Array(3).keys()].map((_, i) => <MenuItem key={i + 2} value={i + 2}>{i + 2}</MenuItem>) }
                                         </Select>
                                     </Grid>
                                     <Grid item xs={6}>
