@@ -10,6 +10,12 @@ import {
     Observer,
 } from "babylonjs";
 
+/**
+ * This class computes a min/max reduction from a texture: it means it computes the minimum
+ * and maximum values from all values of the texture.
+ * It is performed on the GPU for better performances, thanks to a succession of post processes.
+ * The values are read from the red channel of the texture.
+ */
 export class MinMaxReducer {
 
     /**
@@ -24,6 +30,10 @@ export class MinMaxReducer {
     protected _onAfterUnbindObserver: Nullable<Observer<RenderTargetTexture>>;
     protected _forceFullscreenViewport: boolean = true;
 
+    /**
+     * Creates a min/max reducer
+     * @param camera The camera to use for the post processes
+     */
     constructor(camera: Camera) {
         MinMaxReducer.registerShader();
 
@@ -31,10 +41,24 @@ export class MinMaxReducer {
         this._postProcessManager = new PostProcessManager(camera.getScene());
     }
 
+    /**
+     * Gets the texture used to read the values from.
+     */
     public get sourceTexture(): Nullable<RenderTargetTexture> {
         return this._sourceTexture;
     }
 
+    /**
+     * Sets the source texture to read the values from.
+     * One must indicate if the texture is a depth texture or not through the depthRedux parameter
+     * because in such textures '1' value must not be taken into account to compute the maximum
+     * as this value is used to clear the texture.
+     * Note that the computation is not activated by calling this function, you must call activate() for that!
+     * @param sourceTexture The texture to read the values from. The values should be in the red channel.
+     * @param depthRedux Indicates if the texture is a depth texture or not
+     * @param type The type of the textures created for the reduction (defaults to TEXTURETYPE_HALF_FLOAT)
+     * @param forceFullscreenViewport Forces the post processes used for the reduction to be applied without taking into account viewport (defaults to true)
+     */
     public setSourceTexture(sourceTexture: RenderTargetTexture, depthRedux: boolean, type: number = Constants.TEXTURETYPE_HALF_FLOAT, forceFullscreenViewport = true): void {
         if (sourceTexture === this._sourceTexture) {
             return;
@@ -51,10 +75,10 @@ export class MinMaxReducer {
         // create the first step
         let reductionInitial = new PostProcess(
             'Initial reduction phase',
-            'minmaxReducer',  // shader
+            'minmaxReducer', // shader
             ['texSize'],
             ['sourceTexture'], // textures
-            1.0,  // options
+            1.0, // options
             null, // camera
             Constants.TEXTURE_NEAREST_NEAREST, // sampling
             scene.getEngine(), // engine
@@ -90,10 +114,10 @@ export class MinMaxReducer {
 
             let reduction = new PostProcess(
                 'Reduction phase ' + index,
-                'minmaxReducer',  // shader
+                'minmaxReducer', // shader
                 ['texSize'],
                 null,
-                { width: w, height: h },  // options
+                { width: w, height: h }, // options
                 null, // camera
                 Constants.TEXTURE_NEAREST_NEAREST, // sampling
                 scene.getEngine(), // engine
@@ -137,6 +161,11 @@ export class MinMaxReducer {
         }
     }
 
+    /**
+     * Activates the reduction computation.
+     * When activated, the observers registered in onAfterReductionPerformed are
+     * called after the compuation is performed
+     */
     public activate(): void {
         if (this._onAfterUnbindObserver || !this._sourceTexture) {
             return;
@@ -149,6 +178,9 @@ export class MinMaxReducer {
         });
     }
 
+    /**
+     * Deactivates the reduction computation.
+     */
     public deactivate(): void {
         if (!this._onAfterUnbindObserver || !this._sourceTexture) {
             return;
@@ -156,8 +188,12 @@ export class MinMaxReducer {
 
         this._sourceTexture.onAfterUnbindObservable.remove(this._onAfterUnbindObserver);
         this._onAfterUnbindObserver = null;
-}
+    }
 
+    /**
+     * Disposes the min/max reducer
+     * @param disposeAll true to dispose all the resources. You should always call this function with true as the parameter (or without any parameter as it is the default one). This flag is meant to be used internally.
+     */
     public dispose(disposeAll = true): void {
         if (disposeAll) {
             this.onAfterReductionPerformed.clear();
