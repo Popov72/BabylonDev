@@ -24,10 +24,6 @@ import {
     BoundingInfo,
 } from 'babylonjs';
 
-//import "../../Shaders/shadowMap.fragment";
-//import "../../Shaders/shadowMap.vertex";
-//import "../../Shaders/depthBoxBlur.fragment";
-
 interface ICascade {
     prevBreakDistance: number;
     breakDistance: number;
@@ -43,7 +39,7 @@ let tmpv1 = new Vector3(),
 /**
  * A CSM implementation allowing casting shadows on large scenes.
  * Documentation : https://doc.babylonjs.com/babylon101/cascadedShadows
- * Based on: https://johanmedestrom.wordpress.com/2016/03/18/opengl-cascaded-shadow-maps/
+ * Based on: https://github.com/TheRealMJP/Shadows and https://johanmedestrom.wordpress.com/2016/03/18/opengl-cascaded-shadow-maps/
  */
 export class CascadedShadowGenerator implements IShadowGenerator {
 
@@ -462,8 +458,8 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
     /**
      * Sets the minimal and maximal distances to use when computing the cascade breaks.
-     * 
-     * The values of min / max are typically the zmin and zmax values of your scene, for a given frame.
+     *
+     * The values of min / max are typically the depth zmin and zmax values of your scene, for a given frame.
      * If you don't know these values, simply leave them to their defaults and don't call this function.
      * @param min minimal distance for the breaks (default to 0.)
      * @param max maximal distance for the breaks (default to 1.)
@@ -576,6 +572,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     /**
      * Gets a cascade minimum extents
      * @param cascadeIndex index of the cascade
+     * @returns the minimum cascade extents
      */
     public getCascadeMinExtents(cascadeIndex: number): Nullable<Vector3> {
         return cascadeIndex >= 0 && cascadeIndex < this._numCascades ? this._cascadeMinExtents[cascadeIndex] : null;
@@ -584,6 +581,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     /**
      * Gets a cascade maximum extents
      * @param cascadeIndex index of the cascade
+     * @returns the maximum cascade extents
      */
     public getCascadeMaxExtents(cascadeIndex: number): Nullable<Vector3> {
         return cascadeIndex >= 0 && cascadeIndex < this._numCascades ? this._cascadeMaxExtents[cascadeIndex] : null;
@@ -662,16 +660,16 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
     /**
      * Gets or sets the depth clamping value.
-     * 
+     *
      * When enabled, it improves the shadow quality because the near z plane of the light frustum don't need to be adjusted
      * to account for the shadow casters far away.
-     * 
+     *
      * Note that this property is incompatible with PCSS filtering, so it won't be used in that case.
      */
     public get depthClamp(): boolean {
         return this._depthClamp;
     }
-    
+
     public set depthClamp(value: boolean) {
         this._depthClamp = value;
     }
@@ -706,6 +704,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     /**
      * Gets the view matrix corresponding to a given cascade
      * @param cascadeNum cascade to retrieve the view matrix from
+     * @returns the cascade view matrix
      */
     public getCascadeViewMatrix(cascadeNum: number): Nullable<Matrix> {
         return cascadeNum >= 0 && cascadeNum < this._numCascades ? this._viewMatrices[cascadeNum] : null;
@@ -790,24 +789,24 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
             this._computeFrustumInWorldSpace(cascadeIndex);
             this._computeCascadeFrustum(cascadeIndex);
-    
+
             this._cascadeMaxExtents[cascadeIndex].subtractToRef(this._cascadeMinExtents[cascadeIndex], tmpv1); // tmpv1 = cascadeExtents
 
             // Get position of the shadow camera
             this._frustumCenter[cascadeIndex].addToRef(this._lightDirection.scale(this._cascadeMinExtents[cascadeIndex].z), this._shadowCameraPos[cascadeIndex]);
-    
+
             // Come up with a new orthographic camera for the shadow caster
             Matrix.LookAtLHToRef(this._shadowCameraPos[cascadeIndex], this._frustumCenter[cascadeIndex], UpDir, this._viewMatrices[cascadeIndex]);
-    
+
             let minZ = 0, maxZ = tmpv1.z;
-    
+
             // Try to tighten minZ and maxZ based on the bounding box of the shadow casters
             const boundingInfo = this._shadowCastersBoundingInfo;
-    
+
             boundingInfo.update(this._viewMatrices[cascadeIndex]);
-    
+
             maxZ = Math.min(maxZ, boundingInfo.boundingBox.maximumWorld.z);
-    
+
             if (!this._depthClamp || this.filter === CascadedShadowGenerator.FILTER_PCSS) {
                 // If we don't use depth clamping, we must set minZ so that all shadow casters are in the light frustum
                 minZ = Math.min(minZ, boundingInfo.boundingBox.minimumWorld.z);
@@ -815,18 +814,18 @@ export class CascadedShadowGenerator implements IShadowGenerator {
                 // If using depth clamping, we can adjust minZ to reduce the [minZ, maxZ] range (and get some additional precision in the shadow map)
                 minZ = Math.max(minZ, boundingInfo.boundingBox.minimumWorld.z);
             }
-    
+
             if (this._scene.useRightHandedSystem) {
                 Matrix.OrthoOffCenterRHToRef(this._cascadeMinExtents[cascadeIndex].x, this._cascadeMaxExtents[cascadeIndex].x, this._cascadeMinExtents[cascadeIndex].y, this._cascadeMaxExtents[cascadeIndex].y, minZ, maxZ, this._projectionMatrices[cascadeIndex]);
             } else {
                 Matrix.OrthoOffCenterLHToRef(this._cascadeMinExtents[cascadeIndex].x, this._cascadeMaxExtents[cascadeIndex].x, this._cascadeMinExtents[cascadeIndex].y, this._cascadeMaxExtents[cascadeIndex].y, minZ, maxZ, this._projectionMatrices[cascadeIndex]);
             }
-    
+
             this._cascadeMinExtents[cascadeIndex].z = minZ;
             this._cascadeMaxExtents[cascadeIndex].z = maxZ;
-    
+
             this._viewMatrices[cascadeIndex].multiplyToRef(this._projectionMatrices[cascadeIndex], this._transformMatrices[cascadeIndex]);
-    
+
             // Create the rounding matrix, by projecting the world-space origin and determining
             // the fractional offset in texel space
             Vector3.TransformCoordinatesToRef(ZeroVec, this._transformMatrices[cascadeIndex], tmpv1); // tmpv1 = shadowOrigin
