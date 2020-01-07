@@ -5,23 +5,18 @@ import {
     StandardMaterial,
     UniversalCamera,
     Vector3,
-    Nullable,
     Matrix,
+    DepthRenderer,
 } from "babylonjs";
 
 import Sample from "../Sample";
 import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
-import { DepthReducer} from "./DepthReducer";
 import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
 
 export default class CSM extends StandardShadow {
 
     public static className: string = "CSM";
-
-    private _oldMin: number = -1;
-    private _oldMax: number = -1;
-    private _depthReducer: DepthReducer;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -29,23 +24,6 @@ export default class CSM extends StandardShadow {
         this._shadowMapFilter = CascadedShadowGenerator.FILTER_PCF;
 
         (window as any).csm = this;
-
-        this._depthReducer = new DepthReducer(this.camera);
-        this._depthReducer.onAfterReductionPerformed.add((minmax: { min: number, max: number}) => {
-            let min = minmax.min, max = minmax.max;
-            if (min >= max) {
-                min = 0;
-                max = 1;
-            }
-            if (min != this._oldMin || max != this._oldMax) {
-                this.getCSMGenerator().setMinMaxDistance(min, max);
-                this._oldMin = min;
-                this._oldMax = max;
-                //console.log(min, max);
-            }
-        });
-
-        this._depthReducer.setDepthRenderer();
     }
 
     protected getCSMGenerator(): CascadedShadowGenerator {
@@ -179,15 +157,7 @@ export default class CSM extends StandardShadow {
         }
 
         this._csmAutoCalcDepthBounds = cacdb;
-
-        if (!this._csmAutoCalcDepthBounds) {
-            this._oldMin = 0;
-            this._oldMax = 1;
-            this._depthReducer.deactivate();
-            this.getCSMGenerator().setMinMaxDistance(0, 1);
-        } else {
-            this._depthReducer.activate();
-        }
+        this.getCSMGenerator().autoCalcDepthBounds = cacdb;
     }
 
     protected getLightExtents(): { min: Vector3, max: Vector3 } | null {
