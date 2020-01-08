@@ -14,9 +14,13 @@ import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
 import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
 
+const useSceneDepthRenderer = false;
+
 export default class CSM extends StandardShadow {
 
     public static className: string = "CSM";
+
+    private _depthRenderer: DepthRenderer;
 
     constructor(scene: Scene, camera: UniversalCamera, parent: Sample, name: string) {
         super(scene, camera, parent, name);
@@ -24,6 +28,10 @@ export default class CSM extends StandardShadow {
         this._shadowMapFilter = CascadedShadowGenerator.FILTER_PCF;
 
         (window as any).csm = this;
+
+        if (useSceneDepthRenderer) {
+            this._depthRenderer = scene.enableDepthRenderer(camera, false);
+        }
     }
 
     protected getCSMGenerator(): CascadedShadowGenerator {
@@ -205,6 +213,10 @@ export default class CSM extends StandardShadow {
         shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
         shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
         shadowGenerator.freezeShadowCastersBoundingInfo = true;
+
+        if (useSceneDepthRenderer) {
+            shadowGenerator.setDepthRenderer(this._depthRenderer);
+        }
 
         this.setShadowMapViewerTexture();
     }
