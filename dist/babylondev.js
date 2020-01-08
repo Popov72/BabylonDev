@@ -4744,36 +4744,30 @@ var DepthReducer = /** @class */ (function (_super) {
         configurable: true
     });
     /**
-     *
+     * Sets the depth renderer to use to generate the depth map
      * @param depthRenderer The depth renderer to use. If not provided, a new one will be created automatically
      * @param type The texture type of the depth map (default: TEXTURETYPE_HALF_FLOAT)
      * @param forceFullscreenViewport Forces the post processes used for the reduction to be applied without taking into account viewport (defaults to true)
      */
     DepthReducer.prototype.setDepthRenderer = function (depthRenderer, type, forceFullscreenViewport) {
-        var _this = this;
         if (depthRenderer === void 0) { depthRenderer = null; }
         if (type === void 0) { type = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT; }
         if (forceFullscreenViewport === void 0) { forceFullscreenViewport = true; }
         var scene = this._camera.getScene();
-        if (this._onBeforeRenderObserver) {
-            scene.onBeforeRenderObservable.remove(this._onBeforeRenderObserver);
-            this._onBeforeRenderObserver = null;
-        }
         if (this._depthRenderer) {
+            delete scene._depthRenderer[this._depthRendererId];
             this._depthRenderer.dispose();
             this._depthRenderer = null;
         }
         if (depthRenderer === null) {
+            if (!scene._depthRenderer) {
+                scene._depthRenderer = {};
+            }
             depthRenderer = this._depthRenderer = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["DepthRenderer"](scene, type, this._camera, false);
             depthRenderer.enabled = false;
+            this._depthRendererId = "minmax" + this._camera.id;
+            scene._depthRenderer[this._depthRendererId] = depthRenderer;
         }
-        this._onBeforeRenderObserver = scene.onBeforeRenderObservable.add(function () {
-            if (_this.activated) {
-                // make sure the depth map is created first, before the shadow maps, as we need the results of the reduction
-                // to set the min/max value, and therefore the new frustum splits
-                scene._renderTargets.push(depthRenderer.getDepthMap());
-            }
-        });
         _super.prototype.setSourceTexture.call(this, depthRenderer.getDepthMap(), true, type, forceFullscreenViewport);
     };
     /** @hidden */
@@ -4808,12 +4802,10 @@ var DepthReducer = /** @class */ (function (_super) {
      */
     DepthReducer.prototype.dispose = function (disposeAll) {
         if (disposeAll === void 0) { disposeAll = true; }
+        var _a;
         _super.prototype.dispose.call(this, disposeAll);
-        if (this._onBeforeRenderObserver && disposeAll) {
-            this._camera.getScene().onBeforeRenderObservable.remove(this._onBeforeRenderObserver);
-            this._onBeforeRenderObserver = null;
-        }
         if (this._depthRenderer && disposeAll) {
+            delete ((_a = this._depthRenderer.getDepthMap().getScene()) === null || _a === void 0 ? void 0 : _a._depthRenderer[this._depthRendererId]);
             this._depthRenderer.dispose();
             this._depthRenderer = null;
         }
@@ -5089,17 +5081,34 @@ var MinMaxReducer = /** @class */ (function () {
             index++;
             if (w == 1 && h == 1) {
                 var func = function (w, h, reduction) {
-                    var buffer0 = new Float32Array(4 * w * h);
+                    var buffer = new Float32Array(4 * w * h), minmax = { min: 0, max: 0 };
                     return function () {
-                        scene.getEngine()._readTexturePixels(reduction.inputTexture, w, h, -1, 0, buffer0);
-                        var min = buffer0[0], max = buffer0[1];
-                        _this.onAfterReductionPerformed.notifyObservers({ min: min, max: max });
+                        scene.getEngine()._readTexturePixels(reduction.inputTexture, w, h, -1, 0, buffer);
+                        minmax.min = buffer[0];
+                        minmax.max = buffer[1];
+                        _this.onAfterReductionPerformed.notifyObservers(minmax);
                     };
                 };
                 reduction.onAfterRenderObservable.add(func(w, h, reduction));
             }
         }
     };
+    Object.defineProperty(MinMaxReducer.prototype, "refreshRate", {
+        /**
+         * Defines the refresh rate of the computation.
+         * Use 0 to compute just once, 1 to compute on every frame, 2 to compute every two frames and so on...
+         */
+        get: function () {
+            return this._sourceTexture ? this._sourceTexture.refreshRate : -1;
+        },
+        set: function (value) {
+            if (this._sourceTexture) {
+                this._sourceTexture.refreshRate = value;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(MinMaxReducer.prototype, "activated", {
         /**
          * Gets the activation status of the reducer
@@ -7423,6 +7432,26 @@ var CascadedShadowGenerator = /** @class */ (function () {
                 this._depthReducer.setDepthRenderer(this._depthRenderer);
             }
             this._depthReducer.activate();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(CascadedShadowGenerator.prototype, "autoCalcDepthBoundsRefreshRate", {
+        /**
+         * Defines the refresh rate of the min/max computation used when autoCalcDepthBounds is set to true
+         * Use 0 to compute just once, 1 to compute on every frame, 2 to compute every two frames and so on...
+         * Note that if you provided your own depth renderer through a call to setDepthRenderer, you are responsible
+         * for setting the refresh rate on the renderer yourself!
+         */
+        get: function () {
+            var _a, _b, _c;
+            return _c = (_b = (_a = this._depthReducer) === null || _a === void 0 ? void 0 : _a.depthRenderer) === null || _b === void 0 ? void 0 : _b.getDepthMap().refreshRate, (_c !== null && _c !== void 0 ? _c : -1);
+        },
+        set: function (value) {
+            var _a;
+            if ((_a = this._depthReducer) === null || _a === void 0 ? void 0 : _a.depthRenderer) {
+                this._depthReducer.depthRenderer.getDepthMap().refreshRate = value;
+            }
         },
         enumerable: true,
         configurable: true
