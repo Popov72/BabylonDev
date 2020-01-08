@@ -716,9 +716,9 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     private _depthRenderer: Nullable<DepthRenderer>;
     /**
      * Sets the depth renderer to use when autoCalcDepthBounds is enabled.
-     * 
+     *
      * Note that if no depth renderer is set, a new one will be automatically created internally when necessary.
-     * 
+     *
      * You should call this function if you already have a depth renderer enabled in your scene, to avoid
      * doing multiple depth rendering each frame. If you provide your own depth renderer, make sure it stores linear depth!
      * @param depthRenderer The depth renderer to use when autoCalcDepthBounds is enabled. If you pass null or don't call this function at all, a depth renderer will be automatically created
@@ -736,7 +736,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
     /**
      * Gets or set the autoCalcDepthBounds property.
-     * 
+     *
      * When enabled, a depth rendering pass is first performed (with an internally created depth renderer or with the one
      * you provide by calling setDepthRenderer). Then, a min/max reducing is applied on the depth map to compute the
      * minimal and maximal depth of the map and those values are used as input for the setMinMaxDistance() function.
