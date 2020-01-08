@@ -1,5 +1,5 @@
 import {
-    /*CascadedShadowGenerator,*/
+    CascadedShadowGenerator,
     Scene,
     ShadowGenerator,
     StandardMaterial,
@@ -12,7 +12,7 @@ import {
 import Sample from "../Sample";
 import StandardShadow from "./StandardShadow";
 import CSMGUI from "./CSMGUI";
-import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
+//import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
 
 const useSceneDepthRenderer = false;
 

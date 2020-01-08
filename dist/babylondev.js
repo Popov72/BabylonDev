@@ -4411,10 +4411,10 @@ _Sample__WEBPACK_IMPORTED_MODULE_1__["default"].registerSampleClass("csm", {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
-/* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
-/* harmony import */ var _DepthReducer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DepthReducer */ "./src/CSM2/DepthReducer.ts");
-/* harmony import */ var _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./cascadedShadowGenerator */ "./src/CSM2/cascadedShadowGenerator.ts");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _StandardShadow__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./StandardShadow */ "./src/CSM2/StandardShadow.ts");
+/* harmony import */ var _CSMGUI__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./CSMGUI */ "./src/CSM2/CSMGUI.tsx");
 var __extends = (undefined && undefined.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -4431,30 +4431,17 @@ var __extends = (undefined && undefined.__extends) || (function () {
 
 
 
-
+//import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
+var useSceneDepthRenderer = false;
 var CSM = /** @class */ (function (_super) {
     __extends(CSM, _super);
     function CSM(scene, camera, parent, name) {
         var _this = _super.call(this, scene, camera, parent, name) || this;
-        _this._oldMin = -1;
-        _this._oldMax = -1;
-        _this._shadowMapFilter = _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"].FILTER_PCF;
+        _this._shadowMapFilter = babylonjs__WEBPACK_IMPORTED_MODULE_0__["CascadedShadowGenerator"].FILTER_PCF;
         window.csm = _this;
-        _this._depthReducer = new _DepthReducer__WEBPACK_IMPORTED_MODULE_2__["DepthReducer"](_this.camera);
-        _this._depthReducer.onAfterReductionPerformed.add(function (minmax) {
-            var min = minmax.min, max = minmax.max;
-            if (min >= max) {
-                min = 0;
-                max = 1;
-            }
-            if (min != _this._oldMin || max != _this._oldMax) {
-                _this.getCSMGenerator().setMinMaxDistance(min, max);
-                _this._oldMin = min;
-                _this._oldMax = max;
-                //console.log(min, max);
-            }
-        });
-        _this._depthReducer.setDepthRenderer();
+        if (useSceneDepthRenderer) {
+            _this._depthRenderer = scene.enableDepthRenderer(camera, false);
+        }
         return _this;
     }
     CSM.prototype.getCSMGenerator = function () {
@@ -4605,15 +4592,7 @@ var CSM = /** @class */ (function (_super) {
                 return;
             }
             this._csmAutoCalcDepthBounds = cacdb;
-            if (!this._csmAutoCalcDepthBounds) {
-                this._oldMin = 0;
-                this._oldMax = 1;
-                this._depthReducer.deactivate();
-                this.getCSMGenerator().setMinMaxDistance(0, 1);
-            }
-            else {
-                this._depthReducer.activate();
-            }
+            this.getCSMGenerator().autoCalcDepthBounds = cacdb;
         },
         enumerable: true,
         configurable: true
@@ -4629,11 +4608,11 @@ var CSM = /** @class */ (function (_super) {
         return this.getCSMGenerator().getCascadeViewMatrix(this._csmActiveCascade);
     };
     CSM.prototype.createGUI = function () {
-        this.gui = new _CSMGUI__WEBPACK_IMPORTED_MODULE_1__["default"](this.name, this.scene.getEngine(), this._container, this);
+        this.gui = new _CSMGUI__WEBPACK_IMPORTED_MODULE_2__["default"](this.name, this.scene.getEngine(), this._container, this);
         this.gui.createGUI();
     };
     CSM.prototype.createGenerator = function () {
-        var generator = new _cascadedShadowGenerator__WEBPACK_IMPORTED_MODULE_3__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
+        var generator = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["CascadedShadowGenerator"](this.shadowMapSize, this.sun);
         generator.numCascades = this._csmNumCascades;
         return generator;
     };
@@ -4651,11 +4630,14 @@ var CSM = /** @class */ (function (_super) {
         shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
         shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
         shadowGenerator.freezeShadowCastersBoundingInfo = true;
+        if (useSceneDepthRenderer) {
+            shadowGenerator.setDepthRenderer(this._depthRenderer);
+        }
         this.setShadowMapViewerTexture();
     };
     CSM.className = "CSM";
     return CSM;
-}(_StandardShadow__WEBPACK_IMPORTED_MODULE_0__["default"]));
+}(_StandardShadow__WEBPACK_IMPORTED_MODULE_1__["default"]));
 /* harmony default export */ __webpack_exports__["default"] = (CSM);
 
 
@@ -4738,51 +4720,100 @@ var __extends = (undefined && undefined.__extends) || (function () {
 })();
 
 
+/**
+ * This class is a small wrapper around the MinMaxReducer class to compute the min/max values of a depth texture
+ */
 var DepthReducer = /** @class */ (function (_super) {
     __extends(DepthReducer, _super);
+    /**
+     * Creates a depth reducer
+     * @param camera The camera used to render the depth texture
+     */
     function DepthReducer(camera) {
         return _super.call(this, camera) || this;
     }
+    Object.defineProperty(DepthReducer.prototype, "depthRenderer", {
+        /**
+         * Gets the depth renderer used for the computation.
+         * Note that the result is null if you provide your own renderer when calling setDepthRenderer.
+         */
+        get: function () {
+            return this._depthRenderer;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     *
+     * @param depthRenderer The depth renderer to use. If not provided, a new one will be created automatically
+     * @param type The texture type of the depth map (default: TEXTURETYPE_HALF_FLOAT)
+     * @param forceFullscreenViewport Forces the post processes used for the reduction to be applied without taking into account viewport (defaults to true)
+     */
     DepthReducer.prototype.setDepthRenderer = function (depthRenderer, type, forceFullscreenViewport) {
+        var _this = this;
         if (depthRenderer === void 0) { depthRenderer = null; }
         if (type === void 0) { type = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT; }
         if (forceFullscreenViewport === void 0) { forceFullscreenViewport = true; }
         var scene = this._camera.getScene();
+        if (this._onBeforeRenderObserver) {
+            scene.onBeforeRenderObservable.remove(this._onBeforeRenderObserver);
+            this._onBeforeRenderObserver = null;
+        }
         if (this._depthRenderer) {
-            delete scene._depthRenderer[this._depthRendererId];
             this._depthRenderer.dispose();
             this._depthRenderer = null;
         }
         if (depthRenderer === null) {
-            if (!scene._depthRenderer) {
-                scene._depthRenderer = {};
-            }
             depthRenderer = this._depthRenderer = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["DepthRenderer"](scene, type, this._camera, false);
-            depthRenderer.getDepthMap().updateSamplingMode(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURE_NEAREST_NEAREST);
             depthRenderer.enabled = false;
-            this._depthRendererId = "minmax" + this._camera.id;
-            scene._depthRenderer[this._depthRendererId] = depthRenderer;
         }
+        this._onBeforeRenderObserver = scene.onBeforeRenderObservable.add(function () {
+            if (_this.activated) {
+                // make sure the depth map is created first, before the shadow maps, as we need the results of the reduction
+                // to set the min/max value, and therefore the new frustum splits
+                scene._renderTargets.push(depthRenderer.getDepthMap());
+            }
+        });
         _super.prototype.setSourceTexture.call(this, depthRenderer.getDepthMap(), true, type, forceFullscreenViewport);
     };
+    /** @hidden */
+    DepthReducer.prototype.setSourceTexture = function (sourceTexture, depthRedux, type, forceFullscreenViewport) {
+        if (type === void 0) { type = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT; }
+        if (forceFullscreenViewport === void 0) { forceFullscreenViewport = true; }
+        _super.prototype.setSourceTexture.call(this, sourceTexture, depthRedux, type, forceFullscreenViewport);
+    };
+    /**
+     * Activates the reduction computation.
+     * When activated, the observers registered in onAfterReductionPerformed are
+     * called after the compuation is performed
+     */
     DepthReducer.prototype.activate = function () {
         if (this._depthRenderer) {
             this._depthRenderer.enabled = true;
         }
         _super.prototype.activate.call(this);
     };
+    /**
+     * Deactivates the reduction computation.
+     */
     DepthReducer.prototype.deactivate = function () {
         _super.prototype.deactivate.call(this);
         if (this._depthRenderer) {
             this._depthRenderer.enabled = false;
         }
     };
+    /**
+     * Disposes the depth reducer
+     * @param disposeAll true to dispose all the resources. You should always call this function with true as the parameter (or without any parameter as it is the default one). This flag is meant to be used internally.
+     */
     DepthReducer.prototype.dispose = function (disposeAll) {
         if (disposeAll === void 0) { disposeAll = true; }
-        var _a;
         _super.prototype.dispose.call(this, disposeAll);
+        if (this._onBeforeRenderObserver && disposeAll) {
+            this._camera.getScene().onBeforeRenderObservable.remove(this._onBeforeRenderObserver);
+            this._onBeforeRenderObserver = null;
+        }
         if (this._depthRenderer && disposeAll) {
-            delete ((_a = this._depthRenderer.getDepthMap().getScene()) === null || _a === void 0 ? void 0 : _a._depthRenderer[this._depthRendererId]);
             this._depthRenderer.dispose();
             this._depthRenderer = null;
         }
@@ -4954,24 +4985,49 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
 /* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
 
+/**
+ * This class computes a min/max reduction from a texture: it means it computes the minimum
+ * and maximum values from all values of the texture.
+ * It is performed on the GPU for better performances, thanks to a succession of post processes.
+ * The values are read from the red channel of the texture.
+ */
 var MinMaxReducer = /** @class */ (function () {
+    /**
+     * Creates a min/max reducer
+     * @param camera The camera to use for the post processes
+     */
     function MinMaxReducer(camera) {
         /**
          * Observable triggered when the computation has been performed
          */
         this.onAfterReductionPerformed = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Observable"]();
         this._forceFullscreenViewport = true;
+        this._activated = false;
         MinMaxReducer.registerShader();
         this._camera = camera;
         this._postProcessManager = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PostProcessManager"](camera.getScene());
     }
     Object.defineProperty(MinMaxReducer.prototype, "sourceTexture", {
+        /**
+         * Gets the texture used to read the values from.
+         */
         get: function () {
             return this._sourceTexture;
         },
         enumerable: true,
         configurable: true
     });
+    /**
+     * Sets the source texture to read the values from.
+     * One must indicate if the texture is a depth texture or not through the depthRedux parameter
+     * because in such textures '1' value must not be taken into account to compute the maximum
+     * as this value is used to clear the texture.
+     * Note that the computation is not activated by calling this function, you must call activate() for that!
+     * @param sourceTexture The texture to read the values from. The values should be in the red channel.
+     * @param depthRedux Indicates if the texture is a depth texture or not
+     * @param type The type of the textures created for the reduction (defaults to TEXTURETYPE_HALF_FLOAT)
+     * @param forceFullscreenViewport Forces the post processes used for the reduction to be applied without taking into account viewport (defaults to true)
+     */
     MinMaxReducer.prototype.setSourceTexture = function (sourceTexture, depthRedux, type, forceFullscreenViewport) {
         var _this = this;
         if (type === void 0) { type = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Constants"].TEXTURETYPE_HALF_FLOAT; }
@@ -5044,6 +5100,21 @@ var MinMaxReducer = /** @class */ (function () {
             }
         }
     };
+    Object.defineProperty(MinMaxReducer.prototype, "activated", {
+        /**
+         * Gets the activation status of the reducer
+         */
+        get: function () {
+            return this._activated;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * Activates the reduction computation.
+     * When activated, the observers registered in onAfterReductionPerformed are
+     * called after the compuation is performed
+     */
     MinMaxReducer.prototype.activate = function () {
         var _this = this;
         if (this._onAfterUnbindObserver || !this._sourceTexture) {
@@ -5054,14 +5125,23 @@ var MinMaxReducer = /** @class */ (function () {
             _this._postProcessManager.directRender(_this._reductionSteps, _this._reductionSteps[0].inputTexture, _this._forceFullscreenViewport);
             _this._camera.getScene().getEngine().unBindFramebuffer(_this._reductionSteps[0].inputTexture, false);
         });
+        this._activated = true;
     };
+    /**
+     * Deactivates the reduction computation.
+     */
     MinMaxReducer.prototype.deactivate = function () {
         if (!this._onAfterUnbindObserver || !this._sourceTexture) {
             return;
         }
         this._sourceTexture.onAfterUnbindObservable.remove(this._onAfterUnbindObserver);
         this._onAfterUnbindObserver = null;
+        this._activated = false;
     };
+    /**
+     * Disposes the min/max reducer
+     * @param disposeAll true to dispose all the resources. You should always call this function with true as the parameter (or without any parameter as it is the default one). This flag is meant to be used internally.
+     */
     MinMaxReducer.prototype.dispose = function (disposeAll) {
         if (disposeAll === void 0) { disposeAll = true; }
         if (disposeAll) {
@@ -6616,6 +6696,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CascadedShadowGenerator", function() { return CascadedShadowGenerator; });
 /* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
 /* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _DepthReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DepthReducer */ "./src/CSM2/DepthReducer.ts");
 var __assign = (undefined && undefined.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -6659,13 +6740,14 @@ var __values = (undefined && undefined.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 
+
 var UpDir = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Up();
 var ZeroVec = babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Zero();
 var tmpv1 = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](), tmpv2 = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](), matrix = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Matrix"]();
 /**
  * A CSM implementation allowing casting shadows on large scenes.
  * Documentation : https://doc.babylonjs.com/babylon101/cascadedShadows
- * Based on: https://johanmedestrom.wordpress.com/2016/03/18/opengl-cascaded-shadow-maps/
+ * Based on: https://github.com/TheRealMJP/Shadows and https://johanmedestrom.wordpress.com/2016/03/18/opengl-cascaded-shadow-maps/
  */
 var CascadedShadowGenerator = /** @class */ (function () {
     /**
@@ -6744,6 +6826,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
          */
         this.cascadeBlendPercentage = 0.1;
         this._lambda = 0.5;
+        this._autoCalcDepthBounds = false;
         this._scene = light.getScene();
         if (this._scene.getEngine().webGLVersion == 1) {
             throw "CSM can only be used in WebGL2";
@@ -7087,7 +7170,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
     /**
      * Sets the minimal and maximal distances to use when computing the cascade breaks.
      *
-     * The values of min / max are typically the zmin and zmax values of your scene, for a given frame.
+     * The values of min / max are typically the depth zmin and zmax values of your scene, for a given frame.
      * If you don't know these values, simply leave them to their defaults and don't call this function.
      * @param min minimal distance for the breaks (default to 0.)
      * @param max maximal distance for the breaks (default to 1.)
@@ -7181,6 +7264,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
     /**
      * Gets a cascade minimum extents
      * @param cascadeIndex index of the cascade
+     * @returns the minimum cascade extents
      */
     CascadedShadowGenerator.prototype.getCascadeMinExtents = function (cascadeIndex) {
         return cascadeIndex >= 0 && cascadeIndex < this._numCascades ? this._cascadeMinExtents[cascadeIndex] : null;
@@ -7188,6 +7272,7 @@ var CascadedShadowGenerator = /** @class */ (function () {
     /**
      * Gets a cascade maximum extents
      * @param cascadeIndex index of the cascade
+     * @returns the maximum cascade extents
      */
     CascadedShadowGenerator.prototype.getCascadeMaxExtents = function (cascadeIndex) {
         return cascadeIndex >= 0 && cascadeIndex < this._numCascades ? this._cascadeMaxExtents[cascadeIndex] : null;
@@ -7277,10 +7362,71 @@ var CascadedShadowGenerator = /** @class */ (function () {
     /**
      * Gets the view matrix corresponding to a given cascade
      * @param cascadeNum cascade to retrieve the view matrix from
+     * @returns the cascade view matrix
      */
     CascadedShadowGenerator.prototype.getCascadeViewMatrix = function (cascadeNum) {
         return cascadeNum >= 0 && cascadeNum < this._numCascades ? this._viewMatrices[cascadeNum] : null;
     };
+    /**
+     * Sets the depth renderer to use when autoCalcDepthBounds is enabled.
+     *
+     * Note that if no depth renderer is set, a new one will be automatically created internally when necessary.
+     *
+     * You should call this function if you already have a depth renderer enabled in your scene, to avoid
+     * doing multiple depth rendering each frame. If you provide your own depth renderer, make sure it stores linear depth!
+     * @param depthRenderer The depth renderer to use when autoCalcDepthBounds is enabled. If you pass null or don't call this function at all, a depth renderer will be automatically created
+     */
+    CascadedShadowGenerator.prototype.setDepthRenderer = function (depthRenderer) {
+        this._depthRenderer = depthRenderer;
+        if (this._depthReducer) {
+            this._depthReducer.setDepthRenderer(this._depthRenderer);
+        }
+    };
+    Object.defineProperty(CascadedShadowGenerator.prototype, "autoCalcDepthBounds", {
+        /**
+         * Gets or set the autoCalcDepthBounds property.
+         *
+         * When enabled, a depth rendering pass is first performed (with an internally created depth renderer or with the one
+         * you provide by calling setDepthRenderer). Then, a min/max reducing is applied on the depth map to compute the
+         * minimal and maximal depth of the map and those values are used as input for the setMinMaxDistance() function.
+         * It can greatly enhance the shadow resolution, at the expense of more GPU works.
+         * When using this option, you should increase the value of the lambda parameter, and even set it to 1 for best results.
+         */
+        get: function () {
+            return this._autoCalcDepthBounds;
+        },
+        set: function (value) {
+            var _this = this;
+            var camera = this._scene.activeCamera;
+            if (!camera) {
+                return;
+            }
+            if (!value) {
+                if (this._depthReducer) {
+                    this._depthReducer.deactivate();
+                }
+                this.setMinMaxDistance(0, 1);
+                return;
+            }
+            if (!this._depthReducer) {
+                this._depthReducer = new _DepthReducer__WEBPACK_IMPORTED_MODULE_1__["DepthReducer"](camera);
+                this._depthReducer.onAfterReductionPerformed.add(function (minmax) {
+                    var min = minmax.min, max = minmax.max;
+                    if (min >= max) {
+                        min = 0;
+                        max = 1;
+                    }
+                    if (min != _this._minDistance || max != _this._maxDistance) {
+                        _this.setMinMaxDistance(min, max);
+                    }
+                });
+                this._depthReducer.setDepthRenderer(this._depthRenderer);
+            }
+            this._depthReducer.activate();
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * Create the cascade breaks according to the lambda, shadowMaxZ and min/max distance properties, as well as the camera near and far planes.
      * This function is automatically called when updating lambda, shadowMaxZ and min/max distances, however you should call it yourself if
@@ -7953,6 +8099,10 @@ var CascadedShadowGenerator = /** @class */ (function () {
         if (this._freezeShadowCastersBoundingInfoObservable) {
             this._scene.onBeforeRenderObservable.remove(this._freezeShadowCastersBoundingInfoObservable);
             this._freezeShadowCastersBoundingInfoObservable = null;
+        }
+        if (this._depthReducer) {
+            this._depthReducer.dispose();
+            this._depthReducer = null;
         }
     };
     /**
