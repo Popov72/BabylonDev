@@ -28,7 +28,7 @@ export class MinMaxReducer {
     protected _reductionSteps: Nullable<Array<PostProcess>>;
     protected _postProcessManager: PostProcessManager;
     protected _onAfterUnbindObserver: Nullable<Observer<RenderTargetTexture>>;
-    protected _forceFullscreenViewport: boolean = true;
+    protected _forceFullscreenViewport = true;
 
     /**
      * Creates a min/max reducer
@@ -161,6 +161,15 @@ export class MinMaxReducer {
         }
     }
 
+    protected _activated = false;
+
+    /**
+     * Gets the activation status of the reducer
+     */
+    public get activated(): boolean {
+        return this._activated;
+    }
+
     /**
      * Activates the reduction computation.
      * When activated, the observers registered in onAfterReductionPerformed are
@@ -176,6 +185,8 @@ export class MinMaxReducer {
             this._postProcessManager.directRender(this._reductionSteps!, this._reductionSteps![0].inputTexture, this._forceFullscreenViewport);
             this._camera.getScene().getEngine().unBindFramebuffer(this._reductionSteps![0].inputTexture, false);
         });
+
+        this._activated = true;
     }
 
     /**
@@ -188,6 +199,7 @@ export class MinMaxReducer {
 
         this._sourceTexture.onAfterUnbindObservable.remove(this._onAfterUnbindObserver);
         this._onAfterUnbindObserver = null;
+        this._activated = false;
     }
 
     /**
