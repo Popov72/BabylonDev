@@ -46,22 +46,6 @@ let tmpv1 = new Vector3(),
  */
 export class CascadedShadowGenerator implements IShadowGenerator {
 
-    public get renderList(): Array<AbstractMesh> {
-        return [];
-    }
-
-    public get mustRender(): boolean {
-        return true;
-    }
-
-    public getShadowMaps(): Array<RenderTargetTexture> {
-        return [];
-    }
-
-    public recreate(): void {
-        this.recreateShadowMap();
-    }
-
     private static readonly frustumCornersNDCSpace = [
         new Vector3(-1.0, +1.0, -1.0),
         new Vector3(+1.0, +1.0, -1.0),
@@ -434,6 +418,21 @@ export class CascadedShadowGenerator implements IShadowGenerator {
                 this._scbiMin.minimizeInPlace(boundingBox.minimumWorld);
                 this._scbiMax.maximizeInPlace(boundingBox.maximumWorld);
             }
+
+            const meshes = this._scene.meshes;
+            for (let meshIndex = 0; meshIndex < meshes.length; meshIndex++) {
+                const mesh = meshes[meshIndex];
+
+                if (!mesh || !mesh.isVisible || !mesh.isEnabled || !mesh.receiveShadows) {
+                    continue;
+                }
+
+                const boundingInfo = mesh.getBoundingInfo(),
+                      boundingBox = boundingInfo.boundingBox;
+
+                this._scbiMin.minimizeInPlace(boundingBox.minimumWorld);
+                this._scbiMax.maximizeInPlace(boundingBox.maximumWorld);
+            }
         }
 
         this._shadowCastersBoundingInfo.reConstruct(this._scbiMin, this._scbiMax);
@@ -641,6 +640,7 @@ export class CascadedShadowGenerator implements IShadowGenerator {
             return;
         }
         this._shadowMaxZ = value;
+        this._light._markMeshesAsLightDirty();
         this._breaksAreDirty = true;
     }
 
@@ -677,11 +677,20 @@ export class CascadedShadowGenerator implements IShadowGenerator {
         this._depthClamp = value;
     }
 
+    private _cascadeBlendPercentage: number = 0.1;
+
     /**
      * Gets or sets the percentage of blending between two cascades (value between 0. and 1.).
      * It defaults to 0.1 (10% blending).
      */
-    public cascadeBlendPercentage: number = 0.1;
+    public get cascadeBlendPercentage(): number {
+        return this._cascadeBlendPercentage;
+    }
+
+    public set cascadeBlendPercentage(value: number) {
+        this._cascadeBlendPercentage = value;
+        this._light._markMeshesAsLightDirty();
+    }
 
     private _lambda = 0.5;
 
@@ -735,12 +744,12 @@ export class CascadedShadowGenerator implements IShadowGenerator {
     private _autoCalcDepthBounds = false;
 
     /**
-     * Gets or set the autoCalcDepthBounds property.
+     * Gets or sets the autoCalcDepthBounds property.
      *
      * When enabled, a depth rendering pass is first performed (with an internally created depth renderer or with the one
      * you provide by calling setDepthRenderer). Then, a min/max reducing is applied on the depth map to compute the
-     * minimal and maximal depth of the map and those values are used as input for the setMinMaxDistance() function.
-     * It can greatly enhance the shadow resolution, at the expense of more GPU works.
+     * minimal and maximal depth of the map and those values are used as inputs for the setMinMaxDistance() function.
+     * It can greatly enhance the shadow quality, at the expense of more GPU works.
      * When using this option, you should increase the value of the lambda parameter, and even set it to 1 for best results.
      */
     public get autoCalcDepthBounds(): boolean {
@@ -1521,6 +1530,10 @@ export class CascadedShadowGenerator implements IShadowGenerator {
 
         if (camera && this._shadowMaxZ < camera.maxZ) {
             defines["SHADOWCSMUSESHADOWMAXZ" + lightIndex] = true;
+        }
+
+        if (this.cascadeBlendPercentage === 0) {
+            defines["SHADOWCSMNOBLEND" + lightIndex] = true;
         }
 
         if (this.useContactHardeningShadow) {

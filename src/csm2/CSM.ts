@@ -213,6 +213,7 @@ export default class CSM extends StandardShadow {
         shadowGenerator.penumbraDarkness = this._csmPenumbraDarkness;
         shadowGenerator.shadowMaxZ = this._csmShadowMaxZ;
         shadowGenerator.freezeShadowCastersBoundingInfo = true;
+        shadowGenerator.autoCalcDepthBounds = this._csmAutoCalcDepthBounds;
 
         if (useSceneDepthRenderer) {
             shadowGenerator.setDepthRenderer(this._depthRenderer);
