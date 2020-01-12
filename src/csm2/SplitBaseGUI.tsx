@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 
 import {
+    CascadedShadowGenerator,
     Engine,
     ShadowGenerator,
 } from 'babylonjs';
@@ -23,7 +24,6 @@ import { PrettoSlider } from "../GUI";
 import Sample from "../Sample";
 import SplitGUI from "../SplitGUI";
 import ISampleSplit from "./ISampleSplit";
-import { CascadedShadowGenerator } from "./cascadedShadowGenerator";
 
 export default class SplitBaseGUI extends SplitGUI {
 
