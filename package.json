@@ -17,6 +17,7 @@
   "dependencies": {
     "@material-ui/core": "^4.7.1",
     "@material-ui/icons": "^4.5.1",
+    "@types/lodash": "^4.14.149",
     "babylonjs": "^4.0.3",
     "babylonjs-gui": "^4.0.3",
     "babylonjs-loaders": "^4.0.3",

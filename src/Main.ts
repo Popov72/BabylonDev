@@ -49,7 +49,7 @@ if (sample === null) {
         sample.render();
 
         if (divFps) {
-            divFps.innerHTML = engine.getFps().toFixed() + " fps";
+            divFps.innerHTML = engine.getFps().toFixed(2) + " fps";
         }
     });
 }
