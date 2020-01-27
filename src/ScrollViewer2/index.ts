@@ -139,7 +139,7 @@ export default class ScrollViewer2 extends SampleBasic {
         let numChildControls = this._countChildren(main._children);
 
         scene.onAfterRenderObservable.add(() => {
-            stats.text = numChildControls + " controls, " + Control.NumLayoutCalls + " layout calls, " + Control.NumRenderCalls + " render calls";
+            stats.text = numChildControls + " controls, " + adt.numLayoutCalls + " layout calls, " + adt.numRenderCalls + " render calls";
         });
 
     }

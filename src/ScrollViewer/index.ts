@@ -149,7 +149,7 @@ export default class ScrollViewer extends SampleBasic {
         scene.onAfterRenderObservable.add(() => {
             let curTime = new Date().getTime();
 
-            stats.text = numChildControls + " controls, " + Control.NumLayoutCalls + " layout calls, " + Control.NumRenderCalls + " render calls";
+            stats.text = numChildControls + " controls, " + adt.numLayoutCalls + " layout calls, " + adt.numRenderCalls + " render calls";
             //console.log("duration=" + (curTime - lastTime));
 
             lastTime = curTime;
