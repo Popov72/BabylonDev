@@ -85,6 +85,7 @@ export default class ScrollViewer extends SampleBasic {
         checkbox.color = "green";
         checkbox.onIsCheckedChangedObservable.add(function(value) {
             main.freezeControls = value;
+            setbuckets.isEnabled = value;
         });
         adt.addControl(checkbox);
 
@@ -100,8 +101,35 @@ export default class ScrollViewer extends SampleBasic {
         header.color = "black";
         adt.addControl(header);
 
+        var setbuckets = new Checkbox();
+        setbuckets.top = "30px";
+        setbuckets.left = "30px";
+        setbuckets.width = "20px";
+        setbuckets.height = "20px";
+        setbuckets.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        setbuckets.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        setbuckets.isChecked = false;
+        setbuckets.isEnabled = false;
+        setbuckets.color = "green";
+        setbuckets.onIsCheckedChangedObservable.add(function(value) {
+            main.setBucketSizes(value ? 280 : 0, value ? 30 : 0);
+        });
+        adt.addControl(setbuckets);
+
+        header = new TextBlock();
+        header.top = "30px";
+        header.left = "55px";
+        header.text = "use buckets";
+        header.width = "120px";
+        header.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        header.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        header.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        header.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        header.color = "black";
+        adt.addControl(header);
+
         var stats = new TextBlock();
-        stats.top = "30px";
+        stats.top = "55px";
         stats.left = "5px";
         stats.text = "";
         stats.width = "500px";
@@ -121,7 +149,7 @@ export default class ScrollViewer extends SampleBasic {
         scene.onAfterRenderObservable.add(() => {
             let curTime = new Date().getTime();
 
-            stats.text = numChildControls + " controls, " + Control.numLayoutCalls + " layout calls, " + Control.numRenderCalls + " render calls";
+            stats.text = numChildControls + " controls, " + Control.NumLayoutCalls + " layout calls, " + Control.NumRenderCalls + " render calls";
             //console.log("duration=" + (curTime - lastTime));
 
             lastTime = curTime;
