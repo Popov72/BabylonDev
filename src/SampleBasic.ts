@@ -12,6 +12,8 @@ class SplitBasic extends Split {
 
 export default class SampleBasic extends Sample {
 
+    protected _split: Split;
+
     protected populateScene(scene: Scene, camera: UniversalCamera) {
     }
 
@@ -19,6 +21,8 @@ export default class SampleBasic extends Sample {
         this.registerClass("split", SplitBasic);
 
         let split = this.addSplit("split", "basic", true, false) as SplitBasic;
+
+        this._split = split;
 
         this.populateScene(split.scene, split.camera);
 

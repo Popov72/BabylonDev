@@ -6,4 +6,5 @@ import "./Raymarching/index";
 import "./RTTAndPostProcess/index";
 import "./ScrollViewer/index";
 import "./ScrollViewer2/index";
+import "./Sheen/index";
 import "./SketchfabMarkers/index";

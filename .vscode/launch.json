@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "TRN BabylonJS",
-            "url": "http://localhost:9000/showSample.html?sample=csm",
+            "url": "http://localhost:9000/showSample.html?sample=sheen",
             "sourceMaps": true,
             "sourceMapPathOverrides": {
                 "webpack:///./src/*": "${workspaceRoot}/src/*"
