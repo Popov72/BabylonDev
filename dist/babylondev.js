@@ -25570,6 +25570,7 @@ var SampleBasic = /** @class */ (function (_super) {
     SampleBasic.prototype.create = function () {
         this.registerClass("split", SplitBasic);
         var split = this.addSplit("split", "basic", true, false);
+        this._split = split;
         this.populateScene(split.scene, split.camera);
         jQuery(document.body).append('<div id="fps"></div>');
     };
@@ -26639,6 +26640,480 @@ _SampleBasic__WEBPACK_IMPORTED_MODULE_0__["default"].registerSampleClass("scroll
 
 /***/ }),
 
+/***/ "./src/Sheen/index.ts":
+/*!****************************!*\
+  !*** ./src/Sheen/index.ts ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _SampleBasic__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../SampleBasic */ "./src/SampleBasic.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __values = (undefined && undefined.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+
+
+var envTextures = [
+    {
+        "name": "&lt;None&gt;",
+        "path": "",
+    },
+    {
+        "name": "Studio",
+        "path": "https://assets.babylonjs.com/environments/studio.env",
+    },
+    {
+        "name": "Country",
+        "path": "resources/texture/country.env",
+    },
+    {
+        "name": "Forest",
+        "path": "resources/texture/forest.env",
+    },
+    {
+        "name": "Night",
+        "path": "resources/texture/night.env",
+    },
+];
+var scenes = [
+    {
+        "name": "Cloth on ball",
+        "num": 0,
+    },
+    {
+        "name": "Couch pillow",
+        "num": 1,
+    },
+    {
+        "name": "Cloth on cup",
+        "num": 3,
+    }
+];
+var Sheen = /** @class */ (function (_super) {
+    __extends(Sheen, _super);
+    function Sheen() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Sheen.prototype.populateScene = function (scene, camera) {
+        this._scene = scene;
+        this._currEnv = 2;
+        this._currScene = 2;
+        this._loadScene(this._currScene);
+    };
+    Sheen.prototype._loadScene = function (numScene) {
+        var _this = this;
+        var scene = this._scene;
+        if (scene.debugLayer.isVisible()) {
+            scene.debugLayer.hide();
+        }
+        this._releaseScene(scene);
+        this._currScene = numScene;
+        var params = this._getModelParams(scenes[numScene].num);
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["SceneLoader"].Append(params.path, params.model, scene, function () {
+            if (scene.activeCamera) {
+                scene.activeCamera._activeMeshes.dispose();
+                scene.activeCamera = null;
+            }
+            while (scene.cameras.length) {
+                scene.cameras[0].dispose();
+            }
+            scene.createDefaultCamera(true, true, true);
+            _this._split.camera = scene.activeCamera;
+            scene.environmentIntensity = params.iblIntensity;
+            var l = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PointLight"]("light", params.lightPos, scene);
+            l.intensity = params.lightIntensity;
+            var camera = scene.activeCamera;
+            camera.alpha = Math.PI / 3;
+            camera.beta = Math.PI / 2 - 0.3;
+            //camera.useAutoRotationBehavior = true;
+            camera.lowerRadiusLimit = 0.5;
+            camera.upperRadiusLimit = 1000;
+            camera.panningSensibility = 0;
+            camera.pinchDeltaPercentage = 0.005;
+            if (params.setCamera) {
+                camera.alpha = params.camAlpha;
+                camera.beta = params.camBeta;
+                camera.radius = params.camRadius;
+            }
+            var mesh = scene.meshes[1];
+            var mat = mesh.material;
+            window.mat = mat;
+            if (params.albedoColor) {
+                mat.albedoColor = params.albedoColor;
+            }
+            mat.metallic = params.metallic;
+            mat.metallicF0Factor = params.metallicF0Factor;
+            mat.roughness = params.roughness;
+            mat.sheen.color = params.sheenColor;
+            mat.sheen.isEnabled = true;
+            mat.sheen.roughness = params.sheenRoughness;
+            _this._setEnvironment(_this._currEnv);
+            /*var t = 0;
+
+            scene.onBeforeRenderObservable.add(() => {
+                l.position.x = 7 * Math.cos(t);
+                l.position.z = 7 * Math.sin(t);
+                t += 0.02;
+            });*/
+            /*mat.inspectableCustomProperties = [
+                {
+                    label: "Enable shadowing term",
+                    propertyName: "enableShadowingTerm",
+                    type: BABYLON.InspectableType.Checkbox
+                }
+            ];*/
+            babylonjs__WEBPACK_IMPORTED_MODULE_0__["DebugLayer"].InspectorURL = 'resources/lib/babylon.inspector.bundle.max.js';
+            scene.debugLayer.show({ showExplorer: true }).then(function () {
+                scene.debugLayer.select(mat, "SHEEN");
+                _this._makeGUI(scene, mat);
+            });
+        });
+    };
+    Sheen.prototype._getModelParams = function (numModel) {
+        var params = this._getDefaultParams();
+        switch (numModel) {
+            case 0:
+                break;
+            case 1:
+                params.path = "resources/3d/couch_pillow/";
+                params.model = "scene.gltf";
+                params.sheenColor = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](207 / 255, 207 / 255, 207 / 255);
+                break;
+            case 2:
+                params.path = "resources/3d/4_sacks/";
+                params.model = "scene.gltf";
+                params.sheenColor = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](207 / 255, 207 / 255, 207 / 255);
+                params.lightPos = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](3, 100, 0);
+                params.lightIntensity = 1000;
+                break;
+            case 3:
+                params.path = "resources/3d/cloth_on_cup/";
+                params.model = "scene.gltf";
+                params.sheenColor = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](1, 1, 1);
+                params.lightPos = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](3, 10, 0);
+                params.lightIntensity = 100;
+                params.setCamera = true;
+                params.camAlpha = -1.3933468840693315;
+                params.camBeta = 0.9755170324890405;
+                params.camRadius = 7.6498204430171235;
+                params.albedoColor = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](12 / 255, 60 / 255, 222 / 255);
+                break;
+        }
+        return params;
+    };
+    Sheen.prototype._getDefaultParams = function () {
+        return {
+            path: "https://models.babylonjs.com/Sheen/",
+            model: "Cloth.gltf",
+            sheenColor: new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](159 / 255, 162 / 255, 247 / 255),
+            metallic: 0,
+            metallicF0Factor: 0.5,
+            roughness: 0.8,
+            sheenRoughness: 0.5,
+            lightPos: new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](3, 3, 0),
+            lightIntensity: 16,
+            iblIntensity: 0.25,
+            camAlpha: -1,
+            camBeta: -1,
+            camRadius: -1,
+            setCamera: false,
+            albedoColor: null,
+        };
+    };
+    Sheen.prototype._makeGUI = function (scene, mat) {
+        var _this = this;
+        var c = jQuery('#renderCanvas').parent();
+        c.css('position', 'relative')
+            .css('text-shadow', '1px 1px black')
+            .css('font-family', '"Arial');
+        var that = this;
+        var environmentTexture = jQuery('<span>Env texture </span>')
+            .append('<select>' + envTextures.map(function (env, idx) { return '<option value="' + idx + '" ' + (idx == _this._currEnv ? 'selected' : '') + '>' + env.name + '</option>'; }).join('') + '</select>')
+            .css('color', 'white')
+            .css('position', 'absolute')
+            .css('left', '10px')
+            .css('top', '10px')
+            .on('change', function (e) {
+            that._setEnvironment(parseInt('' + jQuery(this).find('select').val()));
+        });
+        var sceneObjects = jQuery('<span>Scene </span>')
+            .append('<select>' + scenes.map(function (sc, idx) { return '<option value="' + idx + '" ' + (idx == _this._currScene ? 'selected' : '') + '>' + sc.name + '</option>'; }).join('') + '</select>')
+            .css('color', 'white')
+            .css('position', 'absolute')
+            .css('left', '10px')
+            .css('top', '35px')
+            .on('change', function (e) {
+            that._loadScene(parseInt('' + jQuery(this).find('select').val()));
+        });
+        var enableSheen = jQuery('<span>Enable sheen </span>')
+            .append('<input type="checkbox" checked>')
+            .css('color', 'white')
+            .css('position', 'absolute')
+            .css('left', '10px')
+            .css('top', '60px')
+            .on('click', function (e) {
+            mat.sheen.isEnabled = jQuery(this).find('input').prop('checked');
+        });
+        c.append(environmentTexture);
+        c.append(sceneObjects);
+        c.append(enableSheen);
+    };
+    Sheen.prototype._setEnvironment = function (envNum) {
+        var _a;
+        this._currEnv = envNum;
+        var sky = this._scene.getMeshByID('hdrSkyBox');
+        if (sky) {
+            (_a = sky.material) === null || _a === void 0 ? void 0 : _a.dispose();
+            sky.dispose();
+        }
+        if (envNum === 0) {
+            this._scene.environmentIntensity = 0;
+        }
+        else {
+            if (this._scene.environmentTexture) {
+                this._scene.environmentTexture.dispose();
+            }
+            this._scene.environmentTexture = babylonjs__WEBPACK_IMPORTED_MODULE_0__["CubeTexture"].CreateFromPrefilteredData(envTextures[envNum].path, this._scene);
+            this._scene.createDefaultSkybox(this._scene.environmentTexture, false, 1000, 0, false);
+            var params = this._getModelParams(scenes[this._currScene].num);
+            this._scene.environmentIntensity = params.iblIntensity;
+        }
+    };
+    Sheen.prototype._getEnvBRDFTexture = function (engine, scene) {
+        window.setTimeout(function () {
+            var w = 256, h = 256;
+            var buffer = new Float32Array(4 * w * h);
+            engine._readTexturePixels(scene.environmentBRDFTexture.getInternalTexture(), w, h, -1, 0, buffer);
+            var img = {
+                name: "environmentBRDF",
+                r: [],
+                g: [],
+                b: [],
+            };
+            for (var i = 0; i < w * h; ++i) {
+                img.r.push(buffer[i * 4 + 0]);
+                img.g.push(buffer[i * 4 + 1]);
+                img.b.push(buffer[i * 4 + 2]);
+            }
+            console.log(JSON.stringify(img));
+            window.ii = img;
+        }, 2000);
+    };
+    Sheen.prototype._releaseScene = function (scene) {
+        var e_1, _a, e_2, _b;
+        scene.beforeRender = null;
+        scene.afterRender = null;
+        scene.skeletons = [];
+        scene.morphTargetManagers = [];
+        scene._transientComponents = [];
+        scene._isReadyForMeshStage.clear();
+        scene._beforeEvaluateActiveMeshStage.clear();
+        scene._evaluateSubMeshStage.clear();
+        scene._activeMeshStage.clear();
+        scene._cameraDrawRenderTargetStage.clear();
+        scene._beforeCameraDrawStage.clear();
+        scene._beforeRenderTargetDrawStage.clear();
+        scene._beforeRenderingGroupDrawStage.clear();
+        scene._beforeRenderingMeshStage.clear();
+        scene._afterRenderingMeshStage.clear();
+        scene._afterRenderingGroupDrawStage.clear();
+        scene._afterCameraDrawStage.clear();
+        scene._afterRenderTargetDrawStage.clear();
+        scene._afterRenderStage.clear();
+        scene._beforeCameraUpdateStage.clear();
+        scene._beforeClearStage.clear();
+        scene._gatherRenderTargetsStage.clear();
+        scene._gatherActiveCameraRenderTargetsStage.clear();
+        scene._pointerMoveStage.clear();
+        scene._pointerDownStage.clear();
+        scene._pointerUpStage.clear();
+        try {
+            for (var _c = __values(scene._components), _d = _c.next(); !_d.done; _d = _c.next()) {
+                var component = _d.value;
+                component.dispose();
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_d && !_d.done && (_a = _c.return)) _a.call(_c);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        scene._components = [];
+        scene.importedMeshesFiles = new Array();
+        if (scene.stopAllAnimations) {
+            scene.stopAllAnimations();
+        }
+        scene.resetCachedMaterial();
+        // Smart arrays
+        scene._activeMeshes.reset();
+        scene._activeParticleSystems.reset();
+        scene._activeSkeletons.reset();
+        scene._softwareSkinnedMeshes.reset();
+        scene._renderTargets.reset();
+        scene._registeredForLateAnimationBindings.reset();
+        scene._meshesForIntersections.reset();
+        scene._toBeDisposed = [];
+        try {
+            // Abort active requests
+            for (var _e = __values(scene._activeRequests), _f = _e.next(); !_f.done; _f = _e.next()) {
+                var request = _f.value;
+                request.abort();
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (_f && !_f.done && (_b = _e.return)) _b.call(_e);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+        // Events
+        scene.onDisposeObservable.clear();
+        scene.onBeforeRenderObservable.clear();
+        scene.onAfterRenderObservable.clear();
+        scene.onBeforeRenderTargetsRenderObservable.clear();
+        scene.onAfterRenderTargetsRenderObservable.clear();
+        scene.onAfterStepObservable.clear();
+        scene.onBeforeStepObservable.clear();
+        scene.onBeforeActiveMeshesEvaluationObservable.clear();
+        scene.onAfterActiveMeshesEvaluationObservable.clear();
+        scene.onBeforeParticlesRenderingObservable.clear();
+        scene.onAfterParticlesRenderingObservable.clear();
+        scene.onBeforeDrawPhaseObservable.clear();
+        scene.onAfterDrawPhaseObservable.clear();
+        scene.onBeforeAnimationsObservable.clear();
+        scene.onAfterAnimationsObservable.clear();
+        scene.onDataLoadedObservable.clear();
+        scene.onBeforeRenderingGroupObservable.clear();
+        scene.onAfterRenderingGroupObservable.clear();
+        scene.onMeshImportedObservable.clear();
+        scene.onBeforeCameraRenderObservable.clear();
+        scene.onAfterCameraRenderObservable.clear();
+        scene.onReadyObservable.clear();
+        scene.onNewCameraAddedObservable.clear();
+        scene.onCameraRemovedObservable.clear();
+        scene.onNewLightAddedObservable.clear();
+        scene.onLightRemovedObservable.clear();
+        scene.onNewGeometryAddedObservable.clear();
+        scene.onGeometryRemovedObservable.clear();
+        scene.onNewTransformNodeAddedObservable.clear();
+        scene.onTransformNodeRemovedObservable.clear();
+        scene.onNewMeshAddedObservable.clear();
+        scene.onMeshRemovedObservable.clear();
+        scene.onNewSkeletonAddedObservable.clear();
+        scene.onSkeletonRemovedObservable.clear();
+        scene.onNewMaterialAddedObservable.clear();
+        scene.onMaterialRemovedObservable.clear();
+        scene.onNewTextureAddedObservable.clear();
+        scene.onTextureRemovedObservable.clear();
+        scene.onPrePointerObservable.clear();
+        scene.onPointerObservable.clear();
+        scene.onPreKeyboardObservable.clear();
+        scene.onKeyboardObservable.clear();
+        scene.onActiveCameraChanged.clear();
+        //scene.detachControl();
+        // Detach cameras
+        var canvas = scene.getEngine().getInputElement();
+        if (canvas) {
+            var index;
+            for (index = 0; index < scene.cameras.length; index++) {
+                scene.cameras[index].detachControl(canvas);
+            }
+        }
+        // Release animation groups
+        while (scene.animationGroups.length) {
+            scene.animationGroups[0].dispose();
+        }
+        // Release lights
+        while (scene.lights.length) {
+            scene.lights[0].dispose();
+        }
+        // Release meshes
+        while (scene.meshes.length) {
+            scene.meshes[0].dispose(true);
+        }
+        while (scene.transformNodes.length) {
+            scene.transformNodes[0].dispose(true);
+        }
+        // Release materials
+        if (scene._defaultMaterial) {
+            scene._defaultMaterial.dispose();
+        }
+        while (scene.multiMaterials.length) {
+            scene.multiMaterials[0].dispose();
+        }
+        while (scene.materials.length) {
+            scene.materials[0].dispose();
+        }
+        // Release particles
+        while (scene.particleSystems.length) {
+            scene.particleSystems[0].dispose();
+        }
+        // Release postProcesses
+        while (scene.postProcesses.length) {
+            scene.postProcesses[0].dispose();
+        }
+        // Release textures
+        while (scene.textures.length) {
+            scene.textures[0].dispose();
+        }
+        scene.environmentBRDFTexture = null;
+        // Release UBO
+        /*!scene._sceneUbo.dispose();
+
+        if (scene._multiviewSceneUbo) {
+            scene._multiviewSceneUbo.dispose();
+        }*/
+        // Post-processes
+        //!scene.postProcessManager.dispose();
+        // Remove from engine
+        /*index = scene._engine.scenes.indexOf(this);
+
+        if (index > -1) {
+            this._engine.scenes.splice(index, 1);
+        }
+*/
+        this._engine.wipeCaches(true);
+    };
+    return Sheen;
+}(_SampleBasic__WEBPACK_IMPORTED_MODULE_1__["default"]));
+/* harmony default export */ __webpack_exports__["default"] = (Sheen);
+_SampleBasic__WEBPACK_IMPORTED_MODULE_1__["default"].registerSampleClass("sheen", {
+    "displayName": "Test of the new sheen implementation",
+    "description": "",
+    "class": Sheen,
+});
+
+
+/***/ }),
+
 /***/ "./src/SketchfabMarkers/DepthLinearNoShader.ts":
 /*!*****************************************************!*\
   !*** ./src/SketchfabMarkers/DepthLinearNoShader.ts ***!
@@ -27232,7 +27707,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _RTTAndPostProcess_index__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./RTTAndPostProcess/index */ "./src/RTTAndPostProcess/index.ts");
 /* harmony import */ var _ScrollViewer_index__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./ScrollViewer/index */ "./src/ScrollViewer/index.ts");
 /* harmony import */ var _ScrollViewer2_index__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ScrollViewer2/index */ "./src/ScrollViewer2/index.ts");
-/* harmony import */ var _SketchfabMarkers_index__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./SketchfabMarkers/index */ "./src/SketchfabMarkers/index.ts");
+/* harmony import */ var _Sheen_index__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Sheen/index */ "./src/Sheen/index.ts");
+/* harmony import */ var _SketchfabMarkers_index__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./SketchfabMarkers/index */ "./src/SketchfabMarkers/index.ts");
+
 
 
 
