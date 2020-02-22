@@ -13,8 +13,6 @@ import {
     Nullable,
 } from "babylonjs";
 
-import * as GUI from "babylonjs-gui";
-
 import SampleBasic from "../SampleBasic";
 
 interface IParams {
@@ -36,6 +34,10 @@ interface IParams {
 }
 
 const envTextures = [
+    {
+        "name": "&lt;None&gt;",
+        "path": "",
+    },
     {
         "name": "Studio",
         "path": "https://assets.babylonjs.com/environments/studio.env",
@@ -77,7 +79,7 @@ export default class Sheen extends SampleBasic {
 
     protected populateScene(scene: Scene, camera: UniversalCamera) {
         this._scene = scene;
-        this._currEnv = 1;
+        this._currEnv = 2;
         this._currScene = 2;
 
         this._loadScene(this._currScene);
@@ -245,7 +247,7 @@ export default class Sheen extends SampleBasic {
             .css('left', '10px')
             .css('top', '10px')
             .on('change', function(e) {
-                that._setEnvironment(jQuery(this).find('select').val());
+                that._setEnvironment(parseInt('' + jQuery(this).find('select').val()));
             });
 
         let sceneObjects = jQuery('<span>Scene </span>')
@@ -255,7 +257,7 @@ export default class Sheen extends SampleBasic {
             .css('left', '10px')
             .css('top', '35px')
             .on('change', function(e) {
-                that._loadScene(jQuery(this).find('select').val());
+                that._loadScene(parseInt('' + jQuery(this).find('select').val()));
             });
 
         let enableSheen = jQuery('<span>Enable sheen </span>')
@@ -271,38 +273,6 @@ export default class Sheen extends SampleBasic {
         c.append(environmentTexture);
         c.append(sceneObjects);
         c.append(enableSheen);
-
-        /*var advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-
-        var stack2 = new GUI.StackPanel("panel2");
-
-        advancedTexture.addControl(stack2);
-
-        stack2.height = "40px";
-        stack2.isVertical = false;
-        stack2.horizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        stack2.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
-
-        var header = new GUI.TextBlock();
-
-        header.text = "Enable sheen";
-        header.width = "115px";
-        header.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-        header.color = "white";
-        stack2.addControl(header);
-
-        var checkbox = new GUI.Checkbox();
-
-        checkbox.width = "20px";
-        checkbox.height = "20px";
-        checkbox.isChecked = mat.sheen.isEnabled;
-        checkbox.color = "green";
-        checkbox.onIsCheckedChangedObservable.add((value) => {
-            mat.sheen.isEnabled = value;
-            this._loadScene(this._scene, 3);
-        });
-
-        stack2.addControl(checkbox);*/
     }
 
     private _setEnvironment(envNum: number): void {
@@ -315,11 +285,16 @@ export default class Sheen extends SampleBasic {
             sky.dispose();
         }
 
-        if (envNum < 0) {
-            this._scene.environmentTexture = null;
+        if (envNum === 0) {
+            this._scene.environmentIntensity = 0;
         } else {
+            if (this._scene.environmentTexture) {
+                this._scene.environmentTexture.dispose();
+            }
             this._scene.environmentTexture = CubeTexture.CreateFromPrefilteredData(envTextures[envNum].path, this._scene);
             this._scene.createDefaultSkybox(this._scene.environmentTexture!, false, 1000, 0, false);
+            const params = this._getModelParams(scenes[this._currScene].num);
+            this._scene.environmentIntensity = params.iblIntensity;
         }
     }
 
