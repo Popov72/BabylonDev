@@ -1,0 +1,1459 @@
+22:51:39.127 babylon.js:16 Babylon.js v4.1.0-rc.5 - WebGL2 - Parallel shader compilation
+22:51:39.881 babylon.js:16 Vertex shader: Building position [InputBlock]
+22:51:39.881 babylon.js:16 Vertex shader: Building world [InputBlock]
+22:51:39.882 babylon.js:16 Vertex shader: Building worldPos [TransformBlock]
+22:51:39.882 babylon.js:16 Vertex shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:39.882 babylon.js:16 Vertex shader: Building viewProjection [InputBlock]
+22:51:39.882 babylon.js:16 Vertex shader: Building worldPos * viewProjectionTransform [TransformBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building vertexOutput [VertexOutputBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building windDirLow [InputBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building windDirHigh [InputBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building windDirSpeed [InputBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.883 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building pi [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building Float [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building waveLengthLow [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building waveLengthHigh [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building waveLengthSpeed [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.884 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building resolution [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building speedMultiplier [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building steepnessLow [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building steepnessHigh [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building steepnessSpeed [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.885 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building ampLow [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building ampHigh [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building ampSpeed [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building toggle [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building windDirLow [InputBlock]
+22:51:39.886 babylon.js:16 Vertex shader: Building windDirHigh [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building windDirSpeed [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building pi [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building Float [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building waveLengthLow [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building waveLengthHigh [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.887 babylon.js:16 Vertex shader: Building waveLengthSpeed [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building speedMultiplier [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building steepnessLow [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building steepnessHigh [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building steepnessSpeed [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.888 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building ampLow [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building ampHigh [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building ampSpeed [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building toggle [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building windDirLow [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building windDirHigh [InputBlock]
+22:51:39.889 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building windDirSpeed [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building pi [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building Float [InputBlock]
+22:51:39.890 babylon.js:16 Vertex shader: Building waveLengthLow [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building waveLengthHigh [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building waveLengthSpeed [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building speedMultiplier [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.891 babylon.js:16 Vertex shader: Building steepnessLow [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building steepnessHigh [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building steepnessSpeed [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building ampLow [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building ampHigh [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.892 babylon.js:16 Vertex shader: Building ampSpeed [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building toggle [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building windDirLow [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building windDirHigh [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building windDirSpeed [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.893 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building pi [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building Float [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building waveLengthLow [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building waveLengthHigh [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building waveLengthSpeed [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building speedMultiplier [InputBlock]
+22:51:39.894 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building steepnessLow [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building steepnessHigh [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building steepnessSpeed [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building ampLow [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building ampHigh [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.895 babylon.js:16 Vertex shader: Building ampSpeed [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building toggle [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building windDirLow [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building windDirHigh [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building windDirSpeed [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.896 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building pi [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building Float [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building waveLengthLow [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building waveLengthHigh [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building waveLengthSpeed [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.897 babylon.js:16 Vertex shader: Building speedMultiplier [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building steepnessLow [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building steepnessHigh [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building steepnessSpeed [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building ampLow [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building ampHigh [InputBlock]
+22:51:39.898 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building ampSpeed [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building toggle [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building windDirLow [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building windDirHigh [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building windDirSpeed [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.899 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building pi [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building Float [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building waveLengthLow [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building waveLengthHigh [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building waveLengthSpeed [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.900 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building speedMultiplier [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building steepnessLow [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building steepnessHigh [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building steepnessSpeed [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building ampLow [InputBlock]
+22:51:39.901 babylon.js:16 Vertex shader: Building ampHigh [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building a [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building ampSpeed [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building Time [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building b [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building r [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building q [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building toggle [InputBlock]
+22:51:39.902 babylon.js:16 Vertex shader: Building causticPower [InputBlock]
+22:51:39.911 babylon.js:16 Fragment shader: Building Derivative [DerivativeBlock]
+22:51:39.912 babylon.js:16 Fragment shader: Building Length [LengthBlock]
+22:51:39.912 babylon.js:16 Fragment shader: Building Length [LengthBlock]
+22:51:39.912 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.913 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.913 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.914 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.914 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.915 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.915 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.916 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.916 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.916 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.917 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.917 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.918 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.918 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:39.919 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.919 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.920 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:39.920 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.920 babylon.js:16 Fragment shader: Building Dot [DotBlock]
+22:51:39.921 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.921 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.922 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.922 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.923 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.923 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.923 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.924 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.924 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.925 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.925 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.925 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.926 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.926 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.926 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.927 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.927 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.927 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.928 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.928 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:39.929 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.929 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.930 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.930 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.931 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.931 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.932 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.932 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.933 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.933 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.933 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.934 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.934 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.934 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.935 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.935 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.935 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.936 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.936 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.936 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.937 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.937 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.937 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.938 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.939 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.939 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.940 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.940 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.940 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.940 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.941 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.941 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.941 babylon.js:16 Fragment shader: Building Scale [ScaleBlock]
+22:51:39.941 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.942 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.942 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.942 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.942 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.943 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.943 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.943 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.943 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.944 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.944 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.944 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.944 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:39.944 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.945 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.945 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:39.945 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.945 babylon.js:16 Fragment shader: Building Dot [DotBlock]
+22:51:39.946 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.946 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.946 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.946 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.947 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.947 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.947 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.948 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.948 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.949 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.949 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.949 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.950 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.950 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.950 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.951 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.951 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.951 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.952 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.952 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:39.952 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.953 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.953 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.954 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.954 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.954 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.955 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.955 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.955 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.956 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.956 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.956 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.957 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.957 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.957 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.958 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.958 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.959 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.959 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.959 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.960 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.960 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.960 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.961 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.961 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.961 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.962 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.962 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.962 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.962 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.963 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.963 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.963 babylon.js:16 Fragment shader: Building Scale [ScaleBlock]
+22:51:39.964 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.964 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.964 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.965 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.965 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.966 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.966 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.966 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.967 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.967 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.967 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.968 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.968 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.968 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:39.969 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.969 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.970 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:39.970 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:39.970 babylon.js:16 Fragment shader: Building Dot [DotBlock]
+22:51:39.971 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.971 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.971 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.972 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.972 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.972 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.973 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.973 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.973 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.974 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:39.974 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:39.975 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.976 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.977 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.977 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.977 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.978 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.993 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.993 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.994 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:39.995 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.995 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.996 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:39.997 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.997 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.998 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.998 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:39.998 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:39.999 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:39.999 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:39.999 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.000 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.000 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.000 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.000 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.001 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.001 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.001 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.002 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.002 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.003 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.003 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.003 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.004 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.004 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.004 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.005 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.005 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.005 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.005 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.006 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.006 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.006 babylon.js:16 Fragment shader: Building Scale [ScaleBlock]
+22:51:40.007 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.007 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.008 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.008 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.009 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.010 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.010 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.011 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.011 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.011 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.012 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.012 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.012 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:40.013 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.013 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.013 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:40.013 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.013 babylon.js:16 Fragment shader: Building Dot [DotBlock]
+22:51:40.014 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.014 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.014 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.014 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.015 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.015 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.015 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.016 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.016 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.016 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.017 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.017 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.017 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.017 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.018 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.018 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.018 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.018 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.018 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.019 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:40.019 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.019 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.019 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.019 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.020 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.020 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.021 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.021 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.021 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.022 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.022 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.022 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.023 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.023 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.024 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.024 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.025 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.025 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.025 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.026 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.026 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.026 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.027 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.027 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.028 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.029 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.029 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.029 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.029 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.030 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.030 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.030 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.030 babylon.js:16 Fragment shader: Building Scale [ScaleBlock]
+22:51:40.030 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.030 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.031 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.031 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.031 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.031 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.033 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.033 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.033 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.034 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.034 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.034 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.035 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.035 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.035 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:40.036 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.036 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.036 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:40.037 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.037 babylon.js:16 Fragment shader: Building Dot [DotBlock]
+22:51:40.037 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.037 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.038 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.038 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.038 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.039 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.039 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.039 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.040 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.040 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.041 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.041 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.041 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.041 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.042 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.042 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.042 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.042 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.042 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.043 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:40.043 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.043 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.043 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.044 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.044 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.044 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.045 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.045 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.045 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.045 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.046 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.046 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.046 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.047 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.047 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.047 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.047 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.048 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.048 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.048 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.049 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.049 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.049 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.050 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.050 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.050 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.051 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.051 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.051 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.052 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.052 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.052 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.053 babylon.js:16 Fragment shader: Building Scale [ScaleBlock]
+22:51:40.053 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.054 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.054 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.055 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.055 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.056 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.056 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.057 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.057 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.058 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.058 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.058 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.059 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:40.059 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.059 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.060 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:40.060 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.061 babylon.js:16 Fragment shader: Building Dot [DotBlock]
+22:51:40.061 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.061 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.062 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.062 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.063 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.063 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.064 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.064 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.065 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.065 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.066 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.066 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.066 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.067 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.067 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.067 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.068 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.068 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.068 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.068 babylon.js:16 Fragment shader: Building Cos [TrigonometryBlock]
+22:51:40.069 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.069 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.070 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.070 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.071 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.072 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.072 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.072 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.073 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.073 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.073 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.073 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.074 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.074 babylon.js:16 Fragment shader: Building One minus [OneMinusBlock]
+22:51:40.074 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.075 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.075 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.075 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.076 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.076 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.076 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.077 babylon.js:16 Fragment shader: Building Remap [RemapBlock]
+22:51:40.077 babylon.js:16 Fragment shader: Building Lerp [LerpBlock]
+22:51:40.077 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.078 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.078 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.078 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.078 babylon.js:16 Fragment shader: Building Sin [TrigonometryBlock]
+22:51:40.079 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.079 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.079 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.079 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.080 babylon.js:16 Fragment shader: Building Scale [ScaleBlock]
+22:51:40.080 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.080 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.080 babylon.js:16 Fragment shader: Building VectorSplitter [VectorSplitterBlock]
+22:51:40.080 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.080 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building VectorMerger [VectorMergerBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building Derivative [DerivativeBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building Length [LengthBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building Length [LengthBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building Divide [DivideBlock]
+22:51:40.081 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.082 babylon.js:16 Fragment shader: Building fragmentOutput [FragmentOutputBlock]
+22:51:40.082 babylon.js:16 Vertex shader:
+22:51:40.082 babylon.js:16 
+attribute vec3 position;
+
+
+uniform mat4 u_world;
+uniform mat4 u_viewProjection;
+uniform float u_windDirLow;
+uniform float u_windDirHigh;
+uniform float u_windDirSpeed;
+uniform float u_Time;
+uniform float u_waveLengthLow;
+uniform float u_waveLengthHigh;
+uniform float u_waveLengthSpeed;
+uniform float u_Time1;
+uniform float u_resolution;
+uniform float u_speedMultiplier;
+uniform float u_Time2;
+uniform float u_steepnessLow;
+uniform float u_steepnessHigh;
+uniform float u_steepnessSpeed;
+uniform float u_Time3;
+uniform float u_ampLow;
+uniform float u_ampHigh;
+uniform float u_ampSpeed;
+uniform float u_Time4;
+uniform float u_toggle;
+uniform float u_windDirLow1;
+uniform float u_windDirHigh1;
+uniform float u_windDirSpeed1;
+uniform float u_Time5;
+uniform float u_waveLengthLow1;
+uniform float u_waveLengthHigh1;
+uniform float u_waveLengthSpeed1;
+uniform float u_Time6;
+uniform float u_speedMultiplier1;
+uniform float u_Time7;
+uniform float u_steepnessLow1;
+uniform float u_steepnessHigh1;
+uniform float u_steepnessSpeed1;
+uniform float u_Time8;
+uniform float u_ampLow1;
+uniform float u_ampHigh1;
+uniform float u_ampSpeed1;
+uniform float u_Time9;
+uniform float u_toggle1;
+uniform float u_windDirLow2;
+uniform float u_windDirHigh2;
+uniform float u_windDirSpeed2;
+uniform float u_Time10;
+uniform float u_waveLengthLow2;
+uniform float u_waveLengthHigh2;
+uniform float u_waveLengthSpeed2;
+uniform float u_Time11;
+uniform float u_speedMultiplier2;
+uniform float u_Time12;
+uniform float u_steepnessLow2;
+uniform float u_steepnessHigh2;
+uniform float u_steepnessSpeed2;
+uniform float u_Time13;
+uniform float u_ampLow2;
+uniform float u_ampHigh2;
+uniform float u_ampSpeed2;
+uniform float u_Time14;
+uniform float u_toggle2;
+uniform float u_windDirLow3;
+uniform float u_windDirHigh3;
+uniform float u_windDirSpeed3;
+uniform float u_Time15;
+uniform float u_waveLengthLow3;
+uniform float u_waveLengthHigh3;
+uniform float u_waveLengthSpeed3;
+uniform float u_Time16;
+uniform float u_speedMultiplier3;
+uniform float u_Time17;
+uniform float u_steepnessLow3;
+uniform float u_steepnessHigh3;
+uniform float u_steepnessSpeed3;
+uniform float u_Time18;
+uniform float u_ampLow3;
+uniform float u_ampHigh3;
+uniform float u_ampSpeed3;
+uniform float u_Time19;
+uniform float u_toggle3;
+uniform float u_windDirLow4;
+uniform float u_windDirHigh4;
+uniform float u_windDirSpeed4;
+uniform float u_Time20;
+uniform float u_waveLengthLow4;
+uniform float u_waveLengthHigh4;
+uniform float u_waveLengthSpeed4;
+uniform float u_Time21;
+uniform float u_speedMultiplier4;
+uniform float u_Time22;
+uniform float u_steepnessLow4;
+uniform float u_steepnessHigh4;
+uniform float u_steepnessSpeed4;
+uniform float u_Time23;
+uniform float u_ampLow4;
+uniform float u_ampHigh4;
+uniform float u_ampSpeed4;
+uniform float u_Time24;
+uniform float u_toggle4;
+uniform float u_windDirLow5;
+uniform float u_windDirHigh5;
+uniform float u_windDirSpeed5;
+uniform float u_Time25;
+uniform float u_waveLengthLow5;
+uniform float u_waveLengthHigh5;
+uniform float u_waveLengthSpeed5;
+uniform float u_Time26;
+uniform float u_speedMultiplier5;
+uniform float u_Time27;
+uniform float u_steepnessLow5;
+uniform float u_steepnessHigh5;
+uniform float u_steepnessSpeed5;
+uniform float u_Time28;
+uniform float u_ampLow5;
+uniform float u_ampHigh5;
+uniform float u_ampSpeed5;
+uniform float u_Time29;
+uniform float u_toggle5;
+uniform float u_causticPower;
+
+
+varying vec3 v_xyz1;
+varying float v_x;
+varying float v_z;
+varying float v_w;
+
+
+
+
+float u_a = 0.5;
+float u_b = 1.0;
+float u_r = 0.4;
+float u_q = 0.3;
+float u_pi = 3.14;
+float u_Float = 2.0;
+float u_a1 = 0.5;
+float u_b1 = 1.0;
+float u_r1 = 0.4;
+float u_q1 = 0.3;
+float u_a2 = 0.5;
+float u_b2 = 1.0;
+float u_r2 = 0.4;
+float u_q2 = 0.3;
+float u_a3 = 0.5;
+float u_b3 = 1.0;
+float u_r3 = 0.4;
+float u_q3 = 0.3;
+float u_a4 = 0.5;
+float u_b4 = 1.0;
+float u_r4 = 0.4;
+float u_q4 = 0.3;
+float u_pi1 = 3.14;
+float u_Float1 = 2.0;
+float u_a5 = 0.5;
+float u_b5 = 1.0;
+float u_r5 = 0.4;
+float u_q5 = 0.3;
+float u_a6 = 0.5;
+float u_b6 = 1.0;
+float u_r6 = 0.4;
+float u_q6 = 0.3;
+float u_a7 = 0.5;
+float u_b7 = 1.0;
+float u_r7 = 0.4;
+float u_q7 = 0.3;
+float u_a8 = 0.5;
+float u_b8 = 1.0;
+float u_r8 = 0.4;
+float u_q8 = 0.3;
+float u_pi2 = 3.14;
+float u_Float2 = 2.0;
+float u_a9 = 0.5;
+float u_b9 = 1.0;
+float u_r9 = 0.4;
+float u_q9 = 0.3;
+float u_a10 = 0.5;
+float u_b10 = 1.0;
+float u_r10 = 0.4;
+float u_q10 = 0.3;
+float u_a11 = 0.5;
+float u_b11 = 1.0;
+float u_r11 = 0.4;
+float u_q11 = 0.3;
+float u_a12 = 0.5;
+float u_b12 = 1.0;
+float u_r12 = 0.4;
+float u_q12 = 0.3;
+float u_pi3 = 3.14;
+float u_Float3 = 2.0;
+float u_a13 = 0.5;
+float u_b13 = 1.0;
+float u_r13 = 0.4;
+float u_q13 = 0.3;
+float u_a14 = 0.5;
+float u_b14 = 1.0;
+float u_r14 = 0.4;
+float u_q14 = 0.3;
+float u_a15 = 0.5;
+float u_b15 = 1.0;
+float u_r15 = 0.4;
+float u_q15 = 0.3;
+float u_a16 = 0.5;
+float u_b16 = 1.0;
+float u_r16 = 0.4;
+float u_q16 = 0.3;
+float u_pi4 = 3.14;
+float u_Float4 = 2.0;
+float u_a17 = 0.5;
+float u_b17 = 1.0;
+float u_r17 = 0.4;
+float u_q17 = 0.3;
+float u_a18 = 0.5;
+float u_b18 = 1.0;
+float u_r18 = 0.4;
+float u_q18 = 0.3;
+float u_a19 = 0.5;
+float u_b19 = 1.0;
+float u_r19 = 0.4;
+float u_q19 = 0.3;
+float u_a20 = 0.5;
+float u_b20 = 1.0;
+float u_r20 = 0.4;
+float u_q20 = 0.3;
+float u_pi5 = 3.14;
+float u_Float5 = 2.0;
+float u_a21 = 0.5;
+float u_b21 = 1.0;
+float u_r21 = 0.4;
+float u_q21 = 0.3;
+float u_a22 = 0.5;
+float u_b22 = 1.0;
+float u_r22 = 0.4;
+float u_q22 = 0.3;
+float u_a23 = 0.5;
+float u_b23 = 1.0;
+float u_r23 = 0.4;
+float u_q23 = 0.3;
+
+
+void main(void) {
+vec4 output1 = u_world * vec4(position, 1.0);
+vec3 xyz1 = output1.xyz;
+float x = output1.x;
+float z = output1.z;
+float w = output1.w;
+vec4 output0 = u_viewProjection * vec4(xyz1, 1.0);
+gl_Position = output0;
+v_xyz1 = xyz1;
+v_x = x;
+v_z = z;
+v_w = w;
+
+}
+22:51:40.082 babylon.js:16 Fragment shader:
+22:51:40.082 babylon.js:16 
+#extension GL_OES_standard_derivatives : enable
+
+uniform mat4 u_world;
+uniform mat4 u_viewProjection;
+uniform float u_windDirLow;
+uniform float u_windDirHigh;
+uniform float u_windDirSpeed;
+uniform float u_Time;
+uniform float u_waveLengthLow;
+uniform float u_waveLengthHigh;
+uniform float u_waveLengthSpeed;
+uniform float u_Time1;
+uniform float u_resolution;
+uniform float u_speedMultiplier;
+uniform float u_Time2;
+uniform float u_steepnessLow;
+uniform float u_steepnessHigh;
+uniform float u_steepnessSpeed;
+uniform float u_Time3;
+uniform float u_ampLow;
+uniform float u_ampHigh;
+uniform float u_ampSpeed;
+uniform float u_Time4;
+uniform float u_toggle;
+uniform float u_windDirLow1;
+uniform float u_windDirHigh1;
+uniform float u_windDirSpeed1;
+uniform float u_Time5;
+uniform float u_waveLengthLow1;
+uniform float u_waveLengthHigh1;
+uniform float u_waveLengthSpeed1;
+uniform float u_Time6;
+uniform float u_speedMultiplier1;
+uniform float u_Time7;
+uniform float u_steepnessLow1;
+uniform float u_steepnessHigh1;
+uniform float u_steepnessSpeed1;
+uniform float u_Time8;
+uniform float u_ampLow1;
+uniform float u_ampHigh1;
+uniform float u_ampSpeed1;
+uniform float u_Time9;
+uniform float u_toggle1;
+uniform float u_windDirLow2;
+uniform float u_windDirHigh2;
+uniform float u_windDirSpeed2;
+uniform float u_Time10;
+uniform float u_waveLengthLow2;
+uniform float u_waveLengthHigh2;
+uniform float u_waveLengthSpeed2;
+uniform float u_Time11;
+uniform float u_speedMultiplier2;
+uniform float u_Time12;
+uniform float u_steepnessLow2;
+uniform float u_steepnessHigh2;
+uniform float u_steepnessSpeed2;
+uniform float u_Time13;
+uniform float u_ampLow2;
+uniform float u_ampHigh2;
+uniform float u_ampSpeed2;
+uniform float u_Time14;
+uniform float u_toggle2;
+uniform float u_windDirLow3;
+uniform float u_windDirHigh3;
+uniform float u_windDirSpeed3;
+uniform float u_Time15;
+uniform float u_waveLengthLow3;
+uniform float u_waveLengthHigh3;
+uniform float u_waveLengthSpeed3;
+uniform float u_Time16;
+uniform float u_speedMultiplier3;
+uniform float u_Time17;
+uniform float u_steepnessLow3;
+uniform float u_steepnessHigh3;
+uniform float u_steepnessSpeed3;
+uniform float u_Time18;
+uniform float u_ampLow3;
+uniform float u_ampHigh3;
+uniform float u_ampSpeed3;
+uniform float u_Time19;
+uniform float u_toggle3;
+uniform float u_windDirLow4;
+uniform float u_windDirHigh4;
+uniform float u_windDirSpeed4;
+uniform float u_Time20;
+uniform float u_waveLengthLow4;
+uniform float u_waveLengthHigh4;
+uniform float u_waveLengthSpeed4;
+uniform float u_Time21;
+uniform float u_speedMultiplier4;
+uniform float u_Time22;
+uniform float u_steepnessLow4;
+uniform float u_steepnessHigh4;
+uniform float u_steepnessSpeed4;
+uniform float u_Time23;
+uniform float u_ampLow4;
+uniform float u_ampHigh4;
+uniform float u_ampSpeed4;
+uniform float u_Time24;
+uniform float u_toggle4;
+uniform float u_windDirLow5;
+uniform float u_windDirHigh5;
+uniform float u_windDirSpeed5;
+uniform float u_Time25;
+uniform float u_waveLengthLow5;
+uniform float u_waveLengthHigh5;
+uniform float u_waveLengthSpeed5;
+uniform float u_Time26;
+uniform float u_speedMultiplier5;
+uniform float u_Time27;
+uniform float u_steepnessLow5;
+uniform float u_steepnessHigh5;
+uniform float u_steepnessSpeed5;
+uniform float u_Time28;
+uniform float u_ampLow5;
+uniform float u_ampHigh5;
+uniform float u_ampSpeed5;
+uniform float u_Time29;
+uniform float u_toggle5;
+uniform float u_causticPower;
+
+
+varying vec3 v_xyz1;
+varying float v_x;
+varying float v_z;
+varying float v_w;
+
+
+
+
+float u_a = 0.5;
+float u_b = 1.0;
+float u_r = 0.4;
+float u_q = 0.3;
+float u_pi = 3.14;
+float u_Float = 2.0;
+float u_a1 = 0.5;
+float u_b1 = 1.0;
+float u_r1 = 0.4;
+float u_q1 = 0.3;
+float u_a2 = 0.5;
+float u_b2 = 1.0;
+float u_r2 = 0.4;
+float u_q2 = 0.3;
+float u_a3 = 0.5;
+float u_b3 = 1.0;
+float u_r3 = 0.4;
+float u_q3 = 0.3;
+float u_a4 = 0.5;
+float u_b4 = 1.0;
+float u_r4 = 0.4;
+float u_q4 = 0.3;
+float u_pi1 = 3.14;
+float u_Float1 = 2.0;
+float u_a5 = 0.5;
+float u_b5 = 1.0;
+float u_r5 = 0.4;
+float u_q5 = 0.3;
+float u_a6 = 0.5;
+float u_b6 = 1.0;
+float u_r6 = 0.4;
+float u_q6 = 0.3;
+float u_a7 = 0.5;
+float u_b7 = 1.0;
+float u_r7 = 0.4;
+float u_q7 = 0.3;
+float u_a8 = 0.5;
+float u_b8 = 1.0;
+float u_r8 = 0.4;
+float u_q8 = 0.3;
+float u_pi2 = 3.14;
+float u_Float2 = 2.0;
+float u_a9 = 0.5;
+float u_b9 = 1.0;
+float u_r9 = 0.4;
+float u_q9 = 0.3;
+float u_a10 = 0.5;
+float u_b10 = 1.0;
+float u_r10 = 0.4;
+float u_q10 = 0.3;
+float u_a11 = 0.5;
+float u_b11 = 1.0;
+float u_r11 = 0.4;
+float u_q11 = 0.3;
+float u_a12 = 0.5;
+float u_b12 = 1.0;
+float u_r12 = 0.4;
+float u_q12 = 0.3;
+float u_pi3 = 3.14;
+float u_Float3 = 2.0;
+float u_a13 = 0.5;
+float u_b13 = 1.0;
+float u_r13 = 0.4;
+float u_q13 = 0.3;
+float u_a14 = 0.5;
+float u_b14 = 1.0;
+float u_r14 = 0.4;
+float u_q14 = 0.3;
+float u_a15 = 0.5;
+float u_b15 = 1.0;
+float u_r15 = 0.4;
+float u
+22:51:40.102 babylon.js:16 Vertex shader: Building position [InputBlock]
+22:51:40.102 babylon.js:16 Vertex shader: Building World [InputBlock]
+22:51:40.103 babylon.js:16 Vertex shader: Building WorldPos [TransformBlock]
+22:51:40.103 babylon.js:16 Vertex shader: Building view [InputBlock]
+22:51:40.103 babylon.js:16 Vertex shader: Building Fog [FogBlock]
+22:51:40.103 babylon.js:16 Vertex shader: Building Lights [LightBlock]
+22:51:40.104 babylon.js:16 Vertex shader: Building ViewProjection [InputBlock]
+22:51:40.104 babylon.js:16 Vertex shader: Building WorldPos * ViewProjectionTransform [TransformBlock]
+22:51:40.104 babylon.js:16 Vertex shader: Building VertexOutput [VertexOutputBlock]
+22:51:40.104 babylon.js:16 Vertex shader: Building uv [InputBlock]
+22:51:40.105 babylon.js:16 Vertex shader: Building Texture [TextureBlock]
+22:51:40.105 babylon.js:16 Vertex shader: Building Texture [TextureBlock]
+22:51:40.106 babylon.js:16 Vertex shader: Building Texture [TextureBlock]
+22:51:40.106 babylon.js:16 Fragment shader: Building normal [InputBlock]
+22:51:40.106 babylon.js:16 Fragment shader: Building World normal [TransformBlock]
+22:51:40.107 babylon.js:16 Fragment shader: Building tangent [InputBlock]
+22:51:40.107 babylon.js:16 Fragment shader: Building World tangent [TransformBlock]
+22:51:40.107 babylon.js:16 Fragment shader: Building Texture [TextureBlock]
+22:51:40.107 babylon.js:16 Fragment shader: Building strength [InputBlock]
+22:51:40.108 babylon.js:16 Fragment shader: Building Perturb normal [PerturbNormalBlock]
+22:51:40.108 babylon.js:16 Fragment shader: Building cameraPosition [InputBlock]
+22:51:40.108 babylon.js:16 Fragment shader: Building Texture [TextureBlock]
+22:51:40.109 babylon.js:16 Fragment shader: Building glossPow [InputBlock]
+22:51:40.109 babylon.js:16 Fragment shader: Building Pow [PowBlock]
+22:51:40.109 babylon.js:16 Fragment shader: Building  [InputBlock]
+22:51:40.109 babylon.js:16 Fragment shader: Building  [InputBlock]
+22:51:40.110 babylon.js:16 Fragment shader: Building Lights [LightBlock]
+22:51:40.110 babylon.js:16 Fragment shader: Building Texture [TextureBlock]
+22:51:40.110 babylon.js:16 Fragment shader: Building Gradient [GradientBlock]
+22:51:40.111 babylon.js:16 Fragment shader: Building Gradient [GradientBlock]
+22:51:40.111 babylon.js:16 Fragment shader: Building Multiply [MultiplyBlock]
+22:51:40.111 babylon.js:16 Fragment shader: Building Add [AddBlock]
+22:51:40.111 babylon.js:16 Fragment shader: Building fogColor [InputBlock]
+22:51:40.111 babylon.js:16 Fragment shader: Building Fog [FogBlock]
+22:51:40.112 babylon.js:16 Fragment shader: Building FragmentOutput [FragmentOutputBlock]
+22:51:40.112 babylon.js:16 Vertex shader:
+22:51:40.112 babylon.js:16 
+attribute vec3 position;
+attribute vec2 uv;
+attribute vec3 normal;
+attribute vec3 tangent;
+
+
+uniform mat4 u_World;
+uniform mat4 u_view;
+uniform mat4 u_ViewProjection;
+#ifdef UVTRANSFORM0
+uniform mat4 textureTransform;
+#endif
+#ifdef UVTRANSFORM1
+uniform mat4 textureTransform1;
+#endif
+#ifdef UVTRANSFORM2
+uniform mat4 textureTransform2;
+#endif
+
+
+uniform sampler2D TextureSampler;
+uniform sampler2D TextureSampler1;
+uniform sampler2D TextureSampler2;
+
+
+varying vec3 vFogDistance;
+varying vec4 v_output1;
+#ifdef UVTRANSFORM0
+varying vec2 transformedUV;
+#endif
+#ifdef VMAINUV
+varying vec2 vMainuv;
+#endif
+#ifdef UVTRANSFORM1
+varying vec2 transformedUV1;
+#endif
+#ifdef UVTRANSFORM2
+varying vec2 transformedUV2;
+#endif
+varying vec3 v_normal;
+varying vec3 v_tangent;
+varying vec2 v_uv;
+
+
+#include<lightUboDeclaration>[0..maxSimultaneousLights]
+
+
+
+void main(void) {
+vec4 output1 = u_World * vec4(position, 1.0);
+vFogDistance = (u_view * output1).xyz;
+v_output1 = output1;
+vec4 worldPos = output1;
+#include<shadowsVertex>[0..maxSimultaneousLights]
+vec4 output0 = u_ViewProjection * output1;
+gl_Position = output0;
+#ifdef UVTRANSFORM0
+transformedUV = vec2(textureTransform * vec4(uv.xy, 1.0, 0.0));
+#elif defined(VMAINUV)
+vMainuv = uv.xy;
+#endif
+#ifdef UVTRANSFORM1
+transformedUV1 = vec2(textureTransform1 * vec4(uv.xy, 1.0, 0.0));
+#elif defined(VMAINUV)
+vMainuv = uv.xy;
+#endif
+#ifdef UVTRANSFORM2
+transformedUV2 = vec2(textureTransform2 * vec4(uv.xy, 1.0, 0.0));
+#elif defined(VMAINUV)
+vMainuv = uv.xy;
+#endif
+v_normal = normal;
+v_tangent = tangent;
+v_uv = uv;
+
+}
+22:51:40.112 babylon.js:16 Fragment shader:
+22:51:40.112 babylon.js:16 
+#extension GL_OES_standard_derivatives : enable
+
+uniform mat4 u_World;
+uniform mat4 u_view;
+uniform mat4 u_ViewProjection;
+#ifdef UVTRANSFORM0
+uniform mat4 textureTransform;
+#endif
+#ifdef UVTRANSFORM1
+uniform mat4 textureTransform1;
+#endif
+#ifdef UVTRANSFORM2
+uniform mat4 textureTransform2;
+#endif
+uniform float textureInfoName;
+uniform float u_strength;
+uniform vec2 tangentSpaceParameter0;
+uniform vec3 u_cameraPosition;
+uniform float textureInfoName1;
+uniform float u_glossPow;
+uniform vec3 u_1;
+uniform float textureInfoName2;
+uniform vec3 u_fogColor;
+uniform vec4 fogParameters;
+
+
+uniform sampler2D TextureSampler;
+uniform sampler2D TextureSampler1;
+uniform sampler2D TextureSampler2;
+
+
+varying vec3 vFogDistance;
+varying vec4 v_output1;
+#ifdef UVTRANSFORM0
+varying vec2 transformedUV;
+#endif
+#ifdef VMAINUV
+varying vec2 vMainuv;
+#endif
+#ifdef UVTRANSFORM1
+varying vec2 transformedUV1;
+#endif
+#ifdef UVTRANSFORM2
+varying vec2 transformedUV2;
+#endif
+varying vec3 v_normal;
+varying vec3 v_tangent;
+varying vec2 v_uv;
+
+
+#include<helperFunctions>
+
+#if defined(BUMP) || defined(CLEARCOAT_BUMP) || defined(ANISOTROPIC)
+#if defined(TANGENT) && defined(NORMAL)
+varying mat3 vTBN;
+#endif
+#ifdef OBJECTSPACE_NORMALMAP
+uniform mat4 normalMatrix;
+#endif
+vec3 perturbNormal(mat3 cotangentFrame,vec3 textureSample,float scale)
+{
+textureSample=textureSample*2.0-1.0;
+#ifdef NORMALXYSCALE
+textureSample=normalize(textureSample*vec3(scale,scale,1.0));
+#endif
+return normalize(cotangentFrame*textureSample);
+}
+
+mat3 cotangent_frame(vec3 normal,vec3 p,vec2 uv,vec2 tangentSpaceParams)
+{
+
+uv=gl_FrontFacing ? uv : -uv;
+
+vec3 dp1=dFdx(p);
+vec3 dp2=dFdy(p);
+vec2 duv1=dFdx(uv);
+vec2 duv2=dFdy(uv);
+
+vec3 dp2perp=cross(dp2,normal);
+vec3 dp1perp=cross(normal,dp1);
+vec3 tangent=dp2perp*duv1.x+dp1perp*duv2.x;
+vec3 bitangent=dp2perp*duv1.y+dp1perp*duv2.y;
+
+tangent*=tangentSpaceParams.x;
+bitangent*=tangentSpaceParams.y;
+
+float invmax=inversesqrt(max(dot(tangent,tangent),dot(bitangent,bitangent)));
+return mat3(tangent*invmax,bitangent*invmax,normal);
+}
+#endif
+#if defined(BUMP)
+#if BUMPDIRECTUV == 1
+#define vBumpUV vMainUV1
+#elif BUMPDIRECTUV == 2
+#define vBumpUV vMainUV2
+#else
+varying vec2 vBumpUV;
+#endif
+uniform sampler2D bumpSampler;
+vec3 perturbNormal(mat3 cotangentFrame,vec2 uv)
+{
+return perturbNormal(cotangentFrame,texture2D(bumpSampler,uv).xyz,1.0 / u_strength);
+}
+#endif
+#if defined(BUMP) || defined(CLEARCOAT_BUMP)
+vec3 perturbNormal(mat3 cotangentFrame,vec3 color)
+{
+return perturbNormal(cotangentFrame,color,1.0 / u_strength);
+}
+
+mat3 cotangent_frame(vec3 normal,vec3 p,vec2 uv)
+{
+return cotangent_frame(normal,p,uv,tangentSpaceParameter0);
+}
+#endif
+#if defined(BUMP) && defined(PARALLAX)
+const float minSamples=4.;
+const float maxSamples=15.;
+const int iMaxSamples=15;
+
+vec2 parallaxOcclusion(vec3 vViewDirCoT,vec3 vNormalCoT,vec2 texCoord,float parallaxScale) {
+float parallaxLimit=length(vViewDirCoT.xy)/vViewDirCoT.z;
+parallaxLimit*=parallaxScale;
+vec2 vOffsetDir=normalize(vViewDirCoT.xy);
+vec2 vMaxOffset=vOffsetDir*parallaxLimit;
+float numSamples=maxSamples+(dot(vViewDirCoT,vNormalCoT)*(minSamples-maxSamples));
+float stepSize=1.0/numSamples;
+
+float currRayHeight=1.0;
+vec2 vCurrOffset=vec2(0,0);
+vec2 vLastOffset=vec2(0,0);
+float lastSampledHeight=1.0;
+float currSampledHeight=1.0;
+for (int i=0; i<iMaxSamples; i++)
+{
+currSampledHeight=texture2D(bumpSampler,vBumpUV+vCurrOffset).w;
+
+if (currSampledHeight>currRayHeight)
+{
+float delta1=currSampledHeight-currRayHeight;
+float delta2=(currRayHeight+stepSize)-lastSampledHeight;
+float ratio=delta1/(delta1+delta2);
+vCurrOffset=(ratio)* vLastOffset+(1.0-ratio)*vCurrOffset;
+
+break;
+}
+else
+{
+currRayHeight-=stepSize;
+vLastOffset=vCurrOffset;
+vCurrOffset+=stepSize*vMaxOffset;
+lastSampledHeight=currSampledHeight;
+}
+}
+return vCurrOffset;
+}
+vec2 parallaxOffset(vec3 viewDir,float heightScale)
+{
+
+float height=texture2D(bumpSampler,vBumpUV).w;
+vec2 texCoordOffset=heightScale*viewDir.xy*height;
+return -texCoordOffset;
+}
+#endif
+
+struct lightingInfo
+{
+vec3 diffuse;
+#ifdef SPECULARTERM
+vec3 specular;
+#endif
+#ifdef NDOTL
+float ndl;
+#endif
+};
+lightingInfo computeLighting(vec3 viewDirectionW,vec3 vNormal,vec4 lightData,vec3 diffuseColor,vec3 specularColor,float range,float glossiness) {
+lightingInfo result;
+vec3 lightVectorW;
+float attenuation=1.0;
+if (lightData.w == 0.)
+{
+vec3 direction=lightData.xyz-v_output1.xyz;
+attenuation=max(0.,1.0-length(direction)/range);
+lightVectorW=normalize(direction);
+}
+else
+{
+lightVectorW=normalize(-lightData.xyz);
+}
+
+float ndl=max(0.,dot(vNormal,lightVectorW));
+#ifdef NDOTL
+result.ndl=ndl;
+#endif
+result.diffuse=ndl*diffuseColor*attenuation;
+#ifdef SPECULARTERM
+
+vec3 angleW=normalize(viewDirectionW+lightVectorW);
+float specComp=max(0.,dot(vNormal,angleW));
+specComp=pow(specComp,max(1.,glossiness));
+result.specular=specComp*specularColor*attenuation;
+#endif
+return result;
+}
+lightingInfo computeSpotLighting(vec3 viewDirectionW,vec3 vNormal,vec4 lightDat
