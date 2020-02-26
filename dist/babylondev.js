@@ -26832,7 +26832,7 @@ var Sheen = /** @class */ (function (_super) {
             model: "Cloth.gltf",
             sheenColor: new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](159 / 255, 162 / 255, 247 / 255),
             metallic: 0,
-            metallicF0Factor: 0.5,
+            metallicF0Factor: 0.0,
             roughness: 0.8,
             sheenRoughness: 0.5,
             lightPos: new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](3, 3, 0),
