@@ -26714,6 +26714,26 @@ var scenes = [
         "num": 3,
     }
 ];
+var materials = [
+    {
+        "name": "Blue",
+        "albedo": new BABYLON.Color3(12 / 255, 60 / 255, 222 / 255),
+        "sheen": new BABYLON.Color3(1, 1, 1),
+        "sheenRoughness": 0.5,
+    },
+    {
+        "name": "Red",
+        "albedo": new BABYLON.Color3(0, 0, 0),
+        "sheen": new BABYLON.Color3(1, 0, 0),
+        "sheenRoughness": 1.0,
+    },
+    {
+        "name": "White",
+        "albedo": new BABYLON.Color3(1, 1, 1),
+        "sheen": new BABYLON.Color3(207 / 255, 207 / 255, 207 / 255),
+        "sheenRoughness": 0.5,
+    },
+];
 var Sheen = /** @class */ (function (_super) {
     __extends(Sheen, _super);
     function Sheen() {
@@ -26723,6 +26743,7 @@ var Sheen = /** @class */ (function (_super) {
         this._scene = scene;
         this._currEnv = 2;
         this._currScene = 2;
+        this._currMaterial = 0;
         this._loadScene(this._currScene);
     };
     Sheen.prototype._loadScene = function (numScene) {
@@ -26763,6 +26784,7 @@ var Sheen = /** @class */ (function (_super) {
             var mesh = scene.meshes[1];
             var mat = mesh.material;
             window.mat = mat;
+            _this._material = mat;
             if (params.albedoColor) {
                 mat.albedoColor = params.albedoColor;
             }
@@ -26772,6 +26794,8 @@ var Sheen = /** @class */ (function (_super) {
             mat.sheen.color = params.sheenColor;
             mat.sheen.isEnabled = true;
             mat.sheen.roughness = params.sheenRoughness;
+            mat.sheen.albedoScaling = params.albedoScaling;
+            _this._changeMaterial(_this._currMaterial);
             _this._setEnvironment(_this._currEnv);
             /*var t = 0;
 
@@ -26789,8 +26813,10 @@ var Sheen = /** @class */ (function (_super) {
             ];*/
             babylonjs__WEBPACK_IMPORTED_MODULE_0__["DebugLayer"].InspectorURL = 'resources/lib/babylon.inspector.bundle.max.js';
             scene.debugLayer.show({ showExplorer: true }).then(function () {
-                scene.debugLayer.select(mat, "SHEEN");
-                _this._makeGUI(scene, mat);
+                window.setTimeout(function () {
+                    scene.debugLayer.select(mat, "SHEEN");
+                    _this._makeGUI(scene, mat);
+                }, 500);
             });
         });
     };
@@ -26798,6 +26824,13 @@ var Sheen = /** @class */ (function (_super) {
         var params = this._getDefaultParams();
         switch (numModel) {
             case 0:
+                params.sheenColor = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](1, 1, 1);
+                params.albedoColor = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Color3"](12 / 255, 60 / 255, 222 / 255);
+                params.sheenRoughness = 0.4;
+                params.setCamera = true;
+                params.camAlpha = 1.0471975511965976;
+                params.camBeta = 1.2707963267948965;
+                params.camRadius = 6.954951280362775;
                 break;
             case 1:
                 params.path = "resources/3d/couch_pillow/";
@@ -26843,7 +26876,15 @@ var Sheen = /** @class */ (function (_super) {
             camRadius: -1,
             setCamera: false,
             albedoColor: null,
+            albedoScaling: true,
         };
+    };
+    Sheen.prototype._changeMaterial = function (matIdx) {
+        this._currMaterial = matIdx;
+        var material = materials[matIdx];
+        this._material.sheen.color = material.sheen;
+        this._material.sheen.roughness = material.sheenRoughness;
+        this._material.albedoColor = material.albedo;
     };
     Sheen.prototype._makeGUI = function (scene, mat) {
         var _this = this;
@@ -26870,17 +26911,27 @@ var Sheen = /** @class */ (function (_super) {
             .on('change', function (e) {
             that._loadScene(parseInt('' + jQuery(this).find('select').val()));
         });
+        var sceneMaterials = jQuery('<span>Material </span>')
+            .append('<select>' + materials.map(function (mat, idx) { return '<option value="' + idx + '" ' + (idx == _this._currMaterial ? 'selected' : '') + '>' + mat.name + '</option>'; }).join('') + '</select>')
+            .css('color', 'white')
+            .css('position', 'absolute')
+            .css('left', '10px')
+            .css('top', '60px')
+            .on('change', function (e) {
+            that._changeMaterial(parseInt('' + jQuery(this).find('select').val()));
+        });
         var enableSheen = jQuery('<span>Enable sheen </span>')
             .append('<input type="checkbox" checked>')
             .css('color', 'white')
             .css('position', 'absolute')
             .css('left', '10px')
-            .css('top', '60px')
+            .css('top', '85px')
             .on('click', function (e) {
             mat.sheen.isEnabled = jQuery(this).find('input').prop('checked');
         });
         c.append(environmentTexture);
         c.append(sceneObjects);
+        c.append(sceneMaterials);
         c.append(enableSheen);
     };
     Sheen.prototype._setEnvironment = function (envNum) {
