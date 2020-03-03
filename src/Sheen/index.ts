@@ -31,6 +31,7 @@ interface IParams {
     camRadius: number;
     setCamera: boolean;
     albedoColor: Nullable<Color3>;
+    albedoScaling: boolean;
 }
 
 const envTextures = [
@@ -71,16 +72,40 @@ const scenes = [
     }
 ];
 
+const materials = [
+    {
+        "name": "Blue",
+        "albedo": new BABYLON.Color3(12 / 255, 60 / 255, 222 / 255),
+        "sheen": new BABYLON.Color3(1, 1, 1),
+        "sheenRoughness": 0.5,
+    },
+    {
+        "name": "Red",
+        "albedo": new BABYLON.Color3(0, 0, 0),
+        "sheen": new BABYLON.Color3(1, 0, 0),
+        "sheenRoughness": 1.0,
+    },
+    {
+        "name": "White",
+        "albedo": new BABYLON.Color3(1, 1, 1),
+        "sheen": new BABYLON.Color3(207 / 255, 207 / 255, 207 / 255),
+        "sheenRoughness": 0.5,
+    },
+];
+
 export default class Sheen extends SampleBasic {
 
     private _scene: Scene;
     private _currEnv: number;
     private _currScene: number;
+    private _currMaterial: number;
+    private _material: PBRMaterial;
 
     protected populateScene(scene: Scene, camera: UniversalCamera) {
         this._scene = scene;
         this._currEnv = 2;
         this._currScene = 2;
+        this._currMaterial = 0;
 
         this._loadScene(this._currScene);
     }
@@ -138,6 +163,7 @@ export default class Sheen extends SampleBasic {
             var mat = mesh.material as PBRMaterial;
 
             (window as any).mat = mat;
+            this._material = mat;
 
             if (params.albedoColor) {
                 mat.albedoColor = params.albedoColor;
@@ -148,6 +174,9 @@ export default class Sheen extends SampleBasic {
             mat.sheen.color = params.sheenColor;
             mat.sheen.isEnabled = true;
             mat.sheen.roughness = params.sheenRoughness;
+            mat.sheen.albedoScaling = params.albedoScaling;
+
+            this._changeMaterial(this._currMaterial);
 
             this._setEnvironment(this._currEnv);
 
@@ -170,8 +199,10 @@ export default class Sheen extends SampleBasic {
             DebugLayer.InspectorURL = 'resources/lib/babylon.inspector.bundle.max.js';
 
             scene.debugLayer.show({ showExplorer: true }).then(() => {
-                scene.debugLayer.select(mat, "SHEEN");
-                this._makeGUI(scene, mat);
+                window.setTimeout(() => {
+                    scene.debugLayer.select(mat, "SHEEN");
+                    this._makeGUI(scene, mat);
+                }, 500);
             });
         });
     }
@@ -181,6 +212,13 @@ export default class Sheen extends SampleBasic {
 
         switch (numModel) {
             case 0:
+                params.sheenColor = new Color3(1, 1, 1);
+                params.albedoColor = new Color3(12 / 255, 60 / 255, 222 / 255);
+                params.sheenRoughness = 0.4;
+                params.setCamera = true;
+                params.camAlpha = 1.0471975511965976;
+                params.camBeta = 1.2707963267948965;
+                params.camRadius = 6.954951280362775;
                 break;
             case 1:
                 params.path = "resources/3d/couch_pillow/";
@@ -228,7 +266,18 @@ export default class Sheen extends SampleBasic {
             camRadius: -1,
             setCamera: false,
             albedoColor: null,
+            albedoScaling: true,
         };
+    }
+
+    private _changeMaterial(matIdx: number): void {
+        this._currMaterial = matIdx;
+
+        const material = materials[matIdx];
+
+        this._material.sheen.color = material.sheen;
+        this._material.sheen.roughness = material.sheenRoughness;
+        this._material.albedoColor = material.albedo;
     }
 
     private _makeGUI(scene: Scene, mat: PBRMaterial): void {
@@ -260,18 +309,29 @@ export default class Sheen extends SampleBasic {
                 that._loadScene(parseInt('' + jQuery(this).find('select').val()));
             });
 
+        let sceneMaterials = jQuery('<span>Material </span>')
+            .append('<select>' + materials.map((mat, idx) => '<option value="' + idx + '" ' + (idx == this._currMaterial ? 'selected' : '') + '>' + mat.name + '</option>').join('') + '</select>')
+            .css('color', 'white')
+            .css('position', 'absolute')
+            .css('left', '10px')
+            .css('top', '60px')
+            .on('change', function(e) {
+                that._changeMaterial(parseInt('' + jQuery(this).find('select').val()));
+            });
+
         let enableSheen = jQuery('<span>Enable sheen </span>')
             .append('<input type="checkbox" checked>')
             .css('color', 'white')
             .css('position', 'absolute')
             .css('left', '10px')
-            .css('top', '60px')
+            .css('top', '85px')
             .on('click', function(e) {
                 mat.sheen.isEnabled = jQuery(this).find('input').prop('checked');
             });
 
         c.append(environmentTexture);
         c.append(sceneObjects);
+        c.append(sceneMaterials);
         c.append(enableSheen);
     }
 
