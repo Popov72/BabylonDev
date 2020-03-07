@@ -27639,6 +27639,248 @@ var SplitGUI = /** @class */ (function (_super) {
 
 /***/ }),
 
+/***/ "./src/Transparency/index.ts":
+/*!***********************************!*\
+  !*** ./src/Transparency/index.ts ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! babylonjs */ "babylonjs");
+/* harmony import */ var babylonjs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(babylonjs__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! babylonjs-gui */ "./node_modules/babylonjs-gui/babylon.gui.min.js");
+/* harmony import */ var babylonjs_gui__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _SampleBasic__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../SampleBasic */ "./src/SampleBasic.ts");
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var Transparency = /** @class */ (function (_super) {
+    __extends(Transparency, _super);
+    function Transparency() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Transparency.prototype.populateScene = function (scene, camera) {
+        camera.position = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 5, -10);
+        camera.setTarget(babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"].Zero());
+        var light = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["HemisphericLight"]("light", new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Vector3"](0, 1, 0), scene);
+        light.intensity = 0.7;
+        babylonjs__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreateGround("ground", { width: 6, height: 6 }, scene);
+        // Sphere with std material (on the left)
+        var sphereStd = babylonjs__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreateSphere("Standard", { diameter: 2, segments: 32 }, scene);
+        sphereStd.position.y = 1;
+        sphereStd.position.x = -1.5;
+        var matStd = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["StandardMaterial"]("matstd", scene);
+        sphereStd.material = matStd;
+        matStd.diffuseTexture = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Texture"]("resources/texture/cloud.png", scene);
+        matStd.diffuseTexture.hasAlpha = true;
+        matStd.useAlphaFromDiffuseTexture = true;
+        matStd.useSpecularOverAlpha = true;
+        matStd.alphaCutOff = 0.4;
+        // Sphere with PBR material (on the right)
+        var spherePbr = babylonjs__WEBPACK_IMPORTED_MODULE_0__["MeshBuilder"].CreateSphere("PBR", { diameter: 2, segments: 32 }, scene);
+        spherePbr.position.y = 1;
+        spherePbr.position.x = 1.5;
+        var matPbr = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["PBRMaterial"]("matpbr", scene);
+        spherePbr.material = matPbr;
+        matPbr.metallic = 1.0;
+        matPbr.roughness = 0.4;
+        matPbr.albedoTexture = new babylonjs__WEBPACK_IMPORTED_MODULE_0__["Texture"]("resources/texture/cloud.png", scene);
+        matPbr.albedoTexture.hasAlpha = true;
+        matPbr.useAlphaFromAlbedoTexture = true;
+        matPbr.alphaCutOff = 0.4;
+        this.makeGUI([matStd, matPbr], [sphereStd, spherePbr]);
+        return scene;
+    };
+    Transparency.prototype.makeGUI = function (materials, meshes) {
+        var advancedTexture = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["AdvancedDynamicTexture"].CreateFullscreenUI("UI");
+        var grid = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Grid"]("grid");
+        grid.addColumnDefinition(220, true);
+        grid.addColumnDefinition(300, true);
+        grid.addColumnDefinition(300, true);
+        advancedTexture.addControl(grid);
+        var stack = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["StackPanel"]("panel");
+        stack.left = "10px";
+        stack.isVertical = true;
+        stack.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        stack.verticalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].VERTICAL_ALIGNMENT_TOP;
+        grid.addControl(stack, 0, 0);
+        // transparencyMode
+        var addRadio = function (text, parent, val) {
+            var button = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["RadioButton"]();
+            button.width = "35px";
+            button.height = "20px";
+            button.color = "white";
+            button.background = "green";
+            button.isChecked = val == materials[0].transparencyMode;
+            button.group = "g1";
+            button.paddingLeft = "15px";
+            button.onIsCheckedChangedObservable.add(function (state) {
+                if (state) {
+                    materials.forEach(function (mat) { return mat.transparencyMode = val; });
+                }
+            });
+            var header = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].AddHeader(button, text, "250px", { isHorizontal: true, controlFirst: true });
+            header.height = "25px";
+            header.color = "white";
+            header.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+            parent.addControl(header);
+        };
+        var header = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["TextBlock"]();
+        header.text = "Transparency mode:";
+        header.width = "180px";
+        header.height = "25px";
+        header.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        header.verticalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].VERTICAL_ALIGNMENT_TOP;
+        header.textHorizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        header.color = "white";
+        stack.addControl(header);
+        addRadio("null", stack, null);
+        addRadio("Opaque", stack, 0);
+        addRadio("Alpha Test", stack, 1);
+        addRadio("Alpha Blend", stack, 2);
+        addRadio("Alpha Test + Blend", stack, 3);
+        // alpha
+        var stack2 = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["StackPanel"]("panel2");
+        stack2.left = "10px";
+        stack2.isVertical = true;
+        stack2.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        stack2.verticalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].VERTICAL_ALIGNMENT_TOP;
+        grid.addControl(stack2, 0, 1);
+        var headerAlpha = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["TextBlock"]();
+        headerAlpha.text = "Alpha: " + materials[0].alpha;
+        headerAlpha.height = "25px";
+        headerAlpha.color = "white";
+        headerAlpha.paddingLeft = "70px";
+        headerAlpha.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        headerAlpha.textHorizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        stack2.addControl(headerAlpha);
+        var slider = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Slider"]();
+        slider.minimum = 0;
+        slider.maximum = 1;
+        slider.value = 1;
+        slider.height = "20px";
+        slider.width = "200px";
+        slider.color = "green";
+        slider.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        slider.onValueChangedObservable.add(function (value) {
+            headerAlpha.text = "Alpha: " + value;
+            materials.forEach(function (mat) { return mat.alpha = value; });
+        });
+        stack2.addControl(slider);
+        // alpha cut off
+        var headerAlphaC = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["TextBlock"]();
+        headerAlphaC.text = "Alpha Cut Off: " + materials[0].alphaCutOff;
+        headerAlphaC.height = "25px";
+        headerAlphaC.color = "white";
+        headerAlphaC.paddingLeft = "10px";
+        headerAlphaC.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        headerAlphaC.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        stack2.addControl(headerAlphaC);
+        slider = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Slider"]();
+        slider.minimum = 0;
+        slider.maximum = 1;
+        slider.value = materials[0].alphaCutOff;
+        slider.height = "20px";
+        slider.width = "200px";
+        slider.color = "green";
+        slider.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        slider.onValueChangedObservable.add(function (value) {
+            headerAlphaC.text = "Alpha Cut Off: " + value;
+            materials.forEach(function (mat) { return mat.alphaCutOff = value; });
+        });
+        stack2.addControl(slider);
+        // use alpha from texture
+        var checkbox = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Checkbox"]();
+        checkbox.width = "20px";
+        checkbox.height = "20px";
+        checkbox.isChecked = materials[0].useAlphaFromDiffuseTexture;
+        checkbox.color = "green";
+        checkbox.onIsCheckedChangedObservable.add(function (value) {
+            materials[0].useAlphaFromDiffuseTexture = value;
+            materials[1].useAlphaFromAlbedoTexture = value;
+        });
+        header = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].AddHeader(checkbox, "Use alpha from texture", "190px", { isHorizontal: true, controlFirst: false });
+        header.height = "35px";
+        header.color = "white";
+        header.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        stack2.addControl(header);
+        // mesh visibility
+        var headerVisibility = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["TextBlock"]();
+        headerVisibility.text = "Mesh visibility: " + meshes[0].visibility;
+        headerVisibility.height = "50px";
+        headerVisibility.color = "white";
+        headerVisibility.paddingLeft = "20px";
+        headerVisibility.textHorizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        headerVisibility.textVerticalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].VERTICAL_ALIGNMENT_BOTTOM;
+        stack2.addControl(headerVisibility);
+        slider = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Slider"]();
+        slider.minimum = 0;
+        slider.maximum = 1;
+        slider.value = 1;
+        slider.height = "20px";
+        slider.width = "200px";
+        slider.color = "green";
+        slider.horizontalAlignment = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].HORIZONTAL_ALIGNMENT_LEFT;
+        slider.onValueChangedObservable.add(function (value) {
+            headerVisibility.text = "Mesh visibility: " + value;
+            meshes.forEach(function (m) { return m.visibility = value; });
+        });
+        stack2.addControl(slider);
+        // strict transparency mode
+        var checkbox = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Checkbox"]();
+        checkbox.width = "20px";
+        checkbox.height = "20px";
+        checkbox.isChecked = materials[0].strictTransparencyMode;
+        checkbox.color = "green";
+        checkbox.onIsCheckedChangedObservable.add(function (value) {
+            materials.forEach(function (mat) { return mat.strictTransparencyMode = value; });
+        });
+        header = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].AddHeader(checkbox, "Strict transparency mode", "210px", { isHorizontal: true, controlFirst: false });
+        header.height = "35px";
+        header.color = "white";
+        header.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        header.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        grid.addControl(header, 0, 2);
+        // mesh labels
+        meshes.forEach(function (m) {
+            var btn = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Button"].CreateSimpleButton(m.name, m.name);
+            btn.width = "150px";
+            btn.height = "35px";
+            btn.color = "white";
+            btn.background = "green";
+            btn.cornerRadius = 10;
+            advancedTexture.addControl(btn);
+            btn.linkWithMesh(m);
+            btn.linkOffsetY = 160;
+        });
+    };
+    return Transparency;
+}(_SampleBasic__WEBPACK_IMPORTED_MODULE_2__["default"]));
+/* harmony default export */ __webpack_exports__["default"] = (Transparency);
+_SampleBasic__WEBPACK_IMPORTED_MODULE_2__["default"].registerSampleClass("transparency", {
+    "displayName": "Test of the transparency/alpha properties",
+    "description": "",
+    "class": Transparency,
+});
+
+
+/***/ }),
+
 /***/ "./src/Utils.ts":
 /*!**********************!*\
   !*** ./src/Utils.ts ***!
@@ -27760,6 +28002,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _ScrollViewer2_index__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./ScrollViewer2/index */ "./src/ScrollViewer2/index.ts");
 /* harmony import */ var _Sheen_index__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Sheen/index */ "./src/Sheen/index.ts");
 /* harmony import */ var _SketchfabMarkers_index__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./SketchfabMarkers/index */ "./src/SketchfabMarkers/index.ts");
+/* harmony import */ var _Transparency_index__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Transparency/index */ "./src/Transparency/index.ts");
+
 
 
 

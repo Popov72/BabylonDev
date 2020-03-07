@@ -8,3 +8,4 @@ import "./ScrollViewer/index";
 import "./ScrollViewer2/index";
 import "./Sheen/index";
 import "./SketchfabMarkers/index";
+import "./Transparency/index";
