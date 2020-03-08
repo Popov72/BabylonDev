@@ -262,7 +262,7 @@ export default class Transparency extends SampleBasic {
         stack2.addControl(slider);
 
         // strict transparency mode
-        var checkbox = new Checkbox();
+        /*var checkbox = new Checkbox();
 
         checkbox.width = "20px";
         checkbox.height = "20px";
@@ -279,7 +279,7 @@ export default class Transparency extends SampleBasic {
         header.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
         header.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 
-        grid.addControl(header, 0, 2);
+        grid.addControl(header, 0, 2);*/
 
         // mesh labels
         meshes.forEach((m) => {

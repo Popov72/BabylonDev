@@ -27842,20 +27842,24 @@ var Transparency = /** @class */ (function (_super) {
         });
         stack2.addControl(slider);
         // strict transparency mode
-        var checkbox = new babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Checkbox"]();
+        /*var checkbox = new Checkbox();
+
         checkbox.width = "20px";
         checkbox.height = "20px";
         checkbox.isChecked = materials[0].strictTransparencyMode;
         checkbox.color = "green";
-        checkbox.onIsCheckedChangedObservable.add(function (value) {
-            materials.forEach(function (mat) { return mat.strictTransparencyMode = value; });
+        checkbox.onIsCheckedChangedObservable.add(function(value) {
+            materials.forEach((mat) => mat.strictTransparencyMode = value);
         });
-        header = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Control"].AddHeader(checkbox, "Strict transparency mode", "210px", { isHorizontal: true, controlFirst: false });
+
+        header = Control.AddHeader(checkbox, "Strict transparency mode", "210px", { isHorizontal: true, controlFirst: false });
+
         header.height = "35px";
         header.color = "white";
         header.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
         header.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-        grid.addControl(header, 0, 2);
+
+        grid.addControl(header, 0, 2);*/
         // mesh labels
         meshes.forEach(function (m) {
             var btn = babylonjs_gui__WEBPACK_IMPORTED_MODULE_1__["Button"].CreateSimpleButton(m.name, m.name);
