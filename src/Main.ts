@@ -17,7 +17,7 @@ glMatrix.glMatrix.setMatrixArrayType(Array);
 const qs = Browser.QueryString;
 
 const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement,
-      engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true, antialias: false });
+      engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true });
 
 function setContainerDimensions() {
     engine.resize();
