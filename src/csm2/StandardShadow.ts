@@ -508,7 +508,7 @@ export default class StandardShadow extends SplitBase {
                 const totalVertices = m.getTotalVertices();
                 const tileinfos = [];
 
-                const ofst = 4;
+                const ofst = 0.5;
 
                 for (let v = 0; v < totalVertices; v++) {
                     tileinfos[v * 4 + 0] = (x + ofst) / width;
