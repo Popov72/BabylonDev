@@ -454,7 +454,7 @@ export class CSMShadowGenerator implements IShadowGenerator {
         let ready = true;
 
         for (let cascadeIndex = 0; cascadeIndex < this._cascades.length && ready; ++cascadeIndex) {
-            ready = ready && this._cascades[cascadeIndex].generator.isReady(subMesh, useInstances);
+            ready = ready && this._cascades[cascadeIndex].generator.isReady(subMesh, useInstances, false);
         }
 
         return ready;
