@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "BabylonDev",
-            "url": "http://localhost:9000/showSample.html?sample=CSM2",
+            "url": "http://localhost:9000/showSample.html?sample=webgpushadow",
             "sourceMaps": true,
             "sourceMapPathOverrides": {
                 "webpack:///./src/*": "${workspaceRoot}/src/*"

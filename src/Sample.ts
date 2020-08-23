@@ -21,7 +21,8 @@ export enum enumSplitMode {
 export interface ISampleDescription {
     displayName: string;
     description: string;
-    class: typeof Sample;
+    class: any;
+    nonbabylon?: boolean;
 }
 
 export default class Sample {
@@ -72,9 +73,15 @@ export default class Sample {
         const sampleDescr = Sample._sampleList.get(name);
 
         if (sampleDescr) {
-            const sample = new sampleDescr.class(engine, canvas);
+            let sample = null;
 
-            sample.create();
+            if (!sampleDescr.nonbabylon) {
+                sample = new sampleDescr.class(engine, canvas);
+
+                sample.create();
+            } else {
+                sample = new sampleDescr.class(canvas);
+            }
 
             return sample;
         }

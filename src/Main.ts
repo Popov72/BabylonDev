@@ -36,6 +36,8 @@ const sample = Sample.createSample(sampleName, engine, canvas) as Sample;
 
 if (sample === null) {
     alert(`Unknown sample "${sampleName}" !`);
+} else if (!(sample instanceof Sample)) {
+    (sample as any).run();
 } else {
     let divFps = document.getElementById("fps") as HTMLElement;
 

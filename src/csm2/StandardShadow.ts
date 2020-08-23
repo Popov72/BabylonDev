@@ -16,6 +16,8 @@ import {
     Texture,
     RawTexture,
     Constants,
+    CubeTexture,
+    RenderTargetTexture,
 } from "babylonjs";
 
 import {
@@ -360,6 +362,8 @@ export default class StandardShadow extends SplitBase {
         this.scene.activeCamera = this.camera;
 
         const useTextureAtlas = true;
+        const atlasExportMesh = false;
+        const atlasExportTexture = false;
 
         const meshes: Mesh[] = [];
         const textureBlocks: Array<IAtlasTile> = [];
@@ -384,6 +388,10 @@ export default class StandardShadow extends SplitBase {
                     float fx = clamp(fract(vDiffuseUV.x), 0., 1.), fy = clamp(fract(vDiffuseUV.y), 0., 1.);
                     vec2 uvCoord = vec2(vColor.x + fx * vColor.z, vColor.y + fy * vColor.w);
                     baseColor = texture(diffuseSampler, uvCoord);
+                `);
+
+                mat.Fragment_Before_FragColor(`
+                    color = baseColor;
                 `);
     
                 mat.diffuseTexture = stdmat.diffuseTexture;
@@ -485,13 +493,15 @@ export default class StandardShadow extends SplitBase {
 
             const atlasImageData = ctx.getImageData(0, 0, width, height);
 
-            //const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, true, false, Constants.TEXTURE_LINEAR_LINEAR_MIPLINEAR);
-            const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, false, false, Constants.TEXTURE_LINEAR_LINEAR);
+            const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, true, false, Constants.TEXTURE_LINEAR_LINEAR_MIPLINEAR);
+            //const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, false, false, Constants.TEXTURE_LINEAR_LINEAR);
 
-            atlasTexture.anisotropicFilteringLevel = 1;
+            //atlasTexture.anisotropicFilteringLevel = 1;
 
-            //const img = canvas.toDataURL("image/png");
-            //this.saveData("atlas", img);
+            if (atlasExportTexture) {
+                const img = canvas.toDataURL("image/png");
+                this.saveData("atlas", img);
+            }
 
             meshes.forEach((m) => {
                 const mat = m.material as StandardMaterial;
@@ -525,11 +535,66 @@ export default class StandardShadow extends SplitBase {
             (nmesh!.material as StandardMaterial).diffuseTexture = atlasTexture;
 
             nmesh!.receiveShadows = true;
+
+            let toDisp: Array<any> = [];
+            this.scene.materials.forEach((mat) => {
+                if (mat !== nmesh!.material && mat !== this._skybox.material && !mat.name.startsWith("CSM")) {
+                    toDisp.push(mat);
+                }
+            });
+
+            toDisp.forEach((t) => t.dispose());
+
+            toDisp = [];
+            this.scene.textures.forEach((texture) => {
+                if (!(texture instanceof RawTexture) && !(texture instanceof CubeTexture) && !(texture instanceof RenderTargetTexture)) {
+                    toDisp.push(texture);
+                }
+            });
+
+            toDisp.forEach((t) => t.dispose());
+
+            if (atlasExportMesh) {
+                this.exportMesh(nmesh!);
+            }
         }
 
         this.createShadowGenerator();
 
         return this;
+    }
+
+    public exportMesh(mesh: Mesh) {
+        const positions = mesh.getVerticesData("position")!;
+        const normals = mesh.getVerticesData("normal")!;
+        const tileInfos = mesh.getVerticesData("color")!;
+        const uvs = mesh.getVerticesData("uv")!;
+        const indices = mesh.getIndices();
+
+        const numVertices = positions.length / 3;
+
+        const vertexArray = [];
+
+        for (let v = 0; v < numVertices; ++v) {
+            const px = positions[v * 3 + 0], py = positions[v * 3 + 1], pz = positions[v * 3 + 2];
+            const nx = normals[v * 3 + 0], ny = normals[v * 3 + 1], nz = normals[v * 3 + 2];
+            const tileInfosX = tileInfos[v * 4 + 0], tileInfosY = tileInfos[v * 4 + 1], tileInfosZ = tileInfos[v * 4 + 2], tileInfosW = tileInfos[v * 4 + 3];
+            const uvx = uvs[v * 2 + 0], uvy = uvs[v * 2 + 1];
+
+            vertexArray.push(px, py, pz, 1, nx, ny, nz, 1, tileInfosX, tileInfosY, tileInfosZ, tileInfosW, uvx, uvy);
+        }
+
+        const json = { 
+            vertexSize: 14 * 4,
+            positionOffset: 0,
+            normalOffset: 4 * 4,
+            tileinfoOffset: 8 * 4,
+            uvOffset: 12 * 4,
+            vertexArray,
+            indices
+        };
+
+        console.log(JSON.stringify(json));
     }
 
     public async saveData(filename: string, data: any): Promise<void> {
