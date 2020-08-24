@@ -361,7 +361,7 @@ export default class StandardShadow extends SplitBase {
 
         this.scene.activeCamera = this.camera;
 
-        const useTextureAtlas = true;
+        const useTextureAtlas = false;
         const atlasExportMesh = false;
         const atlasExportTexture = false;
 
@@ -372,6 +372,7 @@ export default class StandardShadow extends SplitBase {
 
         this.scene.meshes.forEach((m) => {
             if (m.name == 'skyBox' || m.name.indexOf("_shadowmap") >= 0) { return; }
+            //if (m.name !== 'mesh_139_Mesh_main_ring_subset_0') { return; }
 
             if (!m.material) { return; }
 
@@ -451,7 +452,7 @@ export default class StandardShadow extends SplitBase {
                 return vb < va ? -1 : vb > va ? 1 : 0;
             });
             
-            const atlas = new AtlasPacker();
+            const atlas = new AtlasPacker(8192, 8192);
 
             if (!atlas.fit(textureBlocks)) {
                 console.log("shit!", textureBlocks);

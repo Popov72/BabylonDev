@@ -69,7 +69,7 @@ export class WebGPUShadow {
 
         void main() {
             float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
-            vec2 uvCoord = vec2(vTileinfo.x + fx * vTileinfo.z, 1.0 - (vTileinfo.y + fy * vTileinfo.w));
+            vec2 uvCoord = vec2(vTileinfo.x + fx * vTileinfo.z, vTileinfo.y + fy * vTileinfo.w);
             outColor =  texture(sampler2D(myTexture, mySampler), uvCoord);
         }
         `;
@@ -90,7 +90,7 @@ export class WebGPUShadow {
             format: "bgra8unorm",
         });
 
-        const scene: any = await fetch("/resources/webgpu/powerplant.json").then((response) => response.json());
+        const scene: any = await fetch("/resources/webgpu/powerplant2.json").then((response) => response.json());
 
         console.log(scene.indices.length);
 
@@ -224,7 +224,7 @@ export class WebGPUShadow {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        const atlasTexture = await createTextureFromImage(device, '/resources/webgpu/powerplant.png', GPUTextureUsage.SAMPLED);
+        const atlasTexture = await createTextureFromImage(device, '/resources/webgpu/powerplant2.png', GPUTextureUsage.SAMPLED);
 
         const sampler = device.createSampler({
             magFilter: "linear",
