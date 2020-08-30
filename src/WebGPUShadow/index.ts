@@ -4,6 +4,8 @@ import glslangModule from './glslang';
 import { mat4, vec3, quat } from 'gl-matrix';
 import { checkWebGPUSupport } from './helpers';
 import { GPUTextureHelper } from "./gpuTextureHelper";
+import { Camera } from "./camera";
+import { BasicControl } from "./BasicControl";
 
 const mainVertexShaderGLSL = `
     #version 450
@@ -77,11 +79,19 @@ export class WebGPUShadow {
 
     protected _canvas: HTMLCanvasElement;
     protected _sunDir: Float32Array;
+    protected _camera: Camera;
+    protected _basicControl: BasicControl;
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
         this._sunDir = new Float32Array([-1, -1, -1]);
         vec3.normalize(this._sunDir, this._sunDir);
+        this._camera = new Camera(0.5890486225480862, 1);
+
+        this._camera.position = [40, 5, 5];
+        this._camera.quaternion = [0, 0, 0, 1];
+
+        this._basicControl = new BasicControl(this._camera, { move: 0.02, rotation: 0.04, mouserotation: 0.008 });
     }
 
     public async run() {
@@ -276,6 +286,8 @@ export class WebGPUShadow {
     }
 
     protected _resize() {
+        this._camera.aspect = Math.abs(this._canvas.width / this._canvas.height);
+
         if (this._depthTexture) {
             this._depthTexture.destroy();
         }
@@ -298,10 +310,6 @@ export class WebGPUShadow {
 
         let [verticesBuffer, indicesBuffer, scene] = await this._makeGeometryBuffers();
 
-        const aspect = Math.abs(canvas.width / canvas.height);
-        let projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, 0.59, aspect, 0.25, 250.0);
-
         const pipelineMain = await this._createPiplineForMainRender(scene);
 
         let [vertexUniformBuffer, fragmentUniformBuffer, uniformBindGroup] = await this._createBindGroup(pipelineMain.getBindGroupLayout(0));
@@ -323,17 +331,20 @@ export class WebGPUShadow {
             }
         };
 
-        function getTransformationMatrix() {
-            return new Float32Array([
-                -0.00004175425783614628, -0.40888771414756775, -0.9942644238471985, -0.9922778606414795,
-                0, 3.271101713180542, -0.12428305298089981, -0.12403473258018494,
-                1.6701703071594238, -0.000010222192941000685, -0.000024856610252754763, -0.00002480694638506975,
-                -8.350851058959961, 0.000051110964705003425, 39.89161682128906, 40.3114128112793
-            ]);
-        }
+        let prevTimestamp = -1;
 
-        return (timestamp: any) => {
-            const transformationMatrix = getTransformationMatrix();
+        return (timestamp: number) => {
+            if (prevTimestamp < 0) {
+                prevTimestamp = timestamp;
+            }
+
+            const delta = timestamp - prevTimestamp;
+
+            this._basicControl.update(0, delta);
+
+            prevTimestamp = timestamp;
+
+            const transformationMatrix = this._camera.getTransformationMatrix();
             this._device.defaultQueue.writeBuffer(
                 vertexUniformBuffer,
                 0,
