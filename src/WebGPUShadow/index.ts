@@ -15,14 +15,19 @@ const mainVertexShaderGLSL = `
     layout(location = 0) in vec4 position;
     layout(location = 1) in vec2 uv;
     layout(location = 2) in vec4 tileinfo;
+    layout(location = 3) in vec4 normal;
 
     layout(location = 0) out vec2 fragUV;
     layout(location = 1) out vec4 vTileinfo;
+    layout(location = 2) out vec3 vPositionW;
+    layout(location = 3) out vec3 vNormalW;
 
     void main() {
         gl_Position = uniforms.modelViewProjectionMatrix * position;
         fragUV = uv;
         vTileinfo = tileinfo;
+        vPositionW = vec3(position);
+        vNormalW = normal.xyz;
     }
 `;
 
@@ -37,12 +42,26 @@ const mainFragmentShaderGLSL = `
 
     layout(location = 0) in vec2 fragUV;
     layout(location = 1) in vec4 vTileinfo;
+    layout(location = 2) in vec3 vPositionW;
+    layout(location = 3) in vec3 vNormalW;
+
     layout(location = 0) out vec4 outColor;
 
     void main() {
         float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
         vec2 uvCoord = vec2(vTileinfo.x + fx * vTileinfo.z, vTileinfo.y + fy * vTileinfo.w);
-        outColor = texture(sampler2D(myTexture, mySampler), uvCoord);
+        vec4 baseColor = texture(sampler2D(myTexture, mySampler), uvCoord);
+
+        vec3 normalW = normalize(vNormalW);
+
+        vec3 lightVectorW = normalize(-uniforms.lightDirection);
+
+        float ndl = max(0., dot(normalW, lightVectorW));
+        vec3 diffuse = ndl * vec3(1.); // vec3(1.) == diffuse color of light
+
+        vec3 finalDiffuse = clamp(diffuse + vec3(0.3), 0.0, 1.0) * baseColor.rgb;
+
+        outColor = vec4(finalDiffuse, baseColor.a);
     }
 `;
 
@@ -237,6 +256,11 @@ export class WebGPUShadow {
                         shaderLocation: 2,
                         offset: scene.tileinfoOffset,
                         format: "float4"
+                    }, {
+                        // normal
+                        shaderLocation: 3,
+                        offset: scene.normalOffset,
+                        format: "float4"
                     }]
                 }],
             },
@@ -300,27 +324,11 @@ export class WebGPUShadow {
         };
 
         function getTransformationMatrix() {
-            /*let viewMatrix = mat4.create();
-            mat4.translate(viewMatrix, viewMatrix, vec3.fromValues(-40, -5, -5));
-
-            //let scale = vec3.fromValues(-1, 1, 1);
-            //mat4.scale(viewMatrix, viewMatrix, scale);
-
-            /*let q = quat.fromValues(0.04393725652967226, -0.7057491885986513, 0.043938354988460625, 0.7057315448698508);
-            let matRot = mat4.create();
-            mat4.fromQuat(matRot, q);
-
-            mat4.multiply(viewMatrix, matRot, viewMatrix);/
-
-            let modelViewProjectionMatrix = mat4.create();
-            mat4.multiply(modelViewProjectionMatrix, projectionMatrix, viewMatrix);
-
-            return modelViewProjectionMatrix as Float32Array;*/
             return new Float32Array([
-                -0.00003991925768787041, -0.40888771414756775, -0.9942644238471985, -0.9922778606414795,
+                -0.00004175425783614628, -0.40888771414756775, -0.9942644238471985, -0.9922778606414795,
                 0, 3.271101713180542, -0.12428305298089981, -0.12403473258018494,
-                1.5967704057693481, -0.000010222192941000685, -0.000024856610252754763, -0.00002480694638506975,
-                -7.983851909637451, 0.000051110964705003425, 39.89161682128906, 40.3114128112793
+                1.6701703071594238, -0.000010222192941000685, -0.000024856610252754763, -0.00002480694638506975,
+                -8.350851058959961, 0.000051110964705003425, 39.89161682128906, 40.3114128112793
             ]);
         }
 

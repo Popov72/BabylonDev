@@ -361,7 +361,7 @@ export default class StandardShadow extends SplitBase {
 
         this.scene.activeCamera = this.camera;
 
-        const useTextureAtlas = false;
+        const useTextureAtlas = true;
         const atlasExportMesh = false;
         const atlasExportTexture = false;
 
@@ -391,9 +391,9 @@ export default class StandardShadow extends SplitBase {
                     baseColor = texture(diffuseSampler, uvCoord);
                 `);
 
-                mat.Fragment_Before_FragColor(`
+                /*mat.Fragment_Before_FragColor(`
                     color = baseColor;
-                `);
+                `);*/
     
                 mat.diffuseTexture = stdmat.diffuseTexture;
 
