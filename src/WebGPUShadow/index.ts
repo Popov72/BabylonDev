@@ -2,17 +2,74 @@ import SampleBasic from "../SampleBasic";
 
 import glslangModule from './glslang';
 import { mat4, vec3, quat } from 'gl-matrix';
-import { createTextureFromImage } from './helpers';
+import { checkWebGPUSupport } from './helpers';
+import { GPUTextureHelper } from "./gpuTextureHelper";
+
+const mainVertexShaderGLSL = `
+    #version 450
+
+    layout(set = 0, binding = 0) uniform Uniforms {
+        mat4 modelViewProjectionMatrix;
+    } uniforms;
+
+    layout(location = 0) in vec4 position;
+    layout(location = 1) in vec2 uv;
+    layout(location = 2) in vec4 tileinfo;
+
+    layout(location = 0) out vec2 fragUV;
+    layout(location = 1) out vec4 vTileinfo;
+
+    void main() {
+        gl_Position = uniforms.modelViewProjectionMatrix * position;
+        fragUV = uv;
+        vTileinfo = tileinfo;
+    }
+`;
+
+const mainFragmentShaderGLSL = `
+    #version 450
+
+    layout(set = 0, binding = 1) uniform sampler mySampler;
+    layout(set = 0, binding = 2) uniform texture2D myTexture;
+    layout(set = 0, binding = 3) uniform Uniforms {
+        vec3 lightDirection;
+    } uniforms;
+
+    layout(location = 0) in vec2 fragUV;
+    layout(location = 1) in vec4 vTileinfo;
+    layout(location = 0) out vec4 outColor;
+
+    void main() {
+        float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
+        vec2 uvCoord = vec2(vTileinfo.x + fx * vTileinfo.z, vTileinfo.y + fy * vTileinfo.w);
+        outColor = texture(sampler2D(myTexture, mySampler), uvCoord);
+    }
+`;
 
 export class WebGPUShadow {
 
-    private _canvas: HTMLCanvasElement;
+    protected _device: GPUDevice;
+    protected _glslang: any;
+    protected _swapChain: GPUSwapChain;
+    protected _colorTexture: GPUTexture;
+    protected _colorTextureView: GPUTextureView;
+    protected _depthTexture: GPUTexture;
+    protected _depthTextureView: GPUTextureView;
+
+    protected _canvas: HTMLCanvasElement;
+    protected _sunDir: Float32Array;
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
+        this._sunDir = new Float32Array([-1, -1, -1]);
+        vec3.normalize(this._sunDir, this._sunDir);
     }
 
     public async run() {
+        if (!checkWebGPUSupport()) {
+            return;
+        }
+
         const width = this._canvas.width;
         const height = this._canvas.height;
 
@@ -24,10 +81,11 @@ export class WebGPUShadow {
 
         document.body.appendChild(this._canvas);
 
-        /*window.onresize = () => {
+        window.onresize = () => {
             this._canvas.width = window.innerWidth;
             this._canvas.height = window.innerHeight;
-        };*/
+            this._resize();
+        };
 
         const frame = await this.init(this._canvas);
 
@@ -39,64 +97,29 @@ export class WebGPUShadow {
         requestAnimationFrame(doFrame);
     }
 
-    public async init(canvas: HTMLCanvasElement) {
-        const vertexShaderGLSL = `#version 450
-        layout(set = 0, binding = 0) uniform Uniforms {
-          mat4 modelViewProjectionMatrix;
-        } uniforms;
-
-        layout(location = 0) in vec4 position;
-        layout(location = 1) in vec2 uv;
-        layout(location = 2) in vec4 tileinfo;
-
-        layout(location = 0) out vec2 fragUV;
-        layout(location = 1) out vec4 vTileinfo;
-
-        void main() {
-          gl_Position = uniforms.modelViewProjectionMatrix * position;
-          fragUV = uv;
-          vTileinfo = tileinfo;
-        }
-        `;
-
-        const fragmentShaderGLSL = `#version 450
-        layout(set = 0, binding = 1) uniform sampler mySampler;
-        layout(set = 0, binding = 2) uniform texture2D myTexture;
-
-        layout(location = 0) in vec2 fragUV;
-        layout(location = 1) in vec4 vTileinfo;
-        layout(location = 0) out vec4 outColor;
-
-        void main() {
-            float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
-            vec2 uvCoord = vec2(vTileinfo.x + fx * vTileinfo.z, vTileinfo.y + fy * vTileinfo.w);
-            outColor =  texture(sampler2D(myTexture, mySampler), uvCoord);
-        }
-        `;
-
+    protected async _initWebGPU() {
         const adapter = await navigator.gpu!.requestAdapter() as GPUAdapter;
-        const device = await adapter.requestDevice() as GPUDevice;
-        const glslang = await glslangModule();
 
-        const aspect = Math.abs(canvas.width / canvas.height);
-        let projectionMatrix = mat4.create();
-        mat4.perspective(projectionMatrix, 0.59, aspect, 0.25, 250.0);
+        this._device = await adapter.requestDevice() as GPUDevice;
+        this._glslang = await glslangModule();
 
-        const context = canvas.getContext('gpupresent');
+        const context = this._canvas.getContext('gpupresent');
 
         // @ts-ignore:
-        const swapChain = context.configureSwapChain({
-            device,
+        this._swapChain = context.configureSwapChain({
+            device: this._device,
             format: "bgra8unorm",
         });
+    }
 
+    protected async _makeGeometryBuffers(): Promise<[GPUBuffer, GPUBuffer, any]> {
         const scene: any = await fetch("/resources/webgpu/powerplant2.json").then((response) => response.json());
 
         console.log(scene.indices.length);
 
         const vertexArray = new Float32Array(scene.vertexArray);
 
-        const verticesBuffer = device.createBuffer({
+        const verticesBuffer = this._device.createBuffer({
             size: vertexArray.byteLength,
             usage: GPUBufferUsage.VERTEX,
             mappedAtCreation: true,
@@ -106,7 +129,7 @@ export class WebGPUShadow {
 
         const indices = new Uint32Array(scene.indices);
 
-        const indicesBuffer = device.createBuffer({
+        const indicesBuffer = this._device.createBuffer({
             size: indices.byteLength,
             usage: GPUBufferUsage.INDEX,
             mappedAtCreation: true,
@@ -114,58 +137,89 @@ export class WebGPUShadow {
         new Uint32Array(indicesBuffer.getMappedRange()).set(indices);
         indicesBuffer.unmap();
 
-        const bindGroupLayout = device.createBindGroupLayout({
-            entries: [{
-                // Transform
-                binding: 0,
-                visibility: GPUShaderStage.VERTEX,
-                type: "uniform-buffer"
-            }, {
-                // Sampler
-                binding: 1,
-                visibility: GPUShaderStage.FRAGMENT,
-                type: "sampler"
-            }, {
-                // Texture view
-                binding: 2,
-                visibility: GPUShaderStage.FRAGMENT,
-                type: "sampled-texture"
-            }]
+        return [verticesBuffer, indicesBuffer, scene];
+    }
+
+    protected async _createBindGroup(bindGroupLayout: GPUBindGroupLayout): Promise<[GPUBuffer, GPUBuffer, GPUBindGroup]> {
+        const vertexUniformBufferSize = 4 * 16; // 4x4 matrix
+        const vertexUniformBuffer = this._device.createBuffer({
+            size: vertexUniformBufferSize,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        const pipelineLayout = device.createPipelineLayout({ bindGroupLayouts: [bindGroupLayout] });
-        const pipeline = device.createRenderPipeline({
-            layout: pipelineLayout,
+        const fragmentUniformBufferSize = 4 * 3; // vec3 light direction
+        const fragmentUniformBuffer = this._device.createBuffer({
+            size: fragmentUniformBufferSize,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
 
+        const textureHelper = new GPUTextureHelper(this._device, this._glslang);
+
+        const atlasTexture = await textureHelper.generateMipmappedTexture('/resources/webgpu/powerplant2.png');
+
+        const sampler = this._device.createSampler({
+            magFilter: "linear",
+            minFilter: "linear",
+            mipmapFilter: "linear",
+        });
+
+        const uniformBindGroup = this._device.createBindGroup({
+            layout: bindGroupLayout,
+            entries: [{
+                binding: 0,
+                resource: {
+                    buffer: vertexUniformBuffer,
+                },
+            }, {
+                binding: 1,
+                resource: sampler,
+            }, {
+                binding: 2,
+                resource: atlasTexture.createView(),
+            }, {
+                binding: 3,
+                resource: {
+                    buffer: fragmentUniformBuffer,
+                },
+            }],
+        });
+
+        return [vertexUniformBuffer, fragmentUniformBuffer, uniformBindGroup];
+    }
+
+    protected _createPiplineForMainRender(scene: any) {
+        return this._device.createRenderPipeline({
             vertexStage: {
-                module: device.createShaderModule({
-                    code: glslang.compileGLSL(vertexShaderGLSL, "vertex"),
+                module: this._device.createShaderModule({
+                    code: this._glslang.compileGLSL(mainVertexShaderGLSL, "vertex"),
 
                     // @ts-ignore
-                    source: vertexShaderGLSL,
-                    transform: (source: any) => glslang.compileGLSL(source, "vertex"),
+                    source: mainVertexShaderGLSL,
+                    transform: (source: any) => this._glslang.compileGLSL(source, "vertex"),
                 }),
                 entryPoint: "main"
             },
+
             fragmentStage: {
-                module: device.createShaderModule({
-                    code: glslang.compileGLSL(fragmentShaderGLSL, "fragment"),
+                module: this._device.createShaderModule({
+                    code: this._glslang.compileGLSL(mainFragmentShaderGLSL, "fragment"),
 
                     // @ts-ignore
-                    source: fragmentShaderGLSL,
-                    transform: (source: any) => glslang.compileGLSL(source, "fragment"),
+                    source: mainFragmentShaderGLSL,
+                    transform: (source: any) => this._glslang.compileGLSL(source, "fragment"),
                 }),
                 entryPoint: "main"
             },
 
             primitiveTopology: "triangle-list",
+
             depthStencilState: {
                 depthWriteEnabled: true,
                 depthCompare: "less",
                 format: "depth24plus-stencil8",
             },
+
             vertexState: {
-                indexFormat: "uint32",
                 vertexBuffers: [{
                     arrayStride: scene.vertexSize,
                     attributes: [{
@@ -195,57 +249,55 @@ export class WebGPUShadow {
                 format: "bgra8unorm",
             }],
         });
+    }
 
-        const depthTexture = device.createTexture({
-            size: { width: canvas.width, height: canvas.height, depth: 1 },
+    protected _resize() {
+        if (this._depthTexture) {
+            this._depthTexture.destroy();
+        }
+
+        this._depthTexture = this._device.createTexture({
+            size: {
+                width: this._canvas.width,
+                height: this._canvas.height,
+                depth: 1
+            },
             format: "depth24plus-stencil8",
             usage: GPUTextureUsage.OUTPUT_ATTACHMENT
         });
 
+        this._depthTextureView = this._depthTexture.createView();
+    }
+
+    public async init(canvas: HTMLCanvasElement) {
+        await this._initWebGPU();
+
+        let [verticesBuffer, indicesBuffer, scene] = await this._makeGeometryBuffers();
+
+        const aspect = Math.abs(canvas.width / canvas.height);
+        let projectionMatrix = mat4.create();
+        mat4.perspective(projectionMatrix, 0.59, aspect, 0.25, 250.0);
+
+        const pipelineMain = await this._createPiplineForMainRender(scene);
+
+        let [vertexUniformBuffer, fragmentUniformBuffer, uniformBindGroup] = await this._createBindGroup(pipelineMain.getBindGroupLayout(0));
+
+        this._resize();
+
         const renderPassDescriptor: GPURenderPassDescriptor = {
             colorAttachments: [{
-                attachment: undefined as unknown as GPUTextureView, // Assigned later
-
+                attachment: this._colorTextureView,
                 loadValue: { r: 0.5, g: 0.5, b: 0.5, a: 1.0 },
             }],
-            depthStencilAttachment: {
-                attachment: depthTexture.createView(),
 
+            depthStencilAttachment: {
+                attachment: this._depthTextureView,
                 depthLoadValue: 1.0,
                 depthStoreOp: "store",
                 stencilLoadValue: 0,
                 stencilStoreOp: "store",
             }
         };
-
-        const uniformBufferSize = 4 * 16; // 4x4 matrix
-        const uniformBuffer = device.createBuffer({
-            size: uniformBufferSize,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-
-        const atlasTexture = await createTextureFromImage(device, '/resources/webgpu/powerplant2.png', GPUTextureUsage.SAMPLED);
-
-        const sampler = device.createSampler({
-            magFilter: "linear",
-            minFilter: "linear",
-        });
-
-        const uniformBindGroup = device.createBindGroup({
-            layout: bindGroupLayout,
-            entries: [{
-                binding: 0,
-                resource: {
-                    buffer: uniformBuffer,
-                },
-            }, {
-                binding: 1,
-                resource: sampler,
-            }, {
-                binding: 2,
-                resource: atlasTexture.createView(),
-            }],
-        });
 
         function getTransformationMatrix() {
             /*let viewMatrix = mat4.create();
@@ -272,27 +324,45 @@ export class WebGPUShadow {
             ]);
         }
 
-        return function frame(timestamp: any) {
+        return (timestamp: any) => {
             const transformationMatrix = getTransformationMatrix();
-            device.defaultQueue.writeBuffer(
-                uniformBuffer,
+            this._device.defaultQueue.writeBuffer(
+                vertexUniformBuffer,
                 0,
                 transformationMatrix.buffer,
                 transformationMatrix.byteOffset,
                 transformationMatrix.byteLength
             );
-            (renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = swapChain.getCurrentTexture().createView();
 
-            const commandEncoder = device.createCommandEncoder();
+            this._device.defaultQueue.writeBuffer(
+                fragmentUniformBuffer,
+                0,
+                this._sunDir,
+                this._sunDir.byteOffset,
+                this._sunDir.byteLength
+            );
+
+            if (this._colorTexture) {
+                this._colorTexture.destroy();
+            }
+
+            this._colorTexture = this._swapChain.getCurrentTexture();
+            this._colorTextureView = this._colorTexture.createView();
+
+            (renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = this._colorTextureView;
+            renderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
+
+            const commandEncoder = this._device.createCommandEncoder();
             const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-            passEncoder.setPipeline(pipeline);
+
+            passEncoder.setPipeline(pipelineMain);
             passEncoder.setBindGroup(0, uniformBindGroup);
             passEncoder.setVertexBuffer(0, verticesBuffer);
-            passEncoder.setIndexBuffer(indicesBuffer);
-            passEncoder.drawIndexed(indices.length, 1, 0, 0, 0);
-            //passEncoder.draw(vertexArray.length, 0);
+            passEncoder.setIndexBuffer(indicesBuffer, "uint32");
+            passEncoder.drawIndexed(scene.indices.length, 1, 0, 0, 0);
             passEncoder.endPass();
-            device.defaultQueue.submit([commandEncoder.finish()]);
+
+            this._device.defaultQueue.submit([commandEncoder.finish()]);
         };
     }
 }

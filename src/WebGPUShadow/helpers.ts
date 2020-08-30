@@ -51,6 +51,9 @@ export async function createTextureFromImage(device: GPUDevice, src: string, usa
             height: img.height,
             depth: 1,
         },
+        mipLevelCount: 1,
+        sampleCount: 1,
+        dimension: "2d",
         format: "rgba8unorm",
         usage: GPUTextureUsage.COPY_DST | usage,
     });
@@ -75,6 +78,15 @@ export async function createTextureFromImage(device: GPUDevice, src: string, usa
         depth: 1,
     });
 
+    /*device.defaultQueue.writeTexture({
+        texture: texture,
+    }, data, {
+        bytesPerRow
+    }, {
+        width: img.width,
+        height: img.height,
+        depth: 1,
+    });*/
     device.defaultQueue.submit([commandEncoder.finish()]);
     textureDataBuffer.destroy();
 
