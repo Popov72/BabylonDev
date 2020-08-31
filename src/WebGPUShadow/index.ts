@@ -7,6 +7,8 @@ import { GPUTextureHelper } from "./gpuTextureHelper";
 import { Camera } from "./camera";
 import { BasicControl } from "./BasicControl";
 
+const swapChainFormat = "bgra8unorm";
+
 const mainVertexShaderGLSL = `
     #version 450
 
@@ -76,6 +78,8 @@ export class WebGPUShadow {
     protected _colorTextureView: GPUTextureView;
     protected _depthTexture: GPUTexture;
     protected _depthTextureView: GPUTextureView;
+    protected _msaaTexture: GPUTexture;
+    protected _msaaTextureView: GPUTextureView;
 
     protected _canvas: HTMLCanvasElement;
     protected _sunDir: Float32Array;
@@ -137,7 +141,7 @@ export class WebGPUShadow {
         // @ts-ignore:
         this._swapChain = context.configureSwapChain({
             device: this._device,
-            format: "bgra8unorm",
+            format: swapChainFormat,
         });
     }
 
@@ -248,6 +252,8 @@ export class WebGPUShadow {
                 format: "depth24plus-stencil8",
             },
 
+            sampleCount: 4,
+
             vertexState: {
                 vertexBuffers: [{
                     arrayStride: scene.vertexSize,
@@ -299,10 +305,28 @@ export class WebGPUShadow {
                 depth: 1
             },
             format: "depth24plus-stencil8",
-            usage: GPUTextureUsage.OUTPUT_ATTACHMENT
+            usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+            sampleCount: 4
         });
 
         this._depthTextureView = this._depthTexture.createView();
+
+        if (this._msaaTexture) {
+            this._msaaTexture.destroy();
+        }
+
+        this._msaaTexture = this._device.createTexture({
+            size: {
+                width: this._canvas.width,
+                height: this._canvas.height,
+                depth: 1
+            },
+            sampleCount: 4,
+            format: swapChainFormat,
+            usage: GPUTextureUsage.OUTPUT_ATTACHMENT
+        });
+
+        this._msaaTextureView = this._msaaTexture.createView();
     }
 
     public async init(canvas: HTMLCanvasElement) {
@@ -318,8 +342,9 @@ export class WebGPUShadow {
 
         const renderPassDescriptor: GPURenderPassDescriptor = {
             colorAttachments: [{
-                attachment: this._colorTextureView,
-                loadValue: { r: 0.5, g: 0.5, b: 0.5, a: 1.0 },
+                attachment: this._msaaTextureView,
+                resolveTarget: this._colorTextureView,
+                loadValue: { r: 124 / 255, g: 177 / 255, b: 226 / 255, a: 1.0 },
             }],
 
             depthStencilAttachment: {
@@ -368,7 +393,7 @@ export class WebGPUShadow {
             this._colorTexture = this._swapChain.getCurrentTexture();
             this._colorTextureView = this._colorTexture.createView();
 
-            (renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = this._colorTextureView;
+            (renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = this._colorTextureView;
             renderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
 
             const commandEncoder = this._device.createCommandEncoder();
