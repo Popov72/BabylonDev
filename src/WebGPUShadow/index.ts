@@ -2,10 +2,12 @@ import SampleBasic from "../SampleBasic";
 
 import glslangModule from './glslang';
 import { mat4, vec3, quat } from 'gl-matrix';
-import { checkWebGPUSupport } from './helpers';
+import { checkWebGPUSupport, createTextureFromImage } from './helpers';
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { Camera } from "./camera";
 import { BasicControl } from "./BasicControl";
+
+const useMipmap = false;
 
 const swapChainFormat = "bgra8unorm";
 
@@ -186,9 +188,15 @@ export class WebGPUShadow {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        const textureHelper = new GPUTextureHelper(this._device, this._glslang);
+        let atlasTexture: GPUTexture;
 
-        const atlasTexture = await textureHelper.generateMipmappedTexture('/resources/webgpu/powerplant2.png');
+        if (useMipmap) {
+            const textureHelper = new GPUTextureHelper(this._device, this._glslang);
+
+            atlasTexture = await textureHelper.generateMipmappedTexture('/resources/webgpu/powerplant2.png');
+        } else {
+            atlasTexture = await createTextureFromImage(this._device, '/resources/webgpu/powerplant2.png', GPUTextureUsage.SAMPLED);
+        }
 
         const sampler = this._device.createSampler({
             magFilter: "linear",
