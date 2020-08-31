@@ -92,8 +92,8 @@ export class WebGPUShadow {
         vec3.normalize(this._sunDir, this._sunDir);
         this._camera = new Camera(0.5890486225480862, 1);
 
-        this._camera.position = [40, 5, 5];
-        this._camera.quaternion = [0, 0, 0, 1];
+        this._camera.position = [40, 5, -5];
+        this._camera.setTarget([0, 0, -5]);
 
         this._basicControl = new BasicControl(this._camera, { move: 0.02, rotation: 0.04, mouserotation: 0.008 });
     }

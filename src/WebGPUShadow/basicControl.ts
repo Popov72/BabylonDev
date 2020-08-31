@@ -37,7 +37,7 @@ export class BasicControl {
         this.enabled = true;
         this._captureMouse = false;
         this.object = null;
-        this.xSign = 1;
+        this.xSign = -1;
         this.domElement = <any>null;
 
         this.states = {

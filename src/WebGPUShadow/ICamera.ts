@@ -8,9 +8,7 @@ export interface ICamera {
     position: vec3;
     quaternion: quat;
 
-    //updateMatrixWorld(): void;
-
     getTransformationMatrix(): Float32Array;
 
-    lookAt(pos: vec3): void;
+    setTarget(target: vec3): void;
 }
