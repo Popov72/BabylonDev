@@ -30,11 +30,9 @@
     "baseUrl": "./src/",
     "rootDir": "./src/",
     "paths": {
-    }
-  },
-  "include": [
-    "src/**/*",
-    "node_modules/@webgpu/types"
-  ],
-  "outDir": ".temp/manualBuild"
+    },
+
+    "types": ["@webgpu/types"]
+
+  }  
 }

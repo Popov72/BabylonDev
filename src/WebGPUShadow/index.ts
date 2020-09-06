@@ -6,6 +6,7 @@ import { checkWebGPUSupport, createTextureFromImage } from './helpers';
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { Camera } from "./camera";
 import { BasicControl } from "./BasicControl";
+import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat } from "@webgpu/types/dist/constants";
 
 const useMipmap = false;
 
@@ -199,9 +200,9 @@ export class WebGPUShadow {
         }
 
         const sampler = this._device.createSampler({
-            magFilter: "linear",
-            minFilter: "linear",
-            mipmapFilter: "linear",
+            magFilter: FilterMode.Linear,
+            minFilter: FilterMode.Linear,
+            mipmapFilter: FilterMode.Linear,
         });
 
         const uniformBindGroup = this._device.createBindGroup({
@@ -252,12 +253,12 @@ export class WebGPUShadow {
                 entryPoint: "main"
             },
 
-            primitiveTopology: "triangle-list",
+            primitiveTopology: PrimitiveTopology.TriangleList,
 
             depthStencilState: {
                 depthWriteEnabled: true,
-                depthCompare: "less",
-                format: "depth24plus-stencil8",
+                depthCompare: CompareFunction.Less,
+                format: TextureFormat.Depth24PlusStencil8,
             },
 
             sampleCount: 4,
@@ -269,32 +270,32 @@ export class WebGPUShadow {
                         // position
                         shaderLocation: 0,
                         offset: scene.positionOffset,
-                        format: "float4"
+                        format: VertexFormat.Float4
                     }, {
                         // uv
                         shaderLocation: 1,
                         offset: scene.uvOffset,
-                        format: "float2"
+                        format: VertexFormat.Float2
                     }, {
                         // tileinfo
                         shaderLocation: 2,
                         offset: scene.tileinfoOffset,
-                        format: "float4"
+                        format: VertexFormat.Float4
                     }, {
                         // normal
                         shaderLocation: 3,
                         offset: scene.normalOffset,
-                        format: "float4"
+                        format: VertexFormat.Float4
                     }]
                 }],
             },
 
             rasterizationState: {
-                cullMode: 'none',
+                cullMode: CullMode.None,
             },
 
             colorStates: [{
-                format: "bgra8unorm",
+                format: TextureFormat.BGRA8Unorm,
             }],
         });
     }
@@ -312,7 +313,7 @@ export class WebGPUShadow {
                 height: this._canvas.height,
                 depth: 1
             },
-            format: "depth24plus-stencil8",
+            format: TextureFormat.Depth24PlusStencil8,
             usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
             sampleCount: 4
         });
@@ -358,9 +359,9 @@ export class WebGPUShadow {
             depthStencilAttachment: {
                 attachment: this._depthTextureView,
                 depthLoadValue: 1.0,
-                depthStoreOp: "store",
+                depthStoreOp: StoreOp.Store,
                 stencilLoadValue: 0,
-                stencilStoreOp: "store",
+                stencilStoreOp: StoreOp.Store,
             }
         };
 
@@ -410,7 +411,7 @@ export class WebGPUShadow {
             passEncoder.setPipeline(pipelineMain);
             passEncoder.setBindGroup(0, uniformBindGroup);
             passEncoder.setVertexBuffer(0, verticesBuffer);
-            passEncoder.setIndexBuffer(indicesBuffer, "uint32");
+            passEncoder.setIndexBuffer(indicesBuffer, IndexFormat.Uint32);
             passEncoder.drawIndexed(scene.indices.length, 1, 0, 0, 0);
             passEncoder.endPass();
 
