@@ -1,7 +1,6 @@
 import { ICamera } from "./ICamera";
 import { mat4, vec3, quat, glMatrix } from "gl-matrix";
 
-const rotY180: quat = [0, 1, 0, 0]; // x <=> -x
 const cstDeg = 180 / Math.PI;
 
 export class Camera implements ICamera {
@@ -18,7 +17,7 @@ export class Camera implements ICamera {
     protected _projectionMatrix: mat4;
     protected _transformationMatrix: mat4;
     protected _upVector: vec3 = [0, 1, 0];
-    protected _currentTarget: vec3 = [0, 0, 5];
+    protected _currentTarget: vec3 = [0, 0, 0];
     protected _transformedReferencePoint: vec3 = [0, 0, 0];
     protected _referencePoint: vec3 = [0, 0, 1];
     protected _camMatrix: mat4 = mat4.create();
@@ -37,20 +36,15 @@ export class Camera implements ICamera {
     }
 
     public getTransformationMatrix(): Float32Array {
-        let q: quat = [0, 0, 0, 0];
-        quat.multiply(q, this.quaternion, rotY180);
+        vec3.transformQuat(this._upVector, [0, 1, 0], this.quaternion);
 
-        vec3.transformQuat(this._upVector, [0, 1, 0], q);
-
-        vec3.transformQuat(this._transformedReferencePoint, this._referencePoint, q);
+        vec3.transformQuat(this._transformedReferencePoint, this._referencePoint, this.quaternion);
 
         vec3.add(this._currentTarget, this.position, this._transformedReferencePoint);
 
         this._lookAtLH(this._viewMatrix, this.position, this._currentTarget, this._upVector);
 
-        mat4.scale(this._viewMatrix, this._viewMatrix, [1, 1, -1]);
-
-        mat4.perspective(this._projectionMatrix, this.fov, this.aspect, this.minZ, this.maxZ);
+        this._perspectiveLH(this._projectionMatrix, this.fov, this.aspect, this.minZ, this.maxZ);
 
         mat4.multiply(this._transformationMatrix, this._projectionMatrix, this._viewMatrix);
 
@@ -58,6 +52,8 @@ export class Camera implements ICamera {
     }
 
     public setTarget(target: vec3): void {
+        vec3.normalize(this._upVector, this._upVector);
+
         let temp: vec3 = [0, 0, 0];
 
         vec3.sub(temp, target, this.position);
@@ -116,11 +112,11 @@ export class Camera implements ICamera {
         let centerz = center[2];
 
         if (
-          Math.abs(eyex - centerx) < glMatrix.EPSILON &&
-          Math.abs(eyey - centery) < glMatrix.EPSILON &&
-          Math.abs(eyez - centerz) < glMatrix.EPSILON
+            Math.abs(eyex - centerx) < glMatrix.EPSILON &&
+            Math.abs(eyey - centery) < glMatrix.EPSILON &&
+            Math.abs(eyez - centerz) < glMatrix.EPSILON
         ) {
-          return mat4.identity(out);
+            return mat4.identity(out);
         }
 
         z0 = centerx - eyex;
@@ -137,14 +133,14 @@ export class Camera implements ICamera {
         x2 = upx * z1 - upy * z0;
         len = Math.hypot(x0, x1, x2);
         if (!len) {
-          x0 = 0;
-          x1 = 0;
-          x2 = 0;
+            x0 = 0;
+            x1 = 0;
+            x2 = 0;
         } else {
-          len = 1 / len;
-          x0 *= len;
-          x1 *= len;
-          x2 *= len;
+            len = 1 / len;
+            x0 *= len;
+            x1 *= len;
+            x2 *= len;
         }
 
         y0 = z1 * x2 - z2 * x1;
@@ -153,14 +149,14 @@ export class Camera implements ICamera {
 
         len = Math.hypot(y0, y1, y2);
         if (!len) {
-          y0 = 0;
-          y1 = 0;
-          y2 = 0;
+            y0 = 0;
+            y1 = 0;
+            y2 = 0;
         } else {
-          len = 1 / len;
-          y0 *= len;
-          y1 *= len;
-          y2 *= len;
+            len = 1 / len;
+            y0 *= len;
+            y1 *= len;
+            y2 *= len;
         }
 
         out[0] = x0;
@@ -181,5 +177,14 @@ export class Camera implements ICamera {
         out[15] = 1;
 
         return out;
-      }
+    }
+
+    private _perspectiveLH(out: mat4, fovy: number, aspect: number, near: number, far: number): mat4 {
+        mat4.perspective(out, fovy, aspect, near, far);
+
+        out[10] *= -1.0;
+        out[11] *= -1.0;
+
+        return out;
+    }
 }

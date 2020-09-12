@@ -37,7 +37,7 @@ export class BasicControl {
         this.enabled = true;
         this._captureMouse = false;
         this.object = null;
-        this.xSign = -1;
+        this.xSign = 1;
         this.domElement = <any>null;
 
         this.states = {
@@ -131,11 +131,11 @@ export class BasicControl {
                     break;
 
                 case this.STATES.FORWARD:
-                    translate[2] = -moveScale * this.xSign;
+                    translate[2] = moveScale * this.xSign;
                     break;
 
                 case this.STATES.BACKWARD:
-                    translate[2] = moveScale * this.xSign;
+                    translate[2] = -moveScale * this.xSign;
                     break;
 
                 case this.STATES.LEFT:
@@ -157,7 +157,7 @@ export class BasicControl {
                 case this.STATES.ROTY:
                     if (isMouse) {
 
-                        rotY -= this._mouseDeltaX * rotMouseScale;
+                        rotY += this._mouseDeltaX * rotMouseScale;
 
                     } else {
 
@@ -169,7 +169,7 @@ export class BasicControl {
                 case this.STATES.ROTNY:
                     if (isMouse) {
 
-                        rotY -= this._mouseDeltaX * rotMouseScale;
+                        rotY += this._mouseDeltaX * rotMouseScale;
 
                     } else {
 
@@ -181,7 +181,7 @@ export class BasicControl {
                 case this.STATES.ROTX:
                     if (isMouse) {
 
-                        rotX -= this._mouseDeltaY * rotMouseScale;
+                        rotX += this._mouseDeltaY * rotMouseScale;
 
                     } else {
 
@@ -193,7 +193,7 @@ export class BasicControl {
                 case this.STATES.ROTNX:
                     if (isMouse) {
 
-                        rotX -= this._mouseDeltaY * rotMouseScale;
+                        rotX += this._mouseDeltaY * rotMouseScale;
 
                     } else {
 

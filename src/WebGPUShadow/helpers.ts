@@ -1,7 +1,10 @@
+const useWriteTexture = false;
+
 let displayedNotSupportedError = false;
+
 export function checkWebGPUSupport() {
     if (!navigator.gpu) {
-        document.getElementById('not-supported')!.style.display = 'block';
+        //document.getElementById('not-supported')!.style.display = 'block';
         if (!displayedNotSupportedError) {
             alert('WebGPU not supported! Please visit webgpu.io to see the current implementation status.');
         }
@@ -25,26 +28,6 @@ export async function createTextureFromImage(device: GPUDevice, src: string, usa
     imageCanvasContext.drawImage(img, 0, 0, img.width, img.height);
     const imageData = imageCanvasContext.getImageData(0, 0, img.width, img.height);
 
-    let data = null;
-
-    const bytesPerRow = Math.ceil(img.width * 4 / 256) * 256;
-    if (bytesPerRow == img.width * 4) {
-        data = imageData.data;
-    } else {
-        data = new Uint8Array(bytesPerRow * img.height);
-        let imagePixelIndex = 0;
-        for (let y = 0; y < img.height; ++y) {
-            for (let x = 0; x < img.width; ++x) {
-                let i = x * 4 + y * bytesPerRow;
-                data[i] = imageData.data[imagePixelIndex];
-                data[i + 1] = imageData.data[imagePixelIndex + 1];
-                data[i + 2] = imageData.data[imagePixelIndex + 2];
-                data[i + 3] = imageData.data[imagePixelIndex + 3];
-                imagePixelIndex += 4;
-            }
-        }
-    }
-
     const texture = device.createTexture({
         size: {
             width: img.width,
@@ -58,37 +41,63 @@ export async function createTextureFromImage(device: GPUDevice, src: string, usa
         usage: GPUTextureUsage.COPY_DST | usage,
     });
 
-    const textureDataBuffer = device.createBuffer({
-        size: data.byteLength,
-        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
-        mappedAtCreation: true,
-    });
-    new Uint8Array(textureDataBuffer.getMappedRange()).set(data);
-    textureDataBuffer.unmap();
+    if (useWriteTexture) {
+        device.defaultQueue.writeTexture({
+            texture: texture,
+            mipLevel: 0,
+            origin: [0, 0, 0]
+        }, imageData.data, {
+            bytesPerRow: img.width * 4,
+            offset: 0
+        }, {
+            width: img.width,
+            height: img.height,
+            depth: 1,
+        });
+    } else {
+        let data = null;
 
-    const commandEncoder = device.createCommandEncoder({});
-    commandEncoder.copyBufferToTexture({
-        buffer: textureDataBuffer,
-        bytesPerRow,
-    }, {
-        texture: texture,
-    }, {
-        width: img.width,
-        height: img.height,
-        depth: 1,
-    });
+        const bytesPerRow = Math.ceil(img.width * 4 / 256) * 256;
+        if (bytesPerRow == img.width * 4) {
+            data = imageData.data;
+        } else {
+            data = new Uint8Array(bytesPerRow * img.height);
+            let imagePixelIndex = 0;
+            for (let y = 0; y < img.height; ++y) {
+                for (let x = 0; x < img.width; ++x) {
+                    let i = x * 4 + y * bytesPerRow;
+                    data[i] = imageData.data[imagePixelIndex];
+                    data[i + 1] = imageData.data[imagePixelIndex + 1];
+                    data[i + 2] = imageData.data[imagePixelIndex + 2];
+                    data[i + 3] = imageData.data[imagePixelIndex + 3];
+                    imagePixelIndex += 4;
+                }
+            }
+        }
 
-    /*device.defaultQueue.writeTexture({
-        texture: texture,
-    }, data, {
-        bytesPerRow
-    }, {
-        width: img.width,
-        height: img.height,
-        depth: 1,
-    });*/
-    device.defaultQueue.submit([commandEncoder.finish()]);
-    textureDataBuffer.destroy();
+        const textureDataBuffer = device.createBuffer({
+            size: data.byteLength,
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.COPY_SRC,
+            mappedAtCreation: true,
+        });
+        new Uint8Array(textureDataBuffer.getMappedRange()).set(data);
+        textureDataBuffer.unmap();
+
+        const commandEncoder = device.createCommandEncoder({});
+        commandEncoder.copyBufferToTexture({
+            buffer: textureDataBuffer,
+            bytesPerRow,
+        }, {
+            texture: texture,
+        }, {
+            width: img.width,
+            height: img.height,
+            depth: 1,
+        });
+
+        device.defaultQueue.submit([commandEncoder.finish()]);
+        textureDataBuffer.destroy();
+    }
 
     return texture;
 }

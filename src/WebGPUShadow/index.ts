@@ -1,7 +1,7 @@
 import SampleBasic from "../SampleBasic";
 
 import glslangModule from './glslang';
-import { mat4, vec3, quat } from 'gl-matrix';
+import { vec3 } from 'gl-matrix';
 import { checkWebGPUSupport, createTextureFromImage } from './helpers';
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { Camera } from "./camera";
@@ -35,6 +35,8 @@ const mainVertexShaderGLSL = `
         vTileinfo = tileinfo;
         vPositionW = vec3(position);
         vNormalW = normal.xyz;
+        //gl_Position.y *= -1.0;
+        gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
     }
 `;
 
@@ -95,10 +97,12 @@ export class WebGPUShadow {
         vec3.normalize(this._sunDir, this._sunDir);
         this._camera = new Camera(0.5890486225480862, 1);
 
-        this._camera.position = [40, 5, -5];
-        this._camera.setTarget([0, 0, -5]);
+        this._camera.position = [40, 5, 5];
+        this._camera.setTarget([0, 0, 5]);
 
         this._basicControl = new BasicControl(this._camera, { move: 0.02, rotation: 0.04, mouserotation: 0.008 });
+
+        (window as any).cam = this._camera;
     }
 
     public async run() {
@@ -135,6 +139,8 @@ export class WebGPUShadow {
 
     protected async _initWebGPU() {
         const adapter = await navigator.gpu!.requestAdapter() as GPUAdapter;
+
+        console.log("Adapter limits=", adapter.limits);
 
         this._device = await adapter.requestDevice() as GPUDevice;
         this._glslang = await glslangModule();
