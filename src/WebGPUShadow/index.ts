@@ -7,72 +7,11 @@ import { GPUTextureHelper } from "./gpuTextureHelper";
 import { Camera } from "./camera";
 import { BasicControl } from "./BasicControl";
 import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat } from "@webgpu/types/dist/constants";
+import { mainVertexShaderGLSL, mainFragmentShaderGLSL, shadowmapVertexShaderGLSL, shadowmapFragmentShaderGLSL } from "./shaders";
 
 const useMipmap = false;
 
 const swapChainFormat = "bgra8unorm";
-
-const mainVertexShaderGLSL = `
-    #version 450
-
-    layout(set = 0, binding = 0) uniform Uniforms {
-        mat4 modelViewProjectionMatrix;
-    } uniforms;
-
-    layout(location = 0) in vec4 position;
-    layout(location = 1) in vec2 uv;
-    layout(location = 2) in vec4 tileinfo;
-    layout(location = 3) in vec4 normal;
-
-    layout(location = 0) out vec2 fragUV;
-    layout(location = 1) out vec4 vTileinfo;
-    layout(location = 2) out vec3 vPositionW;
-    layout(location = 3) out vec3 vNormalW;
-
-    void main() {
-        gl_Position = uniforms.modelViewProjectionMatrix * position;
-        fragUV = uv;
-        vTileinfo = tileinfo;
-        vPositionW = vec3(position);
-        vNormalW = normal.xyz;
-        //gl_Position.y *= -1.0;
-        gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0;
-    }
-`;
-
-const mainFragmentShaderGLSL = `
-    #version 450
-
-    layout(set = 0, binding = 1) uniform sampler mySampler;
-    layout(set = 0, binding = 2) uniform texture2D myTexture;
-    layout(set = 0, binding = 3) uniform Uniforms {
-        vec3 lightDirection;
-    } uniforms;
-
-    layout(location = 0) in vec2 fragUV;
-    layout(location = 1) in vec4 vTileinfo;
-    layout(location = 2) in vec3 vPositionW;
-    layout(location = 3) in vec3 vNormalW;
-
-    layout(location = 0) out vec4 outColor;
-
-    void main() {
-        float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
-        vec2 uvCoord = vec2(vTileinfo.x + fx * vTileinfo.z, vTileinfo.y + fy * vTileinfo.w);
-        vec4 baseColor = texture(sampler2D(myTexture, mySampler), uvCoord);
-
-        vec3 normalW = normalize(vNormalW);
-
-        vec3 lightVectorW = normalize(-uniforms.lightDirection);
-
-        float ndl = max(0., dot(normalW, lightVectorW));
-        vec3 diffuse = ndl * vec3(1.); // vec3(1.) == diffuse color of light
-
-        vec3 finalDiffuse = clamp(diffuse + vec3(0.3), 0.0, 1.0) * baseColor.rgb;
-
-        outColor = vec4(finalDiffuse, baseColor.a);
-    }
-`;
 
 export class WebGPUShadow {
 
@@ -85,6 +24,10 @@ export class WebGPUShadow {
     protected _depthTextureView: GPUTextureView;
     protected _msaaTexture: GPUTexture;
     protected _msaaTextureView: GPUTextureView;
+    protected _shadowmapTexture: GPUTexture;
+    protected _shadowmapTextureView: GPUTextureView;
+    protected _depthTextureShadowmap: GPUTexture;
+    protected _depthTextureShadowmapView: GPUTextureView;
 
     protected _canvas: HTMLCanvasElement;
     protected _sunDir: Float32Array;
@@ -121,13 +64,13 @@ export class WebGPUShadow {
 
         document.body.appendChild(this._canvas);
 
+        const frame = await this.init(this._canvas);
+
         window.onresize = () => {
             this._canvas.width = window.innerWidth;
             this._canvas.height = window.innerHeight;
             this._resize();
         };
-
-        const frame = await this.init(this._canvas);
 
         function doFrame(timestamp: any) {
             frame(timestamp);
@@ -211,6 +154,11 @@ export class WebGPUShadow {
             mipmapFilter: FilterMode.Linear,
         });
 
+        const samplerShadowmap = this._device.createSampler({
+            magFilter: FilterMode.Nearest,
+            minFilter: FilterMode.Nearest,
+        });
+
         const uniformBindGroup = this._device.createBindGroup({
             layout: bindGroupLayout,
             entries: [{
@@ -229,10 +177,36 @@ export class WebGPUShadow {
                 resource: {
                     buffer: fragmentUniformBuffer,
                 },
+            }, {
+                binding: 4,
+                resource: samplerShadowmap,
+            }, {
+                binding: 5,
+                resource: this._depthTextureShadowmapView,
             }],
         });
 
         return [vertexUniformBuffer, fragmentUniformBuffer, uniformBindGroup];
+    }
+
+    protected async _createBindGroupForShadowmap(bindGroupLayout: GPUBindGroupLayout): Promise<[GPUBuffer, GPUBindGroup]> {
+        const vertexUniformBufferSize = 4 * 16; // 4x4 matrix
+        const vertexUniformBuffer = this._device.createBuffer({
+            size: vertexUniformBufferSize,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
+        const uniformBindGroup = this._device.createBindGroup({
+            layout: bindGroupLayout,
+            entries: [{
+                binding: 0,
+                resource: {
+                    buffer: vertexUniformBuffer,
+                },
+            }],
+        });
+
+        return [vertexUniformBuffer, uniformBindGroup];
     }
 
     protected _createPiplineForMainRender(scene: any) {
@@ -306,9 +280,67 @@ export class WebGPUShadow {
         });
     }
 
+    protected _createPiplineForShadowmapRender(scene: any) {
+        return this._device.createRenderPipeline({
+            vertexStage: {
+                module: this._device.createShaderModule({
+                    code: this._glslang.compileGLSL(shadowmapVertexShaderGLSL, "vertex"),
+
+                    // @ts-ignore
+                    source: shadowmapVertexShaderGLSL,
+                    transform: (source: any) => this._glslang.compileGLSL(source, "vertex"),
+                }),
+                entryPoint: "main"
+            },
+
+            fragmentStage: {
+                module: this._device.createShaderModule({
+                    code: this._glslang.compileGLSL(shadowmapFragmentShaderGLSL, "fragment"),
+
+                    // @ts-ignore
+                    source: shadowmapFragmentShaderGLSL,
+                    transform: (source: any) => this._glslang.compileGLSL(source, "fragment"),
+                }),
+                entryPoint: "main"
+            },
+
+            primitiveTopology: PrimitiveTopology.TriangleList,
+
+            depthStencilState: {
+                depthWriteEnabled: true,
+                depthCompare: CompareFunction.Less,
+                format: TextureFormat.Depth32Float,
+            },
+
+            sampleCount: 1,
+
+            vertexState: {
+                vertexBuffers: [{
+                    arrayStride: scene.vertexSize,
+                    attributes: [{
+                        // position
+                        shaderLocation: 0,
+                        offset: scene.positionOffset,
+                        format: VertexFormat.Float4
+                    }]
+                }],
+            },
+
+            rasterizationState: {
+                cullMode: CullMode.None,
+            },
+
+            colorStates: [{
+                format: TextureFormat.BGRA8Unorm,
+                /*writeMask: 0,*/
+            }],
+        });
+    }
+
     protected _resize() {
         this._camera.aspect = Math.abs(this._canvas.width / this._canvas.height);
 
+        // main render
         if (this._depthTexture) {
             this._depthTexture.destroy();
         }
@@ -342,20 +374,58 @@ export class WebGPUShadow {
         });
 
         this._msaaTextureView = this._msaaTexture.createView();
+
+        if (this._shadowmapTexture) {
+            this._shadowmapTexture.destroy();
+        }
+
+        // shadowmap
+        this._shadowmapTexture = this._device.createTexture({
+            size: {
+                width: this._canvas.width,
+                height: this._canvas.height,
+                depth: 1
+            },
+            sampleCount: 1,
+            format: TextureFormat.BGRA8Unorm, // todo: why can't I use another format?
+            usage: GPUTextureUsage.OUTPUT_ATTACHMENT
+        });
+
+        this._shadowmapTextureView = this._shadowmapTexture.createView();
+
+        if (this._depthTextureShadowmap) {
+            this._depthTextureShadowmap.destroy();
+        }
+
+        this._depthTextureShadowmap = this._device.createTexture({
+            size: {
+                width: this._canvas.width,
+                height: this._canvas.height,
+                depth: 1
+            },
+            format: TextureFormat.Depth32Float,
+            usage: GPUTextureUsage.OUTPUT_ATTACHMENT | GPUTextureUsage.SAMPLED,
+            sampleCount: 1
+        });
+
+        this._depthTextureShadowmapView = this._depthTextureShadowmap.createView();
+
     }
 
     public async init(canvas: HTMLCanvasElement) {
         await this._initWebGPU();
 
+        this._resize();
+
         let [verticesBuffer, indicesBuffer, scene] = await this._makeGeometryBuffers();
 
         const pipelineMain = await this._createPiplineForMainRender(scene);
+        const pipelineShadowmap = await this._createPiplineForShadowmapRender(scene);
 
-        let [vertexUniformBuffer, fragmentUniformBuffer, uniformBindGroup] = await this._createBindGroup(pipelineMain.getBindGroupLayout(0));
+        let [vertexUniformBufferMain, fragmentUniformBufferMain, uniformBindGroupMain] = await this._createBindGroup(pipelineMain.getBindGroupLayout(0));
+        let [vertexUniformBufferShadowmap, uniformBindGroupShadowmap] = await this._createBindGroupForShadowmap(pipelineShadowmap.getBindGroupLayout(0));
 
-        this._resize();
-
-        const renderPassDescriptor: GPURenderPassDescriptor = {
+        const mainRenderPassDescriptor: GPURenderPassDescriptor = {
             colorAttachments: [{
                 attachment: this._msaaTextureView,
                 resolveTarget: this._colorTextureView,
@@ -366,6 +436,22 @@ export class WebGPUShadow {
                 attachment: this._depthTextureView,
                 depthLoadValue: 1.0,
                 depthStoreOp: StoreOp.Store,
+                stencilLoadValue: 0,
+                stencilStoreOp: StoreOp.Store,
+            }
+        };
+
+        const shadowmapRenderPassDescriptor: GPURenderPassDescriptor = {
+            colorAttachments: [{
+                attachment: this._shadowmapTextureView,
+                loadValue: { r: 0 / 255, g: 0 / 255, b: 255 / 255, a: 1.0 },
+            }],
+
+            depthStencilAttachment: {
+                attachment: this._depthTextureShadowmapView,
+                depthLoadValue: 1.0,
+                depthStoreOp: StoreOp.Store,
+                depthReadOnly: false,
                 stencilLoadValue: 0,
                 stencilStoreOp: StoreOp.Store,
             }
@@ -386,7 +472,7 @@ export class WebGPUShadow {
 
             const transformationMatrix = this._camera.getTransformationMatrix();
             this._device.defaultQueue.writeBuffer(
-                vertexUniformBuffer,
+                vertexUniformBufferMain,
                 0,
                 transformationMatrix.buffer,
                 transformationMatrix.byteOffset,
@@ -394,7 +480,15 @@ export class WebGPUShadow {
             );
 
             this._device.defaultQueue.writeBuffer(
-                fragmentUniformBuffer,
+                vertexUniformBufferShadowmap,
+                0,
+                transformationMatrix.buffer,
+                transformationMatrix.byteOffset,
+                transformationMatrix.byteLength
+            );
+
+            this._device.defaultQueue.writeBuffer(
+                fragmentUniformBufferMain,
                 0,
                 this._sunDir,
                 this._sunDir.byteOffset,
@@ -408,18 +502,30 @@ export class WebGPUShadow {
             this._colorTexture = this._swapChain.getCurrentTexture();
             this._colorTextureView = this._colorTexture.createView();
 
-            (renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = this._colorTextureView;
-            renderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
+            shadowmapRenderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureShadowmapView;
+
+            (mainRenderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = this._colorTextureView;
+            mainRenderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
 
             const commandEncoder = this._device.createCommandEncoder();
-            const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
 
-            passEncoder.setPipeline(pipelineMain);
-            passEncoder.setBindGroup(0, uniformBindGroup);
-            passEncoder.setVertexBuffer(0, verticesBuffer);
-            passEncoder.setIndexBuffer(indicesBuffer, IndexFormat.Uint32);
-            passEncoder.drawIndexed(scene.indices.length, 1, 0, 0, 0);
-            passEncoder.endPass();
+            const passEncoderShadowmap = commandEncoder.beginRenderPass(shadowmapRenderPassDescriptor);
+
+            passEncoderShadowmap.setPipeline(pipelineShadowmap);
+            passEncoderShadowmap.setBindGroup(0, uniformBindGroupShadowmap);
+            passEncoderShadowmap.setVertexBuffer(0, verticesBuffer);
+            passEncoderShadowmap.setIndexBuffer(indicesBuffer, IndexFormat.Uint32);
+            passEncoderShadowmap.drawIndexed(scene.indices.length, 1, 0, 0, 0);
+            passEncoderShadowmap.endPass();
+
+            const passEncoderMain = commandEncoder.beginRenderPass(mainRenderPassDescriptor);
+
+            passEncoderMain.setPipeline(pipelineMain);
+            passEncoderMain.setBindGroup(0, uniformBindGroupMain);
+            passEncoderMain.setVertexBuffer(0, verticesBuffer);
+            passEncoderMain.setIndexBuffer(indicesBuffer, IndexFormat.Uint32);
+            passEncoderMain.drawIndexed(scene.indices.length, 1, 0, 0, 0);
+            passEncoderMain.endPass();
 
             this._device.defaultQueue.submit([commandEncoder.finish()]);
         };
