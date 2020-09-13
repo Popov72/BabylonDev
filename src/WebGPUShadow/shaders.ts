@@ -50,6 +50,7 @@ export const mainFragmentShaderGLSL = `
     layout(location = 0) out vec4 outColor;
 
     #define GREATEST_LESS_THAN_ONE 0.99999994
+    #define PCF 3
 
     void main() {
         float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
@@ -73,31 +74,53 @@ export const mainFragmentShaderGLSL = `
         /*if (clipSpace.x < -1. || clipSpace.y > 1. || clipSpace.y < -1. || clipSpace.y > 1.) {
 
         } else*/ {
-            // PCF1
-            //shadow = texture(sampler2DShadow(textureShadowmap, samplerShadowmap), uvDepth);
+            #if PCF == 1
+                shadow = texture(sampler2DShadow(textureShadowmap, samplerShadowmap), uvDepth);
+            #else
+                vec2 uv = uvDepth.xy * uniforms.shadowMapSizeAndInverse.x;	// uv in texel units
+                uv += 0.5;											// offset of half to be in the center of the texel
+                vec2 st = fract(uv);								// how far from the center
+                vec2 base_uv = floor(uv) - 0.5;						// texel coord
+                base_uv *= uniforms.shadowMapSizeAndInverse.y;				// move back to uv coords
+                shadow = 0.;
 
-            // PCF3
-            vec2 uv = uvDepth.xy * uniforms.shadowMapSizeAndInverse.x;	// uv in texel units
-            uv += 0.5;											// offset of half to be in the center of the texel
-            vec2 st = fract(uv);								// how far from the center
-            vec2 base_uv = floor(uv) - 0.5;						// texel coord
-            base_uv *= uniforms.shadowMapSizeAndInverse.y;				// move back to uv coords
+                #if PCF == 3
+                    // Equation resolved to fit in a 3*3 distribution like
+                    // 1 2 1
+                    // 2 4 2
+                    // 1 2 1
+                    vec2 uvw0 = 3. - 2. * st;
+                    vec2 uvw1 = 1. + 2. * st;
+                    vec2 u = vec2((2. - st.x) / uvw0.x - 1., st.x / uvw1.x + 1.) * uniforms.shadowMapSizeAndInverse.y;
+                    vec2 v = vec2((2. - st.y) / uvw0.y - 1., st.y / uvw1.y + 1.) * uniforms.shadowMapSizeAndInverse.y;
 
-            // Equation resolved to fit in a 3*3 distribution like
-            // 1 2 1
-            // 2 4 2
-            // 1 2 1
-            vec2 uvw0 = 3. - 2. * st;
-            vec2 uvw1 = 1. + 2. * st;
-            vec2 u = vec2((2. - st.x) / uvw0.x - 1., st.x / uvw1.x + 1.) * uniforms.shadowMapSizeAndInverse.y;
-            vec2 v = vec2((2. - st.y) / uvw0.y - 1., st.y / uvw1.y + 1.) * uniforms.shadowMapSizeAndInverse.y;
+                    shadow += uvw0.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[0]), uvDepth.z));
+                    shadow += uvw1.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[0]), uvDepth.z));
+                    shadow += uvw0.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[1]), uvDepth.z));
+                    shadow += uvw1.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[1]), uvDepth.z));
+                    shadow = shadow / 16.;
+                #else
+                    // Equation resolved to fit in a 5*5 distribution like
+                    // 1 2 4 2 1
+                    vec2 uvw0 = 4. - 3. * st;
+                    vec2 uvw1 = vec2(7.);
+                    vec2 uvw2 = 1. + 3. * st;
 
-            shadow = 0.;
-            shadow += uvw0.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[0]), uvDepth.z));
-            shadow += uvw1.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[0]), uvDepth.z));
-            shadow += uvw0.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[1]), uvDepth.z));
-            shadow += uvw1.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[1]), uvDepth.z));
-            shadow = shadow / 16.;
+                    vec3 u = vec3((3. - 2. * st.x) / uvw0.x - 2., (3. + st.x) / uvw1.x, st.x / uvw2.x + 2.) * uniforms.shadowMapSizeAndInverse.y;
+                    vec3 v = vec3((3. - 2. * st.y) / uvw0.y - 2., (3. + st.y) / uvw1.y, st.y / uvw2.y + 2.) * uniforms.shadowMapSizeAndInverse.y;
+
+                    shadow += uvw0.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[0]), uvDepth.z));
+                    shadow += uvw1.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[0]), uvDepth.z));
+                    shadow += uvw2.x * uvw0.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[2], v[0]), uvDepth.z));
+                    shadow += uvw0.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[1]), uvDepth.z));
+                    shadow += uvw1.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[1]), uvDepth.z));
+                    shadow += uvw2.x * uvw1.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[2], v[1]), uvDepth.z));
+                    shadow += uvw0.x * uvw2.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[0], v[2]), uvDepth.z));
+                    shadow += uvw1.x * uvw2.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[1], v[2]), uvDepth.z));
+                    shadow += uvw2.x * uvw2.y * texture(sampler2DShadow(textureShadowmap, samplerShadowmap), vec3(base_uv.xy + vec2(u[2], v[2]), uvDepth.z));
+                    shadow = shadow / 144.;
+                #endif
+            #endif
         }
 
         vec3 finalDiffuse = clamp(diffuse * shadow + vec3(0.3), 0.0, 1.0) * baseColor.rgb;
