@@ -2,6 +2,7 @@ import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFo
 import { mainVertexShaderGLSL, mainFragmentShaderGLSL } from "./shaders";
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { createTextureFromImage } from './helpers';
+import { ShadowMapPass } from "./shadowMapPass";
 
 const useMSAA = false;
 
@@ -12,6 +13,7 @@ export class MainPass {
     private _glslang: any;
     private _swapChain: GPUSwapChain;
     private _swapChainFormat: GPUTextureFormat;
+    private _shadowMapPass: ShadowMapPass;
     private _textureHelper: GPUTextureHelper;
     private _useMipmap: boolean;
     private _vertexUniformBuffer: GPUBuffer;
@@ -33,11 +35,12 @@ export class MainPass {
     public transformationMatrix: Float32Array;
     public lightTransformationMatrix: Float32Array;
 
-    constructor(device: GPUDevice, glslang: any, scene: any, textureHelper: GPUTextureHelper, canvas: HTMLCanvasElement, swapChainFormat: GPUTextureFormat, useMipmap = false) {
+    constructor(device: GPUDevice, glslang: any, scene: any, textureHelper: GPUTextureHelper, canvas: HTMLCanvasElement, swapChainFormat: GPUTextureFormat, shadowMapPass: ShadowMapPass, useMipmap = false) {
         this._scene = scene;
         this._device = device;
         this._glslang = glslang;
         this._swapChainFormat = swapChainFormat;
+        this._shadowMapPass = shadowMapPass;
         this._textureHelper = textureHelper;
         this._useMipmap = useMipmap;
 
@@ -57,7 +60,7 @@ export class MainPass {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        const _fragmentUniformBufferSize = 4 * 3; // vec3 light direction
+        const _fragmentUniformBufferSize = 4 * 3 + 4 * 1 + 4 * 2; // vec3 light direction + padding + vec2 shadowMapSizeAndInverse
         this._fragmentUniformBuffer = this._device.createBuffer({
             size: _fragmentUniformBufferSize,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -102,10 +105,6 @@ export class MainPass {
         this._createPipeline();
     }
 
-    public setDepthShadowmapTextureView(depthTextureShadowmapView: GPUTextureView) {
-        this._createBindGroup(depthTextureShadowmapView);
-    }
-
     public resize(width: number, height: number) {
         if (this._depthTexture) {
             this._depthTexture.destroy();
@@ -143,6 +142,10 @@ export class MainPass {
     }
 
     public render(commandEncoder: GPUCommandEncoder, verticesBuffer: GPUBuffer, indicesBuffer: GPUBuffer) {
+        if (this._shadowMapPass.shadowMapSizeChanged) {
+            this._createBindGroup(this._shadowMapPass.depthTextureView);
+        }
+
         this._device.defaultQueue.writeBuffer(
             this._vertexUniformBuffer,
             0,
@@ -165,6 +168,14 @@ export class MainPass {
             this.sunDir,
             this.sunDir.byteOffset,
             this.sunDir.byteLength
+        );
+
+        this._device.defaultQueue.writeBuffer(
+            this._fragmentUniformBuffer,
+            4 * 4,
+            new Float32Array([this._shadowMapPass.shadowMapSize, 1 / this._shadowMapPass.shadowMapSize]).buffer,
+            0,
+            4 * 2
         );
 
         const colorTexture = this._swapChain.getCurrentTexture();

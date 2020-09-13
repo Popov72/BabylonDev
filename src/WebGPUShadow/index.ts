@@ -69,8 +69,6 @@ export class WebGPUShadow {
 
         this._shadowMapPass.resize(this._canvas.width, this._canvas.height);
         this._mainPass.resize(this._canvas.width, this._canvas.height);
-
-        this._mainPass.setDepthShadowmapTextureView(this._shadowMapPass.depthTextureView);
     }
 
     protected async _initWebGPU() {
@@ -121,7 +119,7 @@ export class WebGPUShadow {
         let [verticesBuffer, indicesBuffer, scene] = await this._makeGeometryBuffers();
 
         this._shadowMapPass = new ShadowMapPass(this._device, this._glslang, scene);
-        this._mainPass = new MainPass(this._device, this._glslang, scene, this._textureHelper, canvas, swapChainFormat, useMipmap);
+        this._mainPass = new MainPass(this._device, this._glslang, scene, this._textureHelper, canvas, swapChainFormat, this._shadowMapPass, useMipmap);
 
         (window as any).sm = this._shadowMapPass;
 

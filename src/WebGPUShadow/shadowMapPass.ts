@@ -16,6 +16,7 @@ export class ShadowMapPass {
     private _depthTexture: GPUTexture;
     private _depthTextureView: GPUTextureView;
     private _shadowMapSize: number;
+    private _shadowMapSizeChanged: boolean;
 
     public bias: number;
     public normalBias: number;
@@ -24,16 +25,25 @@ export class ShadowMapPass {
         return this._depthTextureView;
     }
 
+    public get shadowMapSize(): number {
+        return this._shadowMapSize;
+    }
+
     public set shadowMapSize(size: number) {
         this._shadowMapSize = size;
         this._resizeShadowmap();
+        this._shadowMapSizeChanged = true;
     }
 
+    public get shadowMapSizeChanged(): boolean {
+        const val = this._shadowMapSizeChanged;
+        this._shadowMapSizeChanged = false;
+        return val;
+    }
     constructor(device: GPUDevice, glslang: any, scene: any) {
         this._scene = scene;
         this._device = device;
         this._glslang = glslang;
-        this._shadowMapSize = 1024;
 
         this.bias = 0;
         this.normalBias = 0;
@@ -69,7 +79,8 @@ export class ShadowMapPass {
 
         this._createPipeline();
         this._createBindGroup();
-        this._resizeShadowmap();
+
+        this.shadowMapSize = 1024;
     }
 
     public resize(width: number, height: number) {
