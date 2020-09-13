@@ -121,7 +121,8 @@ export class WebGPUShadow {
         this._shadowMapPass = new ShadowMapPass(this._device, this._glslang, scene);
         this._mainPass = new MainPass(this._device, this._glslang, scene, this._textureHelper, canvas, swapChainFormat, this._shadowMapPass, useMipmap);
 
-        (window as any).sm = this._shadowMapPass;
+        (window as any).smp = this._shadowMapPass;
+        (window as any).mp = this._mainPass;
 
         await this._shadowMapPass.init();
         await this._mainPass.init();

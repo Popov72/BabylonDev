@@ -30,6 +30,10 @@ export class ShadowMapPass {
     }
 
     public set shadowMapSize(size: number) {
+        if (size === this._shadowMapSize) {
+            return;
+        }
+
         this._shadowMapSize = size;
         this._resizeShadowmap();
         this._shadowMapSizeChanged = true;

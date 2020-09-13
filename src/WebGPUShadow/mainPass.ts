@@ -4,8 +4,6 @@ import { GPUTextureHelper } from "./gpuTextureHelper";
 import { createTextureFromImage } from './helpers';
 import { ShadowMapPass } from "./shadowMapPass";
 
-const useMSAA = false;
-
 export class MainPass {
 
     private _scene: any;
@@ -30,10 +28,26 @@ export class MainPass {
     private _msaaTexture: GPUTexture;
     private _msaaTextureView: GPUTextureView;
     private _bindGroupLayout: GPUBindGroupLayout;
+    private _useMSAA: boolean;
 
     public sunDir: Float32Array;
     public transformationMatrix: Float32Array;
     public lightTransformationMatrix: Float32Array;
+
+    public get useMSAA(): boolean {
+        return this._useMSAA;
+    }
+
+    public set useMSAA(useMSAA: boolean) {
+        if (useMSAA === this._useMSAA) {
+            return;
+        }
+
+        this._useMSAA = useMSAA;
+
+        this._createPipeline();
+        this.resize(window.innerWidth, window.innerHeight);
+    }
 
     constructor(device: GPUDevice, glslang: any, scene: any, textureHelper: GPUTextureHelper, canvas: HTMLCanvasElement, swapChainFormat: GPUTextureFormat, shadowMapPass: ShadowMapPass, useMipmap = false) {
         this._scene = scene;
@@ -43,6 +57,7 @@ export class MainPass {
         this._shadowMapPass = shadowMapPass;
         this._textureHelper = textureHelper;
         this._useMipmap = useMipmap;
+        this._useMSAA = true;
 
         const context = canvas.getContext('gpupresent');
 
@@ -118,27 +133,29 @@ export class MainPass {
             },
             format: TextureFormat.Depth24PlusStencil8,
             usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
-            sampleCount: 4
+            sampleCount: this._useMSAA ? 4 : 1
         });
 
         this._depthTextureView = this._depthTexture.createView();
 
-        if (this._msaaTexture) {
-            this._msaaTexture.destroy();
+        if (this._useMSAA) {
+            if (this._msaaTexture) {
+                this._msaaTexture.destroy();
+            }
+
+            this._msaaTexture = this._device.createTexture({
+                size: {
+                    width,
+                    height,
+                    depth: 1
+                },
+                format: this._swapChainFormat,
+                usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
+                sampleCount: 4
+            });
+
+            this._msaaTextureView = this._msaaTexture.createView();
         }
-
-        this._msaaTexture = this._device.createTexture({
-            size: {
-                width,
-                height,
-                depth: 1
-            },
-            format: this._swapChainFormat,
-            usage: GPUTextureUsage.OUTPUT_ATTACHMENT,
-            sampleCount: 4
-        });
-
-        this._msaaTextureView = this._msaaTexture.createView();
     }
 
     public render(commandEncoder: GPUCommandEncoder, verticesBuffer: GPUBuffer, indicesBuffer: GPUBuffer) {
@@ -181,8 +198,14 @@ export class MainPass {
         const colorTexture = this._swapChain.getCurrentTexture();
         const colorTextureView = colorTexture.createView();
 
-        (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = this._msaaTextureView;
-        (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = colorTextureView;
+        if (this._useMSAA) {
+            (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = this._msaaTextureView;
+            (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = colorTextureView;
+        } else {
+            (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = colorTextureView;
+            (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = undefined;
+        }
+
         this._renderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
 
         //commandEncoder.insertDebugMarker("Render the scene");
@@ -204,8 +227,8 @@ export class MainPass {
         this._atlasTexture?.destroy();
         this._sampler = null as any;
         this._samplerShadowmap = null as any;
-        this._depthTexture.destroy();
-        this._msaaTexture.destroy();
+        this._depthTexture?.destroy();
+        this._msaaTexture?.destroy();
     }
 
     protected _createPipeline() {
@@ -272,7 +295,7 @@ export class MainPass {
                 format: TextureFormat.Depth24PlusStencil8,
             },
 
-            sampleCount: 4,
+            sampleCount: this._useMSAA ? 4 : 1,
 
             vertexState: {
                 vertexBuffers: [{
