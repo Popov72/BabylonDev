@@ -1,13 +1,13 @@
 import SampleBasic from "../SampleBasic";
 
 import glslangModule from './glslang';
-import { vec3 } from 'gl-matrix';
 import { checkWebGPUSupport } from './helpers';
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { Camera } from "./camera";
 import { BasicControl } from "./BasicControl";
 import { MainPass } from "./mainPass";
 import { ShadowMapPass } from "./shadowMapPass";
+import { Light } from "./light";
 
 const useMipmap = false;
 
@@ -19,7 +19,7 @@ export class WebGPUShadow {
     protected _glslang: any;
 
     protected _canvas: HTMLCanvasElement;
-    protected _sunDir: Float32Array;
+    protected _light: Light;
     protected _camera: Camera;
     protected _basicControl: BasicControl;
 
@@ -29,8 +29,8 @@ export class WebGPUShadow {
 
     constructor(canvas: HTMLCanvasElement) {
         this._canvas = canvas;
-        this._sunDir = new Float32Array([-1, -1, -1]);
-        vec3.normalize(this._sunDir, this._sunDir);
+
+        this._light = new Light([-1, -1, -1]);
         this._camera = new Camera(0.5890486225480862, 1);
 
         this._camera.position = [40, 5, 5];
@@ -45,17 +45,6 @@ export class WebGPUShadow {
         if (!checkWebGPUSupport()) {
             return;
         }
-
-        const width = this._canvas.width;
-        const height = this._canvas.height;
-
-        this._canvas.style.display = "none";
-
-        this._canvas = document.createElement('canvas');
-        this._canvas.width = width;
-        this._canvas.height = height;
-
-        document.body.appendChild(this._canvas);
 
         const frame = await this.init(this._canvas);
 
@@ -91,6 +80,9 @@ export class WebGPUShadow {
 
         this._device = await adapter.requestDevice() as GPUDevice;
         this._glslang = await glslangModule();
+
+        console.log("Device limits=", this._device.limits);
+        console.log("Device extensions=", this._device.extensions);
     }
 
     protected async _makeGeometryBuffers(): Promise<[GPUBuffer, GPUBuffer, any]> {
@@ -131,10 +123,15 @@ export class WebGPUShadow {
         this._shadowMapPass = new ShadowMapPass(this._device, this._glslang, scene);
         this._mainPass = new MainPass(this._device, this._glslang, scene, this._textureHelper, canvas, swapChainFormat, useMipmap);
 
+        (window as any).sm = this._shadowMapPass;
+
         await this._shadowMapPass.init();
         await this._mainPass.init();
 
         this._resize();
+
+        this._shadowMapPass.bias = 0.003;
+        this._shadowMapPass.normalBias = 0;
 
         let prevTimestamp = -1;
 
@@ -149,16 +146,13 @@ export class WebGPUShadow {
 
             prevTimestamp = timestamp;
 
-            const transformationMatrix = this._camera.getTransformationMatrix();
-
             const commandEncoder = this._device.createCommandEncoder();
 
-            this._shadowMapPass.transformationMatrix = transformationMatrix;
-            this._shadowMapPass.sunDir = this._sunDir;
-            this._shadowMapPass.render(commandEncoder, verticesBuffer, indicesBuffer);
+            this._shadowMapPass.render(commandEncoder, verticesBuffer, indicesBuffer, this._light);
 
-            this._mainPass.transformationMatrix = transformationMatrix;
-            this._mainPass.sunDir = this._sunDir;
+            this._mainPass.transformationMatrix = this._camera.getTransformationMatrix();
+            this._mainPass.lightTransformationMatrix = this._light.getTransformationMatrix();
+            this._mainPass.sunDir = this._light.direction;
             this._mainPass.render(commandEncoder, verticesBuffer, indicesBuffer);
 
             this._device.defaultQueue.submit([commandEncoder.finish()]);

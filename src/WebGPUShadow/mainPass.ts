@@ -1,7 +1,9 @@
-import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat } from "@webgpu/types/dist/constants";
+import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat, ShaderStage, BindingType } from "@webgpu/types/dist/constants";
 import { mainVertexShaderGLSL, mainFragmentShaderGLSL } from "./shaders";
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { createTextureFromImage } from './helpers';
+
+const useMSAA = false;
 
 export class MainPass {
 
@@ -25,9 +27,11 @@ export class MainPass {
     private _depthTextureView: GPUTextureView;
     private _msaaTexture: GPUTexture;
     private _msaaTextureView: GPUTextureView;
+    private _bindGroupLayout: GPUBindGroupLayout;
 
     public sunDir: Float32Array;
     public transformationMatrix: Float32Array;
+    public lightTransformationMatrix: Float32Array;
 
     constructor(device: GPUDevice, glslang: any, scene: any, textureHelper: GPUTextureHelper, canvas: HTMLCanvasElement, swapChainFormat: GPUTextureFormat, useMipmap = false) {
         this._scene = scene;
@@ -47,7 +51,7 @@ export class MainPass {
     }
 
     public async init() {
-        const _vertexUniformBufferSize = 4 * 16; // 4x4 matrix
+        const _vertexUniformBufferSize = 4 * 16 * 2; // 2 4x4 matrices
         this._vertexUniformBuffer = this._device.createBuffer({
             size: _vertexUniformBufferSize,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -74,8 +78,9 @@ export class MainPass {
         });
 
         this._samplerShadowmap = this._device.createSampler({
-            magFilter: FilterMode.Nearest,
-            minFilter: FilterMode.Nearest,
+            magFilter: FilterMode.Linear,
+            minFilter: FilterMode.Linear,
+            compare: CompareFunction.LessEqual
         });
 
         this._renderPassDescriptor = {
@@ -147,6 +152,14 @@ export class MainPass {
         );
 
         this._device.defaultQueue.writeBuffer(
+            this._vertexUniformBuffer,
+            16 * 4,
+            this.lightTransformationMatrix.buffer,
+            this.lightTransformationMatrix.byteOffset,
+            this.lightTransformationMatrix.byteLength
+        );
+
+        this._device.defaultQueue.writeBuffer(
             this._fragmentUniformBuffer,
             0,
             this.sunDir,
@@ -160,6 +173,8 @@ export class MainPass {
         (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = this._msaaTextureView;
         (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].resolveTarget = colorTextureView;
         this._renderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
+
+        //commandEncoder.insertDebugMarker("Render the scene");
 
         const passEncoder = commandEncoder.beginRenderPass(this._renderPassDescriptor);
 
@@ -183,7 +198,39 @@ export class MainPass {
     }
 
     protected _createPipeline() {
+        this._bindGroupLayout = this._device.createBindGroupLayout({
+            entries: [{
+                    binding: 0,
+                    visibility: ShaderStage.Vertex,
+                    type: BindingType.UniformBuffer
+                }, {
+                    binding: 1,
+                    visibility: ShaderStage.Fragment,
+                    type: BindingType.Sampler
+                }, {
+                    binding: 2,
+                    visibility: ShaderStage.Fragment,
+                    type: BindingType.SampledTexture
+                }, {
+                    binding: 3,
+                    visibility: ShaderStage.Fragment,
+                    type: BindingType.UniformBuffer
+                }, {
+                    binding: 4,
+                    visibility: ShaderStage.Fragment,
+                    type: BindingType.ComparisonSampler
+                }, {
+                    binding: 5,
+                    visibility: ShaderStage.Fragment,
+                    type: BindingType.SampledTexture
+                }
+            ]
+        });
+
         this._pipeline = this._device.createRenderPipeline({
+            layout: this._device.createPipelineLayout({
+                bindGroupLayouts: [this._bindGroupLayout]
+            }),
             vertexStage: {
                 module: this._device.createShaderModule({
                     code: this._glslang.compileGLSL(mainVertexShaderGLSL, "vertex"),
@@ -255,7 +302,7 @@ export class MainPass {
 
     protected _createBindGroup(depthTextureShadowmapView: GPUTextureView) {
         this._uniformBindGroup = this._device.createBindGroup({
-            layout: this._pipeline.getBindGroupLayout(0),
+            layout: this._bindGroupLayout/*this._pipeline.getBindGroupLayout(0)*/,
             entries: [{
                 binding: 0,
                 resource: {

@@ -10,26 +10,34 @@ import Sample from "./Sample";
 
 declare var glMatrix: any;
 
-const showDebugLayer = false;
-
 glMatrix.glMatrix.setMatrixArrayType(Array);
 
 const qs = Browser.QueryString;
 
-const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement,
-      engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true });
+const canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
 
-function setContainerDimensions() {
-    engine.resize();
-}
-
-jQuery(window).on('resize', setContainerDimensions);
-jQuery(window).on('load', setContainerDimensions);
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 let sampleName = Sample.sampleList.keys().next().value;
 
 if (qs['sample']) {
     sampleName = qs['sample'];
+}
+
+const sampleDescr = Sample.sampleList.get(sampleName);
+
+if (!sampleDescr) {
+    throw new Error("Invalid sample name: " + sampleName);
+}
+
+let engine: Engine | null = null;
+
+if (!sampleDescr.nonbabylon) {
+    engine = new Engine(canvas, true, { premultipliedAlpha: false, stencil: true, disableWebGL2Support: false, preserveDrawingBuffer: true });
+
+    jQuery(window).on('resize', engine.resize);
+    jQuery(window).on('load', engine.resize);
 }
 
 const sample = Sample.createSample(sampleName, engine, canvas) as Sample;
@@ -41,17 +49,13 @@ if (sample === null) {
 } else {
     let divFps = document.getElementById("fps") as HTMLElement;
 
-    /*if (showDebugLayer) {
-        scene.debugLayer.show({ embedMode: false, handleResize: false, overlay: true, showExplorer: true, showInspector: true });
-    }*/
-
-    engine.runRenderLoop(function() {
-        sample.onBeforeRender(engine.getDeltaTime() / 1000.0);
+    engine!.runRenderLoop(function() {
+        sample.onBeforeRender(engine!.getDeltaTime() / 1000.0);
 
         sample.render();
 
         if (divFps) {
-            divFps.innerHTML = engine.getFps().toFixed(2) + " fps";
+            divFps.innerHTML = engine!.getFps().toFixed(2) + " fps";
         }
     });
 }

@@ -69,7 +69,7 @@ export default class Sample {
         Sample._sampleList.set(name, sample);
     }
 
-    public static createSample(name: string, engine: Engine, canvas: HTMLCanvasElement): Sample | null {
+    public static createSample(name: string, engine: Engine | null, canvas: HTMLCanvasElement): Sample | null {
         const sampleDescr = Sample._sampleList.get(name);
 
         if (sampleDescr) {

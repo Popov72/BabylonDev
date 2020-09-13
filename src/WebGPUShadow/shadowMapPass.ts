@@ -1,5 +1,6 @@
 import { PrimitiveTopology, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat } from "@webgpu/types/dist/constants";
 import { shadowmapVertexShaderGLSL, shadowmapFragmentShaderGLSL } from "./shaders";
+import { Light } from "./light";
 
 export class ShadowMapPass {
 
@@ -14,22 +15,37 @@ export class ShadowMapPass {
     private _renderTextureView: GPUTextureView;
     private _depthTexture: GPUTexture;
     private _depthTextureView: GPUTextureView;
+    private _shadowMapSize: number;
 
-    public sunDir: Float32Array;
-    public transformationMatrix: Float32Array;
+    public bias: number;
+    public normalBias: number;
 
     public get depthTextureView(): GPUTextureView {
         return this._depthTextureView;
+    }
+
+    public set shadowMapSize(size: number) {
+        this._shadowMapSize = size;
+        this._resizeShadowmap();
     }
 
     constructor(device: GPUDevice, glslang: any, scene: any) {
         this._scene = scene;
         this._device = device;
         this._glslang = glslang;
+        this._shadowMapSize = 1024;
+
+        this.bias = 0;
+        this.normalBias = 0;
     }
 
     public async init() {
-        const vertexUniformBufferSize = 4 * 16; // 4x4 matrix
+        const vertexUniformBufferSize =
+            4 * 16 + /* transform matrix */
+            4 * 3 + /* direction */
+            4 * 1 + /* padding */
+            4 * 2 /* bias + normal bias*/;
+
         this._vertexUniformBuffer = this._device.createBuffer({
             size: vertexUniformBufferSize,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -53,17 +69,21 @@ export class ShadowMapPass {
 
         this._createPipeline();
         this._createBindGroup();
+        this._resizeShadowmap();
     }
 
     public resize(width: number, height: number) {
+    }
+
+    protected _resizeShadowmap() {
         if (this._renderTexture) {
             this._renderTexture.destroy();
         }
 
         this._renderTexture = this._device.createTexture({
             size: {
-                width,
-                height,
+                width: this._shadowMapSize,
+                height: this._shadowMapSize,
                 depth: 1
             },
             format: TextureFormat.BGRA8Unorm, // todo: why can't I use another format?
@@ -79,8 +99,8 @@ export class ShadowMapPass {
 
         this._depthTexture = this._device.createTexture({
             size: {
-                width,
-                height,
+                width: this._shadowMapSize,
+                height: this._shadowMapSize,
                 depth: 1
             },
             format: TextureFormat.Depth32Float,
@@ -91,17 +111,45 @@ export class ShadowMapPass {
         this._depthTextureView = this._depthTexture.createView();
     }
 
-    public render(commandEncoder: GPUCommandEncoder, verticesBuffer: GPUBuffer, indicesBuffer: GPUBuffer) {
+    public render(commandEncoder: GPUCommandEncoder, verticesBuffer: GPUBuffer, indicesBuffer: GPUBuffer, light: Light) {
+        const transformationMatrix = light.getTransformationMatrix();
+
         this._device.defaultQueue.writeBuffer(
             this._vertexUniformBuffer,
             0,
-            this.transformationMatrix.buffer,
-            this.transformationMatrix.byteOffset,
-            this.transformationMatrix.byteLength
+            transformationMatrix.buffer,
+            transformationMatrix.byteOffset,
+            transformationMatrix.byteLength
+        );
+
+        this._device.defaultQueue.writeBuffer(
+            this._vertexUniformBuffer,
+            16 * 4,
+            light.direction.buffer,
+            light.direction.byteOffset,
+            light.direction.byteLength
+        );
+
+        this._device.defaultQueue.writeBuffer(
+            this._vertexUniformBuffer,
+            16 * 4 + 4 * 4,
+            new Float32Array([this.bias]).buffer,
+            0,
+            4
+        );
+
+        this._device.defaultQueue.writeBuffer(
+            this._vertexUniformBuffer,
+            16 * 4 + 4 * 4 + 1 * 4,
+            new Float32Array([this.normalBias]).buffer,
+            0,
+            4
         );
 
         (this._renderPassDescriptor.colorAttachments as Array<GPURenderPassColorAttachmentDescriptor>)[0].attachment = this._renderTextureView;
         this._renderPassDescriptor.depthStencilAttachment!.attachment = this._depthTextureView;
+
+        //commandEncoder.insertDebugMarker("Create the shadow map");
 
         const passEncoderShadowmap = commandEncoder.beginRenderPass(this._renderPassDescriptor);
 
@@ -134,7 +182,7 @@ export class ShadowMapPass {
                 entryPoint: "main"
             },
 
-            fragmentStage: {
+            fragmentStage: { // should remove the fragment stage but not supported by Chrome yet
                 module: this._device.createShaderModule({
                     code: this._glslang.compileGLSL(shadowmapFragmentShaderGLSL, "fragment"),
 
@@ -162,6 +210,11 @@ export class ShadowMapPass {
                         // position
                         shaderLocation: 0,
                         offset: this._scene.positionOffset,
+                        format: VertexFormat.Float4
+                    }, {
+                        // normal
+                        shaderLocation: 1,
+                        offset: this._scene.normalOffset,
                         format: VertexFormat.Float4
                     }]
                 }],
