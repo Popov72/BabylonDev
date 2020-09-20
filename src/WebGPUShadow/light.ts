@@ -1,7 +1,7 @@
-import { mat4, vec3 } from "gl-matrix";
-import { lookAtLH, orthoLH } from "./math";
+import { mat4, vec3, quat } from "gl-matrix";
+import { lookAtLH, orthoLH, XMScalarModAngle } from "./math";
 
-const target: vec3 = [0, 0, 0];
+const up: vec3 = [0, 1, 0];
 
 export class Light {
 
@@ -11,6 +11,7 @@ export class Light {
     private _viewMatrix: mat4 = mat4.create();
     private _projectionMatrix: mat4 = mat4.create();
     private _transformMatrix: mat4 = mat4.create();
+    private _target: vec3 = [0, 0, 0];
 
     public get direction(): Float32Array {
         return this._direction as Float32Array;
@@ -43,10 +44,24 @@ export class Light {
         return this._transformMatrix as Float32Array;
     }
 
-    protected computeTransformationMatrix() {
-        vec3.add(target, this._position, this._direction);
+    public rotateLight(deltaTime: number): void {
+        let matrix = mat4.create();
 
-        lookAtLH(this._viewMatrix, this._position, target, [0, 1, 0]);
+        let rotY = XMScalarModAngle(deltaTime * 0.25);
+
+        let rotation: quat = quat.create();
+
+        quat.setAxisAngle(rotation, up, rotY);
+
+        mat4.fromQuat(matrix, rotation);
+
+        vec3.transformMat4(this._direction, this._direction, matrix);
+    }
+
+    protected computeTransformationMatrix() {
+        vec3.add(this._target, this._position, this._direction);
+
+        lookAtLH(this._viewMatrix, this._position, this._target, [0, 1, 0]);
 
         const _orthoRight = 67.59060364524424, _orthoLeft = -63.64187195930481;
         const _orthoTop = 46.65612685078382, _orthoBottom = -39.246330294585235;

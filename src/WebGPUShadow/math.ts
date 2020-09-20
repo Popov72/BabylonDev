@@ -110,5 +110,26 @@ export function orthoLH(out: mat4, left: number, right: number, bottom: number, 
     out[14] = (far + near) * nf;
     out[15] = 1;
     return out;
-  }
-  
+}
+
+export function XMScalarModAngle(angle: number): number {
+    // Normalize the range from 0.0f to XM_2PI
+    angle = angle + Math.PI;
+
+    // Perform the modulo, unsigned
+    let fTemp = Math.abs(angle);
+
+    const PIPI = Math.PI * 2;
+
+    fTemp = fTemp - (PIPI * Math.floor(fTemp / PIPI));
+
+    // Restore the number to the range of -XM_PI to XM_PI-epsilon
+    fTemp = fTemp - Math.PI;
+
+    // If the modulo'd value was negative, restore negation
+    if (angle < 0.0) {
+        fTemp = -fTemp;
+    }
+
+    return fTemp;
+}

@@ -44,6 +44,7 @@ export class ShadowMapPass {
         this._shadowMapSizeChanged = false;
         return val;
     }
+
     constructor(device: GPUDevice, glslang: any, scene: any) {
         this._scene = scene;
         this._device = device;

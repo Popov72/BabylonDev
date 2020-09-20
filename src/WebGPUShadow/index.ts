@@ -8,6 +8,7 @@ import { BasicControl } from "./BasicControl";
 import { MainPass } from "./mainPass";
 import { ShadowMapPass } from "./shadowMapPass";
 import { Light } from "./light";
+import dat from "dat.gui";
 
 const useMipmap = false;
 
@@ -22,6 +23,7 @@ export class WebGPUShadow {
     protected _light: Light;
     protected _camera: Camera;
     protected _basicControl: BasicControl;
+    protected _options: any;
 
     protected _textureHelper: GPUTextureHelper;
     protected _mainPass: MainPass;
@@ -111,6 +113,57 @@ export class WebGPUShadow {
         return [verticesBuffer, indicesBuffer, scene];
     }
 
+    private _makeGUI() {
+        const gui = new dat.GUI();
+
+        this._options = {
+            "global_msaa": this._mainPass.useMSAA,
+            "global_animateLight": false,
+
+            "shadowmap_size": this._shadowMapPass.shadowMapSize,
+            "shadowmap_bias": this._shadowMapPass.bias,
+            "shadowmap_normalBias": this._shadowMapPass.normalBias,
+
+            "shadow_pcffiltering": this._mainPass.pcfFiltering,
+        };
+
+        gui.domElement.style.marginTop = "50px";
+
+        // Global
+        const global = gui.addFolder("Global");
+
+        global.add(this._options, "global_msaa")
+            .name("Use MSAA")
+            .onChange((value) => this._mainPass.useMSAA = value);
+
+        global.add(this._options, "global_animateLight")
+            .name("Animate light")
+            .onChange((value) => this._mainPass.useMSAA = value);
+
+        global.open();
+
+        // Shadow map
+        const shadowMap = gui.addFolder("Shadow map");
+
+        shadowMap.add(this._options, "shadowmap_size", [512, 1024, 2048, 4096])
+            .name("Size")
+            .onChange((value) => this._shadowMapPass.shadowMapSize = value);
+
+        shadowMap.add(this._options, "shadowmap_bias", 0, 0.2, 0.001)
+            .name("Bias")
+            .onChange((value) => this._shadowMapPass.bias = value);
+
+        shadowMap.add(this._options, "shadowmap_normalBias", 0, 0.2, 0.001)
+            .name("Normal bias")
+            .onChange((value) => this._shadowMapPass.normalBias = value);
+
+        shadowMap.add(this._options, "shadow_pcffiltering", [1, 3, 5])
+            .name("PCF filtering")
+            .onChange((value) => this._mainPass.pcfFiltering = value);
+
+        shadowMap.open();
+    }
+
     public async init(canvas: HTMLCanvasElement) {
         await this._initWebGPU();
 
@@ -134,6 +187,8 @@ export class WebGPUShadow {
 
         let prevTimestamp = -1;
 
+        this._makeGUI();
+
         return (timestamp: number) => {
             if (prevTimestamp < 0) {
                 prevTimestamp = timestamp;
@@ -142,6 +197,10 @@ export class WebGPUShadow {
             const delta = timestamp - prevTimestamp;
 
             this._basicControl.update(0, delta);
+
+            if (this._options.global_animateLight) {
+                this._light.rotateLight(delta / 1000);
+            }
 
             prevTimestamp = timestamp;
 

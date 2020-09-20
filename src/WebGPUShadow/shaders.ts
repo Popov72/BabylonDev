@@ -50,7 +50,7 @@ export const mainFragmentShaderGLSL = `
     layout(location = 0) out vec4 outColor;
 
     #define GREATEST_LESS_THAN_ONE 0.99999994
-    #define PCF 3
+    #define PCF PCF_VALUE
 
     void main() {
         float fx = clamp(fract(fragUV.x), 0., 1.), fy = clamp(fract(fragUV.y), 0., 1.);
@@ -65,7 +65,7 @@ export const mainFragmentShaderGLSL = `
         vec3 diffuse = ndl * vec3(1.); // vec3(1.) == diffuse color of light
 
         vec3 clipSpace = vPositionFromLight.xyz / vPositionFromLight.w;
-        vec3 uvDepth = vec3(0.5 * clipSpace.xyz + vec3(0.5));
+        vec3 uvDepth = 0.5 * clipSpace.xyz + vec3(0.5);
 
         uvDepth.z = clamp(uvDepth.z, 0., GREATEST_LESS_THAN_ONE);
 

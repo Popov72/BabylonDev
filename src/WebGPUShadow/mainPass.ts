@@ -29,6 +29,7 @@ export class MainPass {
     private _msaaTextureView: GPUTextureView;
     private _bindGroupLayout: GPUBindGroupLayout;
     private _useMSAA: boolean;
+    private _pcfFiltering: number;
 
     public sunDir: Float32Array;
     public transformationMatrix: Float32Array;
@@ -49,6 +50,17 @@ export class MainPass {
         this.resize(window.innerWidth, window.innerHeight);
     }
 
+    public get pcfFiltering(): number {
+        return this._pcfFiltering;
+    }
+
+    public set pcfFiltering(value: number) {
+        this._pcfFiltering = value;
+
+        this._createPipeline();
+        this.resize(window.innerWidth, window.innerHeight);
+    }
+
     constructor(device: GPUDevice, glslang: any, scene: any, textureHelper: GPUTextureHelper, canvas: HTMLCanvasElement, swapChainFormat: GPUTextureFormat, shadowMapPass: ShadowMapPass, useMipmap = false) {
         this._scene = scene;
         this._device = device;
@@ -58,6 +70,8 @@ export class MainPass {
         this._textureHelper = textureHelper;
         this._useMipmap = useMipmap;
         this._useMSAA = true;
+
+        this._pcfFiltering = 3;
 
         const context = canvas.getContext('gpupresent');
 
@@ -278,7 +292,7 @@ export class MainPass {
 
             fragmentStage: {
                 module: this._device.createShaderModule({
-                    code: this._glslang.compileGLSL(mainFragmentShaderGLSL, "fragment"),
+                    code: this._glslang.compileGLSL(mainFragmentShaderGLSL.replace("PCF_VALUE", "" + this._pcfFiltering), "fragment"),
 
                     // @ts-ignore
                     source: mainFragmentShaderGLSL,
