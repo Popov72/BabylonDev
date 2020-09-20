@@ -119,6 +119,7 @@ export class WebGPUShadow {
         this._options = {
             "global_msaa": this._mainPass.useMSAA,
             "global_animateLight": false,
+            "global_qwertyMode": false,
 
             "shadowmap_size": this._shadowMapPass.shadowMapSize,
             "shadowmap_bias": this._shadowMapPass.bias,
@@ -139,6 +140,10 @@ export class WebGPUShadow {
         global.add(this._options, "global_animateLight")
             .name("Animate light")
             .onChange((value) => this._mainPass.useMSAA = value);
+
+        global.add(this._options, "global_qwertyMode")
+            .name("QWERTY mode")
+            .onChange((value) => this._basicControl.setMode(value));
 
         global.open();
 

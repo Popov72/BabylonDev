@@ -75,6 +75,25 @@ export class BasicControl {
         return this._captureMouse;
     }
 
+    public setMode(useQWERTY: boolean) {
+        const states = this.states,
+              STATES = this.STATES;
+
+        if (useQWERTY) {
+            states[87] = {state: STATES.FORWARD, on: false}; // W
+            states[65] = {state: STATES.LEFT,    on: false}; // A
+
+            delete states[90]; // Z
+            delete states[81]; // Q
+        } else {
+            states[90] = {state: STATES.FORWARD, on: false}; // Z
+            states[81] = {state: STATES.LEFT,    on: false}; // Q
+
+            delete states[87]; // W
+            delete states[65]; // A
+        }
+    }
+
     protected init(camera: ICamera, scale?: { move: number; rotation: number; mouserotation: number }) {
         const domElement = document.body,
               object = camera;
