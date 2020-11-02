@@ -10,7 +10,7 @@ export class ShadowMapPass {
     private _vertexUniformBuffer: GPUBuffer;
     private _pipeline: GPURenderPipeline;
     private _renderPassDescriptor: GPURenderPassDescriptor;
-    private _uniformBindGroup: GPUBindGroup;
+    private _bindGroup: GPUBindGroup;
     private _renderTexture: GPUTexture;
     private _renderTextureView: GPUTextureView;
     private _depthTexture: GPUTexture;
@@ -170,7 +170,7 @@ export class ShadowMapPass {
         const passEncoderShadowmap = commandEncoder.beginRenderPass(this._renderPassDescriptor);
 
         passEncoderShadowmap.setPipeline(this._pipeline);
-        passEncoderShadowmap.setBindGroup(0, this._uniformBindGroup);
+        passEncoderShadowmap.setBindGroup(0, this._bindGroup);
         passEncoderShadowmap.setVertexBuffer(0, verticesBuffer);
         passEncoderShadowmap.setIndexBuffer(indicesBuffer, IndexFormat.Uint32);
         passEncoderShadowmap.drawIndexed(this._scene.indices.length, 1, 0, 0, 0);
@@ -248,7 +248,7 @@ export class ShadowMapPass {
     }
 
     protected _createBindGroup() {
-        this._uniformBindGroup = this._device.createBindGroup({
+        this._bindGroup = this._device.createBindGroup({
             layout: this._pipeline.getBindGroupLayout(0),
             entries: [{
                 binding: 0,

@@ -22,7 +22,7 @@ export class MainPass {
     private _sampler: GPUSampler;
     private _samplerShadowmap: GPUSampler;
     private _renderPassDescriptor: GPURenderPassDescriptor;
-    private _uniformBindGroup: GPUBindGroup;
+    private _bindGroup: GPUBindGroup;
     private _depthTexture: GPUTexture;
     private _depthTextureView: GPUTextureView;
     private _msaaTexture: GPUTexture;
@@ -227,7 +227,7 @@ export class MainPass {
         const passEncoder = commandEncoder.beginRenderPass(this._renderPassDescriptor);
 
         passEncoder.setPipeline(this._pipeline);
-        passEncoder.setBindGroup(0, this._uniformBindGroup);
+        passEncoder.setBindGroup(0, this._bindGroup);
         passEncoder.setVertexBuffer(0, verticesBuffer);
         passEncoder.setIndexBuffer(indicesBuffer, IndexFormat.Uint32);
         passEncoder.drawIndexed(this._scene.indices.length, 1, 0, 0, 0);
@@ -349,7 +349,7 @@ export class MainPass {
     }
 
     protected _createBindGroup(depthTextureShadowmapView: GPUTextureView) {
-        this._uniformBindGroup = this._device.createBindGroup({
+        this._bindGroup = this._device.createBindGroup({
             layout: this._bindGroupLayout/*this._pipeline.getBindGroupLayout(0)*/,
             entries: [{
                 binding: 0,
