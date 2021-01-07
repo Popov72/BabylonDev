@@ -1,4 +1,4 @@
-import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat, ShaderStage, BindingType } from "@webgpu/types/dist/constants";
+import { PrimitiveTopology, FilterMode, CompareFunction, TextureFormat, VertexFormat, CullMode, StoreOp, IndexFormat, ShaderStage, BindingType, TextureComponentType } from "@webgpu/types/dist/constants";
 import { mainVertexShaderGLSL, mainFragmentShaderGLSL } from "./shaders";
 import { GPUTextureHelper } from "./gpuTextureHelper";
 import { createTextureFromImage } from './helpers';
@@ -270,7 +270,8 @@ export class MainPass {
                 }, {
                     binding: 5,
                     visibility: ShaderStage.Fragment,
-                    type: BindingType.SampledTexture
+                    type: BindingType.SampledTexture,
+                    textureComponentType: TextureComponentType.DepthComparison
                 }
             ]
         });

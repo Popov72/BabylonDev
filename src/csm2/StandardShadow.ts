@@ -361,7 +361,7 @@ export default class StandardShadow extends SplitBase {
 
         this.scene.activeCamera = this.camera;
 
-        const useTextureAtlas = true;
+        const useTextureAtlas = false;
         const atlasExportMesh = false;
         const atlasExportTexture = false;
 
@@ -477,7 +477,7 @@ export default class StandardShadow extends SplitBase {
                 const w = block.w, h = block.h, x = block.fit!.x, y = block.fit!.y;
                 const texture = (block as any).obj as Texture;
 
-                const data = texture.readPixels()! as Uint8Array;
+                const data = await texture.readPixels()! as Uint8Array;
                 const imgData = ctx.createImageData(w, h);
 
                 for (let i = 0; i < imgData.data.length; i += 4) {
@@ -494,8 +494,8 @@ export default class StandardShadow extends SplitBase {
 
             const atlasImageData = ctx.getImageData(0, 0, width, height);
 
-            const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, true, false, Constants.TEXTURE_LINEAR_LINEAR_MIPLINEAR);
-            //const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, false, false, Constants.TEXTURE_LINEAR_LINEAR);
+            //const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, true, false, Constants.TEXTURE_LINEAR_LINEAR_MIPLINEAR);
+            const atlasTexture = RawTexture.CreateRGBATexture(atlasImageData.data, width, height, this.scene, false, false, Constants.TEXTURE_LINEAR_LINEAR);
 
             //atlasTexture.anisotropicFilteringLevel = 1;
 
@@ -539,7 +539,7 @@ export default class StandardShadow extends SplitBase {
 
             let toDisp: Array<any> = [];
             this.scene.materials.forEach((mat) => {
-                if (mat !== nmesh!.material && mat !== this._skybox.material && !mat.name.startsWith("CSM")) {
+                if (mat !== nmesh!.material && mat !== this._skybox.material && !mat.name.startsWith("CSM") && mat.name.indexOf("_shadowmap") < 0) {
                     toDisp.push(mat);
                 }
             });
