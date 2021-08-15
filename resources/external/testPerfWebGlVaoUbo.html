@@ -1,0 +1,301 @@
+<html>
+
+<body>
+
+    <script>
+        const numCubes = 3000;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = 600;
+        canvas.height = 600;
+        document.body.appendChild(canvas);
+
+        const cubeVertexSize = 4 * 4; // Byte size of one cube vertex.
+        const cubePositionOffset = 0;
+        const cubeVertexArray = new Float32Array([
+            // float4 position, float4 color, float2 uv,
+            1, -1, 1, 1,
+            -1, -1, 1, 1,
+            -1, -1, -1, 1,
+            1, -1, -1, 1,
+            1, -1, 1, 1,
+            -1, -1, -1, 1,
+
+            1, 1, 1, 1,
+            1, -1, 1, 1,
+            1, -1, -1, 1,
+            1, 1, -1, 1,
+            1, 1, 1, 1,
+            1, -1, -1, 1,
+
+            -1, 1, 1, 1,
+            1, 1, 1, 1,
+            1, 1, -1, 1,
+            -1, 1, -1, 1,
+            -1, 1, 1, 1,
+            1, 1, -1, 1,
+
+            -1, -1, 1, 1,
+            -1, 1, 1, 1,
+            -1, 1, -1, 1,
+            -1, -1, -1, 1,
+            -1, -1, 1, 1,
+            -1, 1, -1, 1,
+
+            1, 1, 1, 1,
+            -1, 1, 1, 1,
+            -1, -1, 1, 1,
+            -1, -1, 1, 1,
+            1, -1, 1, 1,
+            1, 1, 1, 1,
+
+            1, -1, -1, 1,
+            -1, -1, -1, 1,
+            -1, 1, -1, 1,
+            1, 1, -1, 1,
+            1, -1, -1, 1,
+            -1, 1, -1, 1,
+        ]);
+        const cubeIndexArray = new Uint16Array([
+            0, 1, 2,
+            3, 4, 5,
+            6, 7, 8,
+            9, 10, 11,
+            12, 13, 14,
+            15, 16, 17,
+            18, 19, 20,
+            21, 22, 23,
+            24, 25, 26,
+            27, 28, 29,
+            30, 31, 32,
+            33, 34, 35
+        ]);
+
+        //
+        // Initialize a shader program, so WebGL knows how to draw our data
+        //
+        function initShaderProgram(gl, vsSource, fsSource) {
+            const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
+
+            // Create the shader program
+            const shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
+
+            // If creating the shader program failed, alert
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
+                return null;
+            }
+
+            return shaderProgram;
+        }
+
+        //
+        // creates a shader of the given type, uploads the source and
+        // compiles it.
+        //
+        function loadShader(gl, type, source) {
+            const shader = gl.createShader(type);
+
+            // Send the source to the shader object
+            gl.shaderSource(shader, source);
+
+            // Compile the shader program
+            gl.compileShader(shader);
+
+            // See if it compiled successfully
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
+                gl.deleteShader(shader);
+                return null;
+            }
+
+            return shader;
+        }
+
+        function init(canvas) {
+            const vertexShaderGLSL = `#version 300 es
+                precision highp float;
+
+                in vec4 position;
+
+                uniform mat4 viewProjectionMatrix;
+
+                layout(std140) uniform meshBlock
+                {
+                    mat4 worldMatrix;
+                };
+
+                void main(void) {
+                    gl_Position = viewProjectionMatrix * worldMatrix * position;
+                }`;
+
+            const fragmentShaderGLSL = `#version 300 es
+                precision highp float;
+
+                uniform vec4 color;
+
+                out vec4 glFragColor;
+
+                void main(void) {
+                    glFragColor = color;
+                }`;
+
+            const fragmentShader2GLSL = `#version 300 es
+                precision highp float;
+
+                uniform vec4 color;
+
+                out vec4 glFragColor;
+
+                void main(void) {
+                    glFragColor = vec4(color.xy, 1., 1.);
+                }`;
+
+            const gl = canvas.getContext('webgl2');
+            const program1 = initShaderProgram(gl, vertexShaderGLSL, fragmentShaderGLSL);
+            const program2 = initShaderProgram(gl, vertexShaderGLSL, fragmentShader2GLSL);
+
+            const vpLoc1 = gl.getUniformLocation(program1, "viewProjectionMatrix");
+            const wLoc1 = 1;
+            const uboi1 = gl.getUniformBlockIndex(program1, "meshBlock");
+            gl.uniformBlockBinding(program1, uboi1, wLoc1);
+            const cLoc1 = gl.getUniformLocation(program1, "color");
+
+            const vpLoc2 = gl.getUniformLocation(program2, "viewProjectionMatrix");
+            const wLoc2 = 1;
+            const uboi2 = gl.getUniformBlockIndex(program2, "meshBlock");
+            gl.uniformBlockBinding(program2, uboi2, wLoc2);
+            const cLoc2 = gl.getUniformLocation(program2, "color");
+
+            const transformationMatrix = new Float32Array([
+                0.7471394538879395, -0.046775974333286285, -0.8561082482337952, -0.8391556143760681,
+                -0.046775974333286285, 1.372904658317566, -0.06364049762487411, -0.062380287796258926,
+                -1.154998540878296, -0.08585909754037857, -0.5512174963951111, -0.5403022766113281,
+                0, 0, 2.0606062412261963, 4
+            ]);
+
+            gl.useProgram(program1);
+            gl.uniformMatrix4fv(vpLoc1, false, transformationMatrix);
+            gl.useProgram(program2);
+            gl.uniformMatrix4fv(vpLoc2, false, transformationMatrix);
+
+            const worldMatrix = new Float32Array([
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+            ]);
+
+            const color1 = [Math.random(), Math.random(), Math.random(), 1];
+            const color2 = [Math.random(), Math.random(), Math.random(), 1];
+
+            gl.useProgram(program1);
+            gl.uniform4fv(cLoc1, color1);
+            gl.useProgram(program2);
+            gl.uniform4fv(cLoc2, color2);
+
+            const programs = [];
+            const wLocs = [];
+            const wBuffers = [];
+            const vaos = [];
+
+            for (let i = 0; i < numCubes; ++i) {
+
+                // Create a buffer for the mesh block.
+                const worldBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.UNIFORM_BUFFER, worldBuffer);
+                gl.bufferData(gl.UNIFORM_BUFFER, worldMatrix, gl.STATIC_DRAW);
+                gl.bindBuffer(gl.UNIFORM_BUFFER, null);
+                wBuffers.push(worldBuffer);
+
+                // Create a buffer for the square's positions.
+                const positionBuffer = gl.createBuffer();
+
+                // Select the positionBuffer as the one to apply buffer
+                // operations to from here out.
+                gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+                // Now pass the list of positions into WebGL to build the
+                // shape. We do this by creating a Float32Array from the
+                // JavaScript array, then use it to fill the current buffer.
+                gl.bufferData(gl.ARRAY_BUFFER, cubeVertexArray, gl.STATIC_DRAW);
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+                // Create a buffer for the square's positions.
+                const indexBuffer = gl.createBuffer();
+
+                // Select the positionBuffer as the one to apply buffer
+                // operations to from here out.
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+                // Now pass the list of positions into WebGL to build the
+                // shape. We do this by creating a Float32Array from the
+                // JavaScript array, then use it to fill the current buffer.
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, cubeIndexArray, gl.STATIC_DRAW);
+
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+
+                const vao = gl.createVertexArray();
+                gl.bindVertexArray(vao);
+                gl.enableVertexAttribArray(0);
+                gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 12, 0);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+                gl.bindVertexArray(null);
+
+                vaos.push(vao);
+
+                if (i%2 == 0) {
+                    programs.push(program1);
+                    wLocs.push(wLoc1);
+                }
+                else {
+                    programs.push(program2);
+                    wLocs.push(wLoc2);
+                }
+            }
+
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+            gl.clearDepth(1.0);                 // Clear everything
+            gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+            gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+
+            return function frame(timestamp) {
+                // Clear the canvas before we start drawing on it.
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+                for (let i = 0; i < numCubes; ++i) {
+                    gl.useProgram(programs[i]);
+
+                    gl.bindBufferBase(gl.UNIFORM_BUFFER, wLocs[i], wBuffers[i]);
+                    gl.bindBufferBase(gl.UNIFORM_BUFFER, wLocs[i], wBuffers[i]);
+                    gl.bindBufferBase(gl.UNIFORM_BUFFER, wLocs[i], wBuffers[i]);
+
+                    gl.bindVertexArray(vaos[i]);
+
+                    gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+                }
+            }
+        }
+
+        function doIt() {
+            const frame = init(canvas);
+
+            function doFrame(timestamp) {
+                frame(timestamp);
+                requestAnimationFrame(doFrame);
+            }
+            requestAnimationFrame(doFrame);
+        }
+
+        doIt();
+    </script>
+
+</body>
+
+</html>
