@@ -82,7 +82,7 @@ export class WebGPUShadow {
         this._glslang = await glslangModule();
 
         console.log("Device limits=", this._device.limits);
-        console.log("Device extensions=", this._device.extensions);
+        //console.log("Device extensions=", this._device.extensions);
     }
 
     protected async _makeGeometryBuffers(): Promise<[GPUBuffer, GPUBuffer, any]> {
@@ -218,7 +218,7 @@ export class WebGPUShadow {
             this._mainPass.sunDir = this._light.direction;
             this._mainPass.render(commandEncoder, verticesBuffer, indicesBuffer);
 
-            this._device.defaultQueue.submit([commandEncoder.finish()]);
+            this._device.queue.submit([commandEncoder.finish()]);
         };
     }
 }

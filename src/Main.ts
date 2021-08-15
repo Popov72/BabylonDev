@@ -55,8 +55,8 @@ async function startIt() {
         });
         await engine.initAsync(glslangOptions);*/
 
-        jQuery(window).on('resize', engine.resize);
-        jQuery(window).on('load', engine.resize);
+        jQuery(window).on('resize', engine.resize as any);
+        jQuery(window).on('load', engine.resize as any);
     }
 
     const sample = Sample.createSample(sampleName, engine, canvas) as Sample;

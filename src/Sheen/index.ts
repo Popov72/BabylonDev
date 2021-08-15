@@ -395,7 +395,6 @@ export default class Sheen extends SampleBasic {
         scene._isReadyForMeshStage.clear();
         scene._beforeEvaluateActiveMeshStage.clear();
         scene._evaluateSubMeshStage.clear();
-        scene._activeMeshStage.clear();
         scene._cameraDrawRenderTargetStage.clear();
         scene._beforeCameraDrawStage.clear();
         scene._beforeRenderTargetDrawStage.clear();
