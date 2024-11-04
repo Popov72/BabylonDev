@@ -1,0 +1,59 @@
+<html>
+  <body>
+    <script>
+      const canvas = document.createElement("canvas");
+      canvas.width = 600;
+      canvas.height = 600;
+      document.body.appendChild(canvas);
+
+      async function init(canvas) {
+        const adapter = await navigator.gpu.requestAdapter();
+        const device = await adapter.requestDevice();
+
+        const context = canvas.getContext("webgpu");
+
+        const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
+
+        context.configure({
+          device,
+          format: presentationFormat,
+        });
+
+        const allTextures = [];
+        for (let i = 0; i < 100 * 1; ++i) {
+          const texture = device.createTexture({
+            size: { width: 1024 * 2, height: 1024 * 2 },
+            format: "rgba8unorm",
+            usage: 4 /* texture binding */,
+          });
+          allTextures.push(texture);
+        }
+
+        setTimeout(() => {
+          console.log("Destroying all textures");
+          for (const texture of allTextures) {
+            texture.destroy();
+          }
+        }, 3000);
+
+        return function frame(timestamp) {
+          const commandEncoder = device.createCommandEncoder();
+
+          device.queue.submit([commandEncoder.finish()]);
+        };
+      }
+
+      async function doIt() {
+        const frame = await init(canvas);
+
+        function doFrame(timestamp) {
+          frame(timestamp);
+          requestAnimationFrame(doFrame);
+        }
+        requestAnimationFrame(doFrame);
+      }
+
+      doIt();
+    </script>
+  </body>
+</html>
